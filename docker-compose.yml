@@ -1,0 +1,22 @@
+services:
+  webapp:
+    container_name: webapp
+    build: 
+      context: ./WebApp
+      dockerfile: webapp.Dockerfile
+    volumes:
+      - data-protection:/root/.aspnet/DataProtection-Keys
+    ports:
+      - "5000:80"
+    depends_on:
+      - "flask"
+  flask:
+    container_name: flask
+    build:
+      context: ./Flask
+      dockerfile: flask.Dockerfile
+    ports:
+      - "7007:7007"
+volumes:
+  data-protection:
+    
