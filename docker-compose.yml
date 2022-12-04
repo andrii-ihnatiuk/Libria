@@ -4,6 +4,7 @@ services:
     build: 
       context: ./WebApp
       dockerfile: webapp.Dockerfile
+    image: ihnatiuk/libria-webapp
     volumes:
       - data-protection:/root/.aspnet/DataProtection-Keys
     ports:
@@ -15,6 +16,7 @@ services:
     build:
       context: ./Flask
       dockerfile: flask.Dockerfile
+    image: ihnatiuk/libria-flask
     ports:
       - "7007:7007"
 volumes:
