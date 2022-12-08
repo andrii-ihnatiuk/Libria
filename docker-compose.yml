@@ -7,10 +7,15 @@ services:
     image: ihnatiuk/libria-webapp
     volumes:
       - data-protection:/root/.aspnet/DataProtection-Keys
+      - type: bind
+        source: ~/libria/config
+        target: /app/config
     ports:
       - "5000:80"
     depends_on:
       - "flask"
+    environment:
+      - LIBRIA_SECRETS_PATH=/app/config/
   flask:
     container_name: flask
     build:

@@ -1,0 +1,49 @@
+﻿@model Libria.ViewModels.RegisterViewModel
+
+@{
+	ViewData["Title"] = "Реєстрація";
+}
+
+<div class="row justify-content-center py-5">
+	<div class="col-lg-4">
+		<h2 class="text-center mb-4">Реєстрація</h2>
+		<form method="POST" asp-controller="Account" asp-action="Register" class="needs-validation" novalidate>
+			<div class="form-group mb-2">
+				<label asp-for="FirstName" class="mb-1"></label>
+				<input asp-for="FirstName" class="form-control" placeholder="Введіть ваше ім'я">
+				<span asp-validation-for="FirstName" class="invalid-feedback"></span>
+			</div>
+			<div class="form-group mb-2">
+				<label asp-for="LastName" class="mb-1"></label>
+				<input asp-for="LastName" class="form-control" placeholder="Введіть ваше прізвище">
+			</div>
+			<div class="form-group mb-2">
+				<label asp-for="Email" class="mb-1"></label>
+				<input asp-for="Email" class="form-control" placeholder="Введіть email адресу">
+				<span asp-validation-for="Email" class="invalid-feedback"></span>
+			</div>
+			<div class="form-group mb-2">
+				<label asp-for="PhoneNumber" class="mb-1"></label>
+				<input asp-for="PhoneNumber" class="form-control" placeholder="Введіть номер телефону">
+				<span asp-validation-for="PhoneNumber" class="invalid-feedback"></span>
+			</div>
+			<div class="form-group mb-4">
+				<label asp-for="Password" class="mb-1"></label>
+				<input asp-for="Password" class="form-control" placeholder="Введіть пароль">
+				<span asp-validation-for="Password" class="invalid-feedback"></span>
+			</div>
+			<div class="form-group mb-4">
+				<button type="submit" class="btn btn-primary w-100">Зареєструватися</button>
+			</div>
+			<div asp-validation-summary="ModelOnly" class="text-danger"></div>
+		</form>
+		<div class="text-center mb-2">Вже маєте акаунт?</div>
+		<div class="text-center">
+			<a class="link-dark fw-bold" asp-controller="Account" asp-action="Login">Вхід</a>
+		</div>
+	</div>
+</div>
+
+@section Scripts {
+	<partial name="_ValidationScriptsPartial" />
+}

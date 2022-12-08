@@ -1,0 +1,66 @@
+﻿@using Libria.Data;
+@model Libria.ViewModels.LoginViewModel
+
+@{
+	ViewData["Title"] = "Вхід";
+}
+
+<div class="row justify-content-center py-5">
+	<div class="col-lg-4">
+		<h2 class="text-center mb-4">Вхід до акаунту</h2>
+		<form method="post" asp-controller="Account" asp-action="Login" asp-route-returnURL="@ViewData["returnURL"]" class="needs-validation" role="form" novalidate>
+			<div class="form-group mb-2">
+				<label asp-for="Email" class="mb-1"></label>
+				<input asp-for="Email" class="form-control @(ViewBag.EmailInvalid == true  ? "is-invalid" : "")" placeholder="Введіть email адресу">
+				<span asp-validation-for="Email" class="invalid-feedback"></span>
+			</div>
+			<div class="form-group mb-2">
+				<label asp-for="Password" class="mb-1"></label>
+				<input asp-for="Password" class="form-control @(ViewBag.PasswordInvalid == true ? "is-invalid" : "")" placeholder="Введіть пароль">
+				<span asp-validation-for="Password" class="invalid-feedback"></span>
+			</div>
+			<div class="d-flex justify-content-between">
+				<div class="form-check mb-4">
+					<input name="@nameof(Model.RememberMe)" id="@nameof(Model.RememberMe)" class="form-check-input" type="checkbox" value="true">
+					<input name="@nameof(Model.RememberMe)" type="hidden" value="false"/>
+					<label asp-for="RememberMe" class="form-check-label"></label>
+				</div>
+				<a class="link-dark" asp-controller="Account" asp-action="ResetPassword">Забули пароль?</a>
+			</div>
+			<div asp-validation-summary="ModelOnly" class="text-danger"></div>
+			<div class="form-group mb-4">
+				<button type="submit" class="btn btn-primary w-100">Увійти</button>
+			</div>
+		</form>
+		<div class="d-flex justify-content-between align-items-center mb-4">
+			<div style="flex-grow:1; background-color:lightgrey; height:1px;"></div>
+			<span style="margin:0 1.5rem; text-align:center">або</span>
+			<div style="flex-grow:1; background-color:lightgrey; height:1px;"></div>
+		</div>
+
+		<button class="btn btn-outline-primary w-100 mb-4" asp-controller="Profile" asp-action="LoginGoogle" type="button">
+			<div class="d-flex justify-content-center align-items-center">
+				<svg class="me-3" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xl ink" viewBox="0 0 32 32" width="20" height="20">
+					<defs>
+						<path id="A" d="M44.5 20H24v8.5h11.8C34.7 33.9 30.1 37 24 37c-7.2 0-13-5.8-13-13s5.8-13 13-13c3.1 0 5.9 1.1 8.1 2.9l6.4-6.4C34.6 4.1 29.6 2 24 2 11.8 2 2 11.8 2 24s9.8 22 22 22c11 0 21-8 21-22 0-1.3-.2-2.7-.5-4z" />
+					</defs>
+					<clipPath id="B"><use xlink:href="#A" /></clipPath>
+					<g transform="matrix(.727273 0 0 .727273 -.954545 -1.45455)">
+						<path d="M0 37V11l17 13z" clip-path="url(#B)" fill="#fbbc05" /><path d="M0 11l17 13 7-6.1L48 14V0H0z" clip-path="url(#B)" fill="#ea4335" />
+						<path d="M0 37l30-23 7.9 1L48 0v48H0z" clip-path="url(#B)" fill="#34a853" /><path d="M48 48L17 24l-4-3 35-10z" clip-path="url(#B)" fill="#4285f4" />
+					</g>
+				</svg>
+				Увійти з Google
+			</div>
+		</button>
+
+		<div class="text-center mb-2 mt-2">Не маєте акаунту?</div>
+		<div class="text-center">
+			<a class="link-dark fw-bold" asp-controller="Account" asp-action="Register">Реєстрація</a>
+		</div>
+	</div>
+</div>
+
+@section Scripts {
+	<partial name="_ValidationScriptsPartial" />
+}

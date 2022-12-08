@@ -1,6 +1,6 @@
 ﻿using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
-using Libria.Models;
+using Libria.ViewModels;
 
 namespace Libria.Controllers;
 
