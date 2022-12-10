@@ -4,7 +4,6 @@ using Microsoft.AspNetCore.Identity;
 using Libria.Models;
 using Libria.Data;
 using Libria.Services;
-using Microsoft.AspNetCore.HttpLogging;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -12,13 +11,6 @@ builder.Services.Configure<ForwardedHeadersOptions>(options =>
 {
 	options.ForwardedHeaders =
 		ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
-});
-
-builder.Services.AddHttpLogging(options =>
-{
-	options.LoggingFields = HttpLoggingFields.RequestPropertiesAndHeaders;
-	options.RequestHeaders.Add("X-Forwarded-For");
-	options.RequestHeaders.Add("X-Forwarded-Proto");
 });
 
 // Get path to the folder with application secrets
@@ -54,21 +46,21 @@ var app = builder.Build();
 // This is recommended to use when a reverse proxy is used
 app.UseForwardedHeaders();
 
-app.UseHttpLogging();
-
-app.Use(async (context, next) =>
+app.Use((context, next) =>
 {
-	// Connection: RemoteIp
-	app.Logger.LogInformation("Request RemoteIp: {RemoteIpAddress}",
-		context.Connection.RemoteIpAddress);
-
-	await next(context);
+	var result = context.Request.Headers.TryGetValue("X-Forwarded-Proto", out var value);
+	if (result == true && value.ToString().ToUpper().Equals("HTTPS"))
+	{
+		context.Request.Scheme = "https";
+	}
+    app.Logger.LogInformation($"{result}; {value}");
+	return next(context);
 });
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
 {
-    app.UseExceptionHandler("/Home/Error");
+	app.UseExceptionHandler("/Home/Error");
 	// The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
 	app.UseHsts();
 }

@@ -136,7 +136,6 @@ namespace Libria.Controllers
 				if (user != null)
 				{
 					_logger.LogInformation($"{HttpContext?.Request?.Scheme}; {HttpContext?.Request?.Protocol}");
-					_logger.LogInformation($"{Request.Scheme}; {Request?.Protocol}");
 
 					var token = await _userManager.GeneratePasswordResetTokenAsync(user);
 					var callbackUrl = Url.Action(nameof(ResetPassword), "Account", new { uid = user.Id, token }, protocol: HttpContext?.Request.Scheme);
