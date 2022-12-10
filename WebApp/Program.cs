@@ -11,6 +11,8 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddHttpLogging(options =>
 {
 	options.LoggingFields = HttpLoggingFields.RequestPropertiesAndHeaders;
+	options.RequestHeaders.Add("X-Forwarded-For");
+	options.RequestHeaders.Add("X-Forwarded-Proto");
 });
 
 // Get path to the folder with application secrets
