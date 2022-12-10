@@ -7,6 +7,7 @@
         public const string PhoneNumber = "Введіть правильний номер телефону";
         public const string Password = "Пароль повинен бути довжиною від 6 символів і мати цифру";
         public const string PasswordIncorrect = "Введено невірний пароль";
+        public const string PasswordMismatch = "Паролі не співпадають";
 
     }
 }

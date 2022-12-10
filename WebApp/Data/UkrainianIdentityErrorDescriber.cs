@@ -18,6 +18,6 @@ namespace Libria.Data
         public override IdentityError PasswordRequiresDigit() { return new IdentityError { Code = nameof(PasswordRequiresDigit), Description = "Паролі повинні містити принаймні одну цифру ('0'-'9')." }; }
         public override IdentityError PasswordRequiresLower() { return new IdentityError { Code = nameof(PasswordRequiresLower), Description = "Паролі повинні мати принаймні одну малу літеру ('a'-'z')." }; }
         public override IdentityError PasswordRequiresUpper() { return new IdentityError { Code = nameof(PasswordRequiresUpper), Description = "Паролі повинні містити принаймні одну літеру у верхньому регістрі ('A'-'Z')." }; }
-    
-    }
+        public override IdentityError InvalidToken() { return new IdentityError { Code = nameof(InvalidToken), Description = "Невірний токен" }; }
+	}
 }

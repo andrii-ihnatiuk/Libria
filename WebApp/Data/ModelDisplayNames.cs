@@ -6,6 +6,7 @@
         public const string LastName = "Прізвище";
         public const string Email = "Email";
         public const string Password = "Пароль";
+        public const string ConfirmPassword = "Підтвердження пароля";
         public const string PhoneNumber = "Номер телефону";
         public const string RememberMe = "Запам'ятати мене";
 
