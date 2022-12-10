@@ -135,8 +135,10 @@ namespace Libria.Controllers
 				var user = await _userManager.FindByEmailAsync(model.Email);
 				if (user != null)
 				{
+					_logger.LogInformation($"{HttpContext?.Request?.Scheme}; {HttpContext?.Request?.Protocol}");
+
 					var token = await _userManager.GeneratePasswordResetTokenAsync(user);
-					var callbackUrl = Url.Action(nameof(ResetPassword), "Account", new { uid = user.Id, token }, protocol: HttpContext.Request.Scheme);
+					var callbackUrl = Url.Action(nameof(ResetPassword), "Account", new { uid = user.Id, token }, protocol: HttpContext?.Request.Scheme);
 
 					var subject = "Запит на відновлення доступу";
 					string message = $@"<p>Для зміни пароля перейдіть за</p><a href=""{callbackUrl}"">наступним посиланням</a>";
