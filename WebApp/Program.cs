@@ -8,6 +8,12 @@ using Microsoft.AspNetCore.HttpLogging;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Services.Configure<ForwardedHeadersOptions>(options =>
+{
+	options.ForwardedHeaders =
+		ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
+});
+
 builder.Services.AddHttpLogging(options =>
 {
 	options.LoggingFields = HttpLoggingFields.RequestPropertiesAndHeaders;
@@ -46,10 +52,7 @@ builder.Services.AddControllersWithViews();
 var app = builder.Build();
 
 // This is recommended to use when a reverse proxy is used
-app.UseForwardedHeaders(new ForwardedHeadersOptions
-{
-    ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
-});
+app.UseForwardedHeaders();
 
 app.UseHttpLogging();
 
