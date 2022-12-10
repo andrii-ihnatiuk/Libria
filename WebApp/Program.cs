@@ -4,8 +4,14 @@ using Microsoft.AspNetCore.Identity;
 using Libria.Models;
 using Libria.Data;
 using Libria.Services;
+using Microsoft.AspNetCore.HttpLogging;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddHttpLogging(options =>
+{
+	options.LoggingFields = HttpLoggingFields.RequestPropertiesAndHeaders;
+});
 
 // Get path to the folder with application secrets
 string? secrets_path = Environment.GetEnvironmentVariable("LIBRIA_SECRETS_PATH");
@@ -41,6 +47,17 @@ var app = builder.Build();
 app.UseForwardedHeaders(new ForwardedHeadersOptions
 {
     ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
+});
+
+app.UseHttpLogging();
+
+app.Use(async (context, next) =>
+{
+	// Connection: RemoteIp
+	app.Logger.LogInformation("Request RemoteIp: {RemoteIpAddress}",
+		context.Connection.RemoteIpAddress);
+
+	await next(context);
 });
 
 // Configure the HTTP request pipeline.
