@@ -16,3 +16,50 @@ html {
 body {
   margin-bottom: 60px;
 }
+
+.dropdown-menu ul {
+    list-style: none;
+    padding: 0;
+}
+
+.dropdown-menu.show {
+    display: flex;
+}
+
+.dropdown-menu li .dropdown-item {
+  color: black;
+  font-size: 1em;
+  padding: 0.5em 1em;
+}
+
+.dropdown-menu {
+    border: none;
+    border-radius: 0.2em;
+    padding: 0.7em;
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
+}
+
+/* CAROUSEL STYLES */
+
+.carousel-item, .carousel-item img {
+    margin: auto;
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+}
+
+/* Medium devices (landscape tablets, 768px and up) */
+@media only screen and (min-width: 768px) {
+    .carousel-inner {
+        min-height: 300px;
+    }
+}
+
+/* Extra small devices (phones, 600px and down) */
+@media only screen and (max-width: 767px) {
+    .carousel-inner {
+        height: 160px;
+    }
+}
