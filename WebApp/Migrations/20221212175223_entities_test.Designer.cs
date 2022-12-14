@@ -3,6 +3,7 @@ using System;
 using Libria.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,10 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Libria.Migrations
 {
     [DbContext(typeof(LibriaDbContext))]
-    partial class LibriaDbContextModelSnapshot : ModelSnapshot
+    [Migration("20221212175223_entities_test")]
+    partial class entities_test
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -99,7 +101,7 @@ namespace Libria.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("BookId"));
 
-                    b.Property<bool>("Available")
+                    b.Property<bool?>("Available")
                         .HasColumnType("boolean");
 
                     b.Property<string>("Description")
@@ -111,26 +113,20 @@ namespace Libria.Migrations
                     b.Property<string>("Isbn")
                         .HasColumnType("text");
 
-                    b.Property<string>("Language")
-                        .HasColumnType("text");
+                    b.Property<decimal?>("OriginalPrice")
+                        .HasColumnType("numeric");
 
                     b.Property<int?>("Pages")
                         .HasColumnType("integer");
 
-                    b.Property<decimal>("Price")
+                    b.Property<decimal?>("Price")
                         .HasColumnType("numeric");
 
                     b.Property<string>("PublicationYear")
                         .HasColumnType("text");
 
-                    b.Property<string>("Publisher")
-                        .HasColumnType("text");
-
                     b.Property<int?>("Quantity")
                         .HasColumnType("integer");
-
-                    b.Property<decimal>("SalePrice")
-                        .HasColumnType("numeric");
 
                     b.Property<string>("Title")
                         .IsRequired()
@@ -144,21 +140,15 @@ namespace Libria.Migrations
                         new
                         {
                             BookId = 1,
-                            Available = true,
                             Description = "Book description",
-                            Price = 0m,
                             Quantity = 100,
-                            SalePrice = 0m,
                             Title = "Test book"
                         },
                         new
                         {
                             BookId = 2,
-                            Available = true,
                             Description = "New description",
-                            Price = 0m,
                             Quantity = 50,
-                            SalePrice = 0m,
                             Title = "book #2"
                         });
                 });

@@ -1,0 +1,54 @@
+﻿@model List<Book>
+
+<section class="slider">
+	<ul id="autoWidth" class="hidden">
+		@for (var i = 0; i < 10; i++)
+			@foreach (var book in Model)
+			{
+				<li class="s-item">
+					<div class="s-item-box">
+						<a class="s-item-img" asp-controller="Book" asp-action="Index" asp-route-bookId="@book.BookId" title="@book.Title">
+							<img alt="product" src="@book.ImageUrl">
+						</a>
+						<div class="s-item-details">
+							<a class="s-item-title" asp-controller="Book" asp-action="Index" asp-route-bookId="@book.BookId" title="@book.Title">
+								<span>@book.Title</span>
+							</a>
+							<div class="s-item-author">
+								<span>@(book.Authors.FirstOrDefault()?.Name ?? "Без автора")</span>
+							</div>
+							<div>
+								@if (book.SalePrice < book.Price)
+								{
+									<span class="sale-price">@book.SalePrice грн</span>
+									<span class="price">@book.Price грн</span>
+								}
+								else
+								{
+									<span class="sale-price">@book.Price грн</span>
+								}
+
+							</div>
+						</div>
+						<div class="s-item-btns d-flex p-2">
+							<a class="flex-grow-1" asp-asp-controller="Cart" asp-action="Add" asp-route-bookId="@book.BookId">
+								<input class="w-100" type="button" value="Купити" />
+							</a>
+
+							<a class="flex-grow-0" asp-asp-controller="Cart" asp-action="Add" asp-route-bookId="@book.BookId">
+								<input class="w-100" type="button" value="Бажаю" />
+							</a>
+
+			@*				<button class="pe-1" style="border:black 1px solid" onclick="window.location.href='@Url.Action("Add", "Cart", new { itemid=book.BookId })'" type="button">Купити</button>
+							<button class="ps-1" style="border:black 1px solid" onclick="window.location.href='@Url.Action("Add", "Cart", new { itemid=book.BookId })'" type="button">Бажаю</button>*@
+						</div>
+
+					</div>
+				</li>
+			}
+	</ul>
+	<div class="d-flex justify-content-end mt-1">
+		<button id="goToPrevSlide" class="btn me-2" style="width:70px"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"><path d="M15.293 3.293 6.586 12l8.707 8.707 1.414-1.414L9.414 12l7.293-7.293-1.414-1.414z" /></svg></button>
+		<button id="goToNextSlide" class="btn ms-2" style="width:70px"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"><path d="M7.293 4.707 14.586 12l-7.293 7.293 1.414 1.414L17.414 12 8.707 3.293 7.293 4.707z" /></svg></button>
+	</div>
+</section>

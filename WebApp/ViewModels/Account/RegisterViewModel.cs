@@ -1,7 +1,7 @@
 ﻿using Libria.Data;
 using System.ComponentModel.DataAnnotations;
 
-namespace Libria.ViewModels
+namespace Libria.ViewModels.Account
 {
     public class RegisterViewModel
     {

@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Identity;
 using Libria.Models;
 using Libria.Data;
 using Libria.Services;
+using Libria.Repository;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -39,6 +40,8 @@ builder.Services.AddIdentity<User, IdentityRole>(options =>
 builder.Services.AddTransient<IEmailService, EmailService>();
 builder.Services.Configure<EmailSettings>(builder.Configuration.GetSection(nameof(EmailSettings)));
 
+builder.Services.AddTransient<IBookRepository, BookRepository>();
+
 builder.Services.AddControllersWithViews();
 
 var app = builder.Build();
@@ -64,9 +67,6 @@ if (!app.Environment.IsDevelopment())
 	// The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
 	app.UseHsts();
 }
-
-// We don't need it because nginx proxy_pass by http
-// app.UseHttpsRedirection();
 
 app.UseStaticFiles();
 

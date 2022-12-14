@@ -1,10 +1,9 @@
 ﻿using Libria.Data;
 using Libria.Models;
 using Libria.Services;
-using Libria.ViewModels;
+using Libria.ViewModels.Account;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using System.Diagnostics;
 
 namespace Libria.Controllers
 {

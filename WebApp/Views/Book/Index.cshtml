@@ -1,0 +1,73 @@
+﻿@model Book
+@{
+	var authors = Model.Authors;
+}
+
+<div class="row pt-5">
+	<div class="col-6 col-md-3">
+		<div class="cover-container">
+			<img alt="product" src="@Model.ImageUrl" />
+		</div>
+	</div>
+
+	<div class="col-6 col-md-6">
+		<div class="bp-title">@Model.Title</div>
+		<div class="bp-author">
+			@if (authors.Count == 0)
+			{
+				<span>Без автора</span>
+			}
+			else
+			{
+				@foreach (var author in authors)
+				{
+					<span>@author.Name / </span>
+				}
+			}
+		</div>
+
+		<div class="bp-rating" data-rating="4.5"></div>
+
+		<div class="mt-3 mb-2" style="font-size: 18px;color: black;font-weight: 500;">Характеристики</div>
+
+		<div class="my-2" style="font-size: 18px;color: black;font-weight: 500;">Опис</div>
+		<div class="bp-description">
+			@Model.Description
+		</div>
+	</div>
+
+	<div class="cl-12 col-md-3">
+		@if (Model.SalePrice < Model.Price)
+		{
+			<div class="bp-sale-price">@Model.SalePrice грн.</div>
+			<div class="bp-price">@Model.Price грн.</div>
+		}
+		else
+		{
+			<div class="bp-sale-price">@Model.Price грн.</div>
+		}
+
+		@if (Model.Available)
+		{
+			<div class="bp-status available mb-2">В наявності</div>
+			<div class="btn btn-primary w-100">Купити</div>
+		}
+		else
+		{
+			<div class="bp-status unavailable mb-2">Немає в наявності</div>
+		}
+
+		<a class="bp-to-wishlist mt-2" href="#">
+			<svg class="me-2" xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 64 64" xml:space="preserve" style="fill-rule:evenodd;clip-rule:evenodd;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:2"><path d="M36.5 51.325 32 56.234 11.725 34.116c-4.579-4.996-4.241-12.769.754-17.348 4.996-4.579 12.769-4.241 17.348.754L32 19.893l2.173-2.371c4.579-4.995 12.352-5.333 17.348-.754 4.995 4.579 5.333 12.352.754 17.348L42.5 44.839" style="fill:none;stroke:#222a33;stroke-width:2px" /><path d="M14.868 31.187c-3.217-3.509-2.98-8.97.53-12.187M42 39v12M48 45H36" style="fill:none;stroke:#222a33;stroke-width:2px" /></svg>
+			<span>До списку бажань</span>
+		</a>
+
+		<div class="mt-4">
+			<a class="bp-inform-me text-black" href="#">Повідомити про зниження вартості</a>
+		</div>
+	</div>
+</div>
+
+<div class="row pt-4">
+	<div style="font-size: 22px;color: black;font-weight: 500;">Відгуки</div>
+</div>

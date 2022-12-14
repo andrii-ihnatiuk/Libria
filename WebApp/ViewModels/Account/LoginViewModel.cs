@@ -2,7 +2,7 @@
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 
-namespace Libria.ViewModels
+namespace Libria.ViewModels.Account
 {
     public class LoginViewModel
     {

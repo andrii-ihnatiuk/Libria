@@ -21,13 +21,13 @@
     </div>
     <div class="carousel-inner">
         <div class="carousel-item active">
-            <img src="https://d1w7fb2mkkr3kw.cloudfront.net/assets/images/content/last_minute_gifts_2022_1112.jpg" class="d-block w-100" alt="Wild Landscape" />
+            <img src="~/img/last_minute_gifts_2022_1112.jpg" class="d-block w-100" alt="Wild Landscape" />
         </div>
         <div class="carousel-item">
-            <img src="https://bookshop-uk-prod-images.storage.googleapis.com/spree/promo_banner_slides/desktop_images/187/original/Christmas-banner_bookseller-1.jpg?1668621018" class="d-block w-100" alt="Placeholder" />
+            <img src="~/img/Christmas-banner_bookseller-1.jpg" class="d-block w-100" alt="Placeholder" />
         </div>
         <div class="carousel-item">
-            <img src="https://bookshop-uk-prod-images.storage.googleapis.com/spree/promo_banner_slides/desktop_images/192/original/The_Christmas_Murder_Game_-_Banner_%281%29.jpg?1670515401" class="d-block w-100" alt="Exotic Fruits" />
+            <img src="~/img/The_Christmas_Murder_Game_-_Banner.jpg" class="d-block w-100" alt="Exotic Fruits" />
         </div>
     </div>
     <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="prev">
@@ -41,7 +41,7 @@
 </div>
 
 <div class="my-4">
-    <h4>Новинки</h4>
+    @await Component.InvokeAsync("NewBooks")
 </div>
 
 <div class="my-4">
