@@ -9,6 +9,7 @@ public class LibriaDbContext : IdentityDbContext<User>
     public DbSet<Book> Books { get; set; } = null!;
     public DbSet<Author> Authors { get; set; } = null!;
     public DbSet<Category> Categories { get; set; } = null!;
+    public DbSet<WishList> WishList { get; set; } = null!;
 
     public LibriaDbContext(DbContextOptions<LibriaDbContext> options) : base(options)
     {
@@ -19,6 +20,7 @@ public class LibriaDbContext : IdentityDbContext<User>
     {
         base.OnModelCreating(builder);
 
+        // Seed tables
 
         builder.Entity<Book>()
             .HasData(new[]
@@ -33,6 +35,9 @@ public class LibriaDbContext : IdentityDbContext<User>
                 new Author { AuthorId = 1, Name = "Author 1" }
             });
 
+        // Configuring relations
+
+        // Books-Authors
         builder
             .Entity<Book>()
             .HasMany(b => b.Authors)
@@ -44,9 +49,26 @@ public class LibriaDbContext : IdentityDbContext<User>
                     new { BooksBookId = 2, AuthorsAuthorId = 1 }
                 }));
 
+
+        // Books-Categories
         builder
             .Entity<Category>()
             .HasMany(c => c.Books)
             .WithMany(b => b.Categories);
+
+
+		//Users - Books(WishList)
+        builder.Entity<WishList>()
+            .HasKey(wl => new { wl.UserId, wl.BookId });
+
+		builder.Entity<WishList>()
+            .HasOne(wl => wl.User)
+            .WithMany(u => u.BooksWished)
+            .HasForeignKey(wl => wl.UserId);
+
+        builder.Entity<WishList>()
+            .HasOne(wl => wl.Book)
+            .WithMany(b => b.UsersWish)
+            .HasForeignKey(wl => wl.BookId);
     }
 }

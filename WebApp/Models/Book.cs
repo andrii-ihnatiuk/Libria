@@ -8,6 +8,7 @@ namespace Libria.Models
 		{ 
 			Authors = new List<Author>();
 			Categories= new List<Category>();
+            UsersWish = new List<WishList>();
 		}
 
 		public int BookId { get; set; }
@@ -33,7 +34,7 @@ namespace Libria.Models
 
 		public string? Publisher { get; set; }
 
-		public decimal SalePrice { get; set; }
+		public decimal? SalePrice { get; set; }
 
 		public decimal Price { get; set; }
 
@@ -41,5 +42,6 @@ namespace Libria.Models
 
 		public ICollection<Author> Authors { get; set; }
 		public ICollection<Category> Categories { get; set; }
+		public ICollection<WishList> UsersWish { get; set; }
 	}
 }

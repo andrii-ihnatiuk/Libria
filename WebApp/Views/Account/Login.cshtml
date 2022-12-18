@@ -9,7 +9,7 @@
 <div class="row justify-content-center py-5">
 	<div class="col-lg-4">
 		<h2 class="text-center mb-4">Вхід до акаунту</h2>
-		<form method="post" asp-controller="Account" asp-action="Login" asp-route-returnURL="@ViewData["returnURL"]" class="needs-validation" role="form" novalidate>
+		<form method="post" asp-controller="Account" asp-action="Login" asp-route-returnUrl="@ViewData["returnUrl"]" class="needs-validation" role="form" novalidate>
 			<div class="form-group mb-2">
 				<label asp-for="Email" class="mb-1"></label>
 				<input asp-for="Email" class="form-control @(ViewBag.EmailInvalid == true  ? "is-invalid" : "")" placeholder="Введіть email адресу">

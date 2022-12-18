@@ -1,0 +1,51 @@
+﻿@using Libria.ViewModels;
+
+@model CardDisplayViewModel
+@{
+	var book = Model.Book;
+}
+
+<div class="s-item">
+	<div class="s-item-box">
+		<a class="s-item-img" asp-controller="Book" asp-action="Index" asp-route-bookId="@book.BookId" title="@book.Title">
+			<img alt="product" src="@book.ImageUrl">
+		</a>
+		<div class="s-item-details">
+			<a class="s-item-title" asp-controller="Book" asp-action="Index" asp-route-bookId="@book.BookId" title="@book.Title">
+				<span>@book.Title</span>
+			</a>
+			<div class="s-item-author">
+				<span>@(book.Authors.FirstOrDefault()?.Name ?? "Без автора")</span>
+			</div>
+			<div>
+				@if (book.SalePrice < book.Price)
+				{
+					<span class="sale-price">@book.SalePrice грн</span>
+					<span class="price">@book.Price грн</span>
+				}
+				else
+				{
+					<span class="sale-price">@book.Price грн</span>
+				}
+
+			</div>
+		</div>
+		<div class="s-item-btns d-flex p-2">
+			<form class="flex-grow-1" method="post" asp-controller="Cart" asp-action="Add" asp-route-bookId="@book.BookId">
+				<input class="w-100" type="submit" value="Купити" />
+			</form>
+
+			<div class="flex-grow-0 ms-2 cardWishListAction">
+				@if (Model.Wished)
+				{
+					<input data-bookId="@book.BookId" class="cardWishRm w-100" type="submit" value="Видалити" />
+				}
+				else
+				{
+					<input data-bookId="@book.BookId" class="cardWishAdd w-100" type="submit" value="Бажаю" />
+				}
+			</div>
+		</div>
+
+	</div>
+</div>

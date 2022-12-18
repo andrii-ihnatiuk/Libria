@@ -1,0 +1,12 @@
+﻿@using Libria.ViewModels;
+@model List<Book>;
+
+<div class="wl-container">
+	<h2 class="my-5">Бажані книги</h2>
+	<div class="d-flex flex-wrap justify-content-between justify-content-md-start">
+		@foreach (var book in Model)
+		{
+			<partial name="_BookCardPartial" model=@(new CardDisplayViewModel { Book = book, Wished = true })></partial>
+		}
+	</div>
+</div>

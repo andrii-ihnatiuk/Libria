@@ -4,7 +4,6 @@ using Microsoft.AspNetCore.Identity;
 using Libria.Models;
 using Libria.Data;
 using Libria.Services;
-using Libria.Repository;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -39,8 +38,6 @@ builder.Services.AddIdentity<User, IdentityRole>(options =>
 // Configuring Email
 builder.Services.AddTransient<IEmailService, EmailService>();
 builder.Services.Configure<EmailSettings>(builder.Configuration.GetSection(nameof(EmailSettings)));
-
-builder.Services.AddTransient<IBookRepository, BookRepository>();
 
 builder.Services.AddControllersWithViews();
 

@@ -65,16 +65,20 @@ namespace Libria.Controllers
 		// Authorization
 
 		[HttpGet]
-		public IActionResult Login()
+		public IActionResult Login(string? returnUrl)
 		{
-			var path = new Uri(Request.Headers["Referer"].ToString());
-			ViewData["returnURL"] = path.PathAndQuery.ToString();
+			if (returnUrl == null)
+			{
+				var path = new Uri(Request.Headers["Referer"].ToString());
+				ViewData["returnUrl"] = path.PathAndQuery.ToString();
+			}
+			else { ViewData["returnUrl"] = returnUrl; }
 			return View();
 		}
 
 		[HttpPost]
 		[ValidateAntiForgeryToken]
-		public async Task<IActionResult> Login(LoginViewModel model, string? returnURL)
+		public async Task<IActionResult> Login(LoginViewModel model, string? returnUrl)
 		{
 			if (ModelState.IsValid)
 			{
@@ -82,9 +86,9 @@ namespace Libria.Controllers
 
 				if (result.Succeeded)
 				{
-					if (!string.IsNullOrEmpty(returnURL) && Url.IsLocalUrl(returnURL))
+					if (!string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl))
 					{
-						return LocalRedirect(returnURL);
+						return LocalRedirect(returnUrl);
 					}
 					else
 					{
