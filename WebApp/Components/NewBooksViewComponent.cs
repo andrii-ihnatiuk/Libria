@@ -28,7 +28,7 @@ namespace Libria.Components
 				wishIds = await _context.WishList.Where(wl => wl.UserId == userId).Select(wl => wl.BookId).ToListAsync();
 
 			ViewData["wishIds"] = wishIds;
-			
+
 
 			//var books = new List<Book>()
 			//{

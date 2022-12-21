@@ -2,12 +2,12 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
-using Libria.Models;
 using Microsoft.EntityFrameworkCore;
+using Libria.Models.Entities;
 
 namespace Libria.Controllers
 {
-	public class WishListController : Controller
+    public class WishListController : Controller
 	{
 		private readonly LibriaDbContext _context;
 

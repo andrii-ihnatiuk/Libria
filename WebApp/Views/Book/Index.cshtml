@@ -1,4 +1,6 @@
-﻿@model Book
+﻿@using Libria.Models.Entities
+
+@model Book
 @{
 	var authors = Model.Authors;
 	if (authors.Count == 0)
@@ -92,7 +94,7 @@
 		@if (Model.Available)
 		{
 			<div class="bp-status available mb-2">В наявності</div>
-			<div class="btn btn-primary w-100">Купити</div>
+			<button id="cartAddBtn" class="btn btn-primary w-100" data-bookId="@Model.BookId" type="button">Купити</button>
 		}
 		else
 		{
@@ -109,7 +111,7 @@
 			}
 			else
 			{
-				<button id="wishAddBtn" data-bookId="@Model.BookId" class="bp-to-wishlist mt-2">
+				<button id="wishAddBtn" data-bookId="@Model.BookId" class="bp-to-wishlist mt-2" type="button">
 					<svg class="me-2" xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 64 64" xml:space="preserve" style="fill-rule:evenodd;clip-rule:evenodd;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:2"><path d="M36.5 51.325 32 56.234 11.725 34.116c-4.579-4.996-4.241-12.769.754-17.348 4.996-4.579 12.769-4.241 17.348.754L32 19.893l2.173-2.371c4.579-4.995 12.352-5.333 17.348-.754 4.995 4.579 5.333 12.352.754 17.348L42.5 44.839" style="fill:none;stroke:#222a33;stroke-width:2px" /><path d="M14.868 31.187c-3.217-3.509-2.98-8.97.53-12.187M42 39v12M48 45H36" style="fill:none;stroke:#222a33;stroke-width:2px" /></svg>
 					<span>До списку бажань</span>
 				</button>

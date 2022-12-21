@@ -14,34 +14,20 @@
 </head>
 <body>
 	<header>
-		<nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
+		<nav class="navbar navbar-expand-md navbar-toggleable-md navbar-light bg-white border-bottom box-shadow mb-3">
 			<div class="container">
 				<a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">Libria</a>
 				<button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
 						aria-expanded="false" aria-label="Toggle navigation">
 					<span class="navbar-toggler-icon"></span>
 				</button>
-				<div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-					<ul class="navbar-nav ms-lg-5 me-2">
+				<div class="navbar-collapse collapse d-md-inline-flex justify-content-between">
+					<ul class="navbar-nav ms-lg-5 me-sm-2">
 						<li class="nav-item dropdown">
 							<button class="btn btn-outline-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
 								Категорії
 							</button>
-							<div class="dropdown-menu" aria-labelledby="navbarDropdown">
-								<ul>
-									<li><a class="dropdown-item" href="#">Комп'ютерна література</a></li>
-									<li><a class="dropdown-item" href="#">Історія</a></li>
-									<li><a class="dropdown-item" href="#">Дитяча література</a></li>
-									<li><a class="dropdown-item" href="#">Наука і Техніка</a></li>
-								</ul>
-								<ul>
-									<li><a class="dropdown-item" href="#">Медична література</a></li>
-									<li><a class="dropdown-item" href="#">Саморозвиток. Мотивація</a></li>
-									<li><a class="dropdown-item" href="#">Mega Menu Link</a></li>
-									<li><a class="dropdown-item" href="#">Mega Menu Link</a></li>
-								</ul>
-							</div>
-
+							@await Component.InvokeAsync("CategoriesMenu")
 						</li>
 					</ul>
 					<form class="d-flex flex-grow-1 me-lg-5">

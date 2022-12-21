@@ -24,6 +24,7 @@ body {
 
 .dropdown-menu.show {
     display: flex;
+    position: absolute !important;
 }
 
 .dropdown-menu li .dropdown-item {
@@ -112,19 +113,19 @@ body {
         font-size: 14px;
     }
 
-    .s-item-details .sale-price {
-        color: dimgrey;
-        font-weight: 600;
-        font-size: 16px;
-    }
+.sale-price {
+    color: dimgrey;
+    font-weight: 600;
+    font-size: 16px;
+}
 
-    .s-item-details .price {
-        text-decoration: line-through;
-        color: dimgrey;
-        font-weight: 400;
-        font-size: 14px;
-        margin-left: 5px;
-    }
+.price {
+    text-decoration: line-through;
+    color: dimgrey;
+    font-weight: 400;
+    font-size: 14px;
+    margin-left: 5px;
+}
 
 .s-item-btns {
     opacity: 0;
@@ -261,9 +262,11 @@ body {
         object-fit: contain;
     }
 
+.cart-book-props {
+    white-space: nowrap;
+}
+
 /* STAR RATING STYLES */
-
-
 .jq-stars {
     display: inline-block;
 }

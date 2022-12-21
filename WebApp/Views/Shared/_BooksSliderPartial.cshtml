@@ -1,4 +1,5 @@
 ﻿@using Libria.ViewModels
+@using Libria.Models.Entities
 @model List<Book>
 @{
 	List<int>? wishIds = null;
@@ -12,7 +13,7 @@
 			@foreach (var book in Model)
 			{
 				wished = wishIds != null && wishIds.Contains(book.BookId) ? true : false;
-				<partial name="_BookCardPartial" model=@(new CardDisplayViewModel { Book = book, Wished = wished })></partial>
+				<partial name="_BookCardPartial" model=@(new BookCardViewModel { Book = book, Wished = wished })></partial>
 			}
 	</div>
 	<div class="d-flex justify-content-end mt-1">

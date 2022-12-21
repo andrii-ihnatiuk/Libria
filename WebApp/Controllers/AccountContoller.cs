@@ -1,5 +1,5 @@
 ﻿using Libria.Data;
-using Libria.Models;
+using Libria.Models.Entities;
 using Libria.Services;
 using Libria.ViewModels.Account;
 using Microsoft.AspNetCore.Identity;
@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Libria.Controllers
 {
-	public class AccountController : Controller
+    public class AccountController : Controller
 	{
 		private readonly UserManager<User> _userManager;
 		private readonly SignInManager<User> _signInManager;

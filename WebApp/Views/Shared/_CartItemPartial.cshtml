@@ -1,0 +1,65 @@
+﻿@using Libria.ViewModels.Cart
+@model CartItemViewModel
+
+<div class="cart-item d-flex shadow mt-4">
+	<div class="d-flex flex-grow-1" style="flex-basis: 50%; overflow: hidden;">
+		<div class="cart-img-cont">
+			<img src=@Model.Book.ImageUrl alt="product img">
+		</div>
+		<div class="d-flex flex-column align-items-start justify-content-center p-3" style="overflow: hidden">
+			<span class="cart-book-props">@Model.Book.Title</span>
+			<span class="cart-book-props">@string.Join(", ", Model.Book.Authors.Select(a => a.Name))</span>
+			<div>
+				@if (Model.Book.SalePrice < Model.Book.Price)
+				{
+					<span class="price">@Model.Book.Price</span>
+					<span class="sale-price">@Model.Book.SalePrice</span>
+					<span>грн.</span>
+				}
+				else
+				{
+					<span class="sale-price">@Model.Book.Price</span>
+					<span>грн.</span>
+				}
+			</div>
+		</div>
+	</div>
+	<div class="d-flex flex-grow-1 justify-content-between cart-actions" style="flex-basis: 50%">
+		<div class="d-flex flex-column align-items-center justify-content-center p-3">
+			<p class="text-center mb-1">Кількість:</p>
+			@if (Model.Book.Available == true)
+			{
+				<div class="d-flex justify-content-evenly align-items-center">
+					<button data-bookId=@Model.Book.BookId class="btn btn-outline-primary cartBtnRemove" type="button">-</button>
+					<span style="min-width:50px; max-width:100px; text-align:center">@Model.Quantity</span>
+					<button data-bookId=@Model.Book.BookId class="btn btn-outline-primary cartBtnAdd" type="button">+</button>
+				</div>
+				<span class="available">В наявності</span>
+			}
+			else
+			{
+				<div class="d-flex justify-content-evenly align-items-center">
+					<button class="btn btn-outline-primary" type="button" disabled>-</button>
+					<span style="min-width:50px; max-width:100px; text-align:center">@Model.Quantity</span>
+					<button class="btn btn-outline-primary" type="button" disabled>+</button>
+				</div>
+				<span class="unavailable">Недоступно</span>
+			}
+		</div>
+		<div class="d-flex flex-column justify-content-center text-center p-3">
+			<span>Сума:</span>
+			<div>
+				<span class="">@Model.FinalPrice</span>
+				<span>грн.</span>
+			</div>
+		</div>
+		<button data-bookId="@Model.Book.BookId" class="btn btn-danger h-100 cartBtnFullRemove px-1" type="button">
+			<svg width="24" height="24" xmlns="http://www.w3.org/2000/svg" fill="none" style="pointer-events: none">
+				<g>
+					<path fill-rule="evenodd" clip-rule="evenodd" d="m6,7a1,1 0 0 1 1,1l0,11a1,1 0 0 0 1,1l8,0a1,1 0 0 0 1,-1l0,-11a1,1 0 1 1 2,0l0,11a3,3 0 0 1 -3,3l-8,0a3,3 0 0 1 -3,-3l0,-11a1,1 0 0 1 1,-1z" fill="#fff" id="svg_1" />
+					<path fill-rule="evenodd" clip-rule="evenodd" d="m10,8a1,1 0 0 1 1,1l0,8a1,1 0 1 1 -2,0l0,-8a1,1 0 0 1 1,-1zm4,0a1,1 0 0 1 1,1l0,8a1,1 0 1 1 -2,0l0,-8a1,1 0 0 1 1,-1zm-10,-3a1,1 0 0 1 1,-1l14,0a1,1 0 1 1 0,2l-14,0a1,1 0 0 1 -1,-1zm4,-2a1,1 0 0 1 1,-1l6,0a1,1 0 1 1 0,2l-6,0a1,1 0 0 1 -1,-1z" fill="#fff" id="svg_2" />
+				</g>
+			</svg>
+		</button>
+	</div>
+</div>

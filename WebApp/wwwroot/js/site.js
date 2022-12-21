@@ -37,9 +37,10 @@ $(document).ready(function () {
         animationspeed: 200
     });
 
-    /* BOOK PAGE ADD TO WISH LIST ACTIONS */
+    /* BOOK PAGE ADD TO WISH LIST  */
     $('#wishBtnContainer').on('click', function () {
         var clickedEl = $(this).children('button');
+        clickedEl.attr('disabled', true);
 
         var id = clickedEl.attr('id');
 
@@ -55,7 +56,10 @@ $(document).ready(function () {
             var newFill = 'none';
             var newId = 'wishAddBtn';
         }
-        else return;
+        else {
+            clickedEl.removeAttr('disabled');
+            return;
+        }
 
         var bookId = clickedEl.attr('data-bookId');
         if (typeof bookId === 'undefined' || bookId === '') {
@@ -73,7 +77,7 @@ $(document).ready(function () {
                     clickedEl.find('svg path:first').css('fill', newFill);
                     clickedEl.attr('id', newId)
                 }
-                else alert("Sorry, error occured");
+                else alert("Sorry, an error occured");
             },
             error: function (xhr, status, err) {
                 if (xhr.status == 401) {
@@ -83,12 +87,47 @@ $(document).ready(function () {
                     alert("Failed");
                 }
             }
+        }).always(function () {
+            clickedEl.removeAttr('disabled');
         });
     });
 
-    /* BOOK CARD WISH LIST ACTIONS */
+    /* BOOK PAGE ADD TO CART */
+    $('#cartAddBtn').on('click', function () {
+        $(this).attr('disabled', true);
+        var bookId = $(this).attr('data-bookId');
+        if (typeof bookId === 'undefined' || bookId === '') {
+            alert("Сталася помилка");
+            $(this).removeAttr('disabled');
+            return;
+        }
+        var thisBtn = $(this);
+        $.ajax({
+            type: 'POST',
+            url: '/Cart/Add',
+            dataType: 'json',
+            data: { 'bookId': bookId },
+            success: function (response) {
+                if (response.success == true) {
+                    if (typeof response.newQuantity !== 'undefined') {
+                        alert(`Додано!\nУ кошику ${response.newQuantity} шт.`);
+                    }
+                }
+                else alert("Sorry, an error occured")
+            },
+            error: function (xhr, status, err) {
+                alert(err);
+            },
+        }).always(function () {
+            $(thisBtn).removeAttr('disabled');
+        });
+    });
+
+
+    /* BOOK CARD ADD TO WISH LIST */
     $('main').on('click', '.s-item-btns', function (e) {
         var clickedEl = $(e.target);
+        clickedEl.attr('disabled', true);
 
         if (clickedEl.hasClass('cardWishAdd')) {
             var reqURL = '/WishList/Add';
@@ -102,11 +141,15 @@ $(document).ready(function () {
             var newClass = 'cardWishAdd';
             var oldClass = 'cardWishRm';
         }
-        else return;
+        else {
+            clickedEl.removeAttr('disabled');
+            return;
+        }
 
         var bookId = clickedEl.attr('data-bookId');
         if (typeof bookId === 'undefined' || bookId === '') {
             alert("Сталася помилка");
+            clickedEl.removeAttr('disabled');
             return;
         }
         $.ajax({
@@ -121,7 +164,7 @@ $(document).ready(function () {
                         $(this).addClass(newClass).removeClass(oldClass);
                     })
                 }
-                else alert("Sorry, error occured");
+                else alert("Sorry, an error occured");
             },
             error: function (xhr, status, err) {
                 if (xhr.status == 401) {
@@ -130,6 +173,81 @@ $(document).ready(function () {
                 else {
                     alert("Failed");
                 }
+            }
+        }).always(function () {
+            clickedEl.removeAttr('disabled');
+        });
+    });
+
+    /* BOOK CARD ADD TO CART */
+
+
+    /* CART PAGE ADD MORE TO CART BUTTON */
+    $('main').on('click', '.cart-actions', function (e) {
+        var clickedEl = $(e.target);
+        clickedEl.attr('disabled', true);
+        var bookId = clickedEl.attr('data-bookId');
+
+        if (clickedEl.hasClass('cartBtnRemove')) {
+            var reqURL = '/Cart/Remove';
+            var reqData = { 'bookId': bookId }; 
+        }
+        else if (clickedEl.hasClass('cartBtnFullRemove')) {
+            var reqURL = '/Cart/Remove';
+            var reqData = { 'bookId': bookId, 'fullRemove': true };
+        }
+        else if (clickedEl.hasClass('cartBtnAdd')) {
+            var reqURL = '/Cart/Add';
+            var reqData = { 'bookId': bookId };
+        }
+        else {
+            clickedEl.removeAttr('disabled');
+            return;
+        }
+
+        if (typeof bookId === 'undefined' || bookId === '') {
+            alert("Сталася помилка");
+            clickedEl.removeAttr('disabled');
+            return;
+        }
+
+        var keepDisabled = false;
+
+        $.ajax({
+            type: 'POST',
+            url: reqURL,
+            dataType: 'json',
+            data: reqData,
+            success: function (response) {
+                if (response.success === true) {
+                    if (response.newQuantity === 0) {
+                        // full removal handling
+                        // TODO
+                        alert("Removed");
+                    }
+                    else if (response.newQuantity !== 0 && response.totalItemPrice !== 'undefined' && response.totalCartPrice !== 'undefined') {
+                        // add/remove 1
+                        // TODO
+
+                        if (response.newQuantity === 1) {
+                            // disable minus button
+                            // TODO
+                            clickedEl.attr('disabled', true);
+                            keepDisabled = true;
+                        }
+                    }
+                    else {
+                        alert("Unexpected error");
+                    }
+                }
+                else alert("Sorry, an error occured\n" + response.errorMessage);
+            },
+            error: function (xhr, status, err) {
+                alert('Sorry, an error occured.');
+            }
+        }).always(function () {
+            if (keepDisabled === false) {
+                clickedEl.removeAttr('disabled');
             }
         });
     });

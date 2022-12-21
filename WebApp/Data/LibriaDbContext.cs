@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-using Libria.Models;
+using Libria.Models.Entities;
 
 namespace Libria.Data;
 
@@ -10,6 +10,7 @@ public class LibriaDbContext : IdentityDbContext<User>
     public DbSet<Author> Authors { get; set; } = null!;
     public DbSet<Category> Categories { get; set; } = null!;
     public DbSet<WishList> WishList { get; set; } = null!;
+    public DbSet<CartUsersBooks> CartUsersBooks { get; set; } = null!;
 
     public LibriaDbContext(DbContextOptions<LibriaDbContext> options) : base(options)
     {
@@ -37,7 +38,7 @@ public class LibriaDbContext : IdentityDbContext<User>
 
         // Configuring relations
 
-        // Books-Authors
+        // Books - Authors
         builder
             .Entity<Book>()
             .HasMany(b => b.Authors)
@@ -50,14 +51,14 @@ public class LibriaDbContext : IdentityDbContext<User>
                 }));
 
 
-        // Books-Categories
+        // Books - Categories
         builder
             .Entity<Category>()
             .HasMany(c => c.Books)
             .WithMany(b => b.Categories);
 
 
-		//Users - Books(WishList)
+		// Users - Books (WishList)
         builder.Entity<WishList>()
             .HasKey(wl => new { wl.UserId, wl.BookId });
 
@@ -70,5 +71,19 @@ public class LibriaDbContext : IdentityDbContext<User>
             .HasOne(wl => wl.Book)
             .WithMany(b => b.UsersWish)
             .HasForeignKey(wl => wl.BookId);
+
+        // Users - Books (CartUsersBooks)
+        builder.Entity<CartUsersBooks>()
+            .HasKey(c => new { c.UserId, c.BookId });
+
+        builder.Entity<CartUsersBooks>()
+            .HasOne(c => c.Book)
+            .WithMany(b => b.UsersHaveInCart)
+            .HasForeignKey(c => c.BookId);
+
+        builder.Entity<CartUsersBooks>()
+            .HasOne(c => c.User)
+            .WithMany(u => u.BooksInCart)
+            .HasForeignKey(c => c.UserId);
     }
 }

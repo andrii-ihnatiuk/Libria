@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Identity;
 using Libria.Models;
 using Libria.Data;
 using Libria.Services;
+using Libria.Models.Entities;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -41,6 +42,9 @@ builder.Services.Configure<EmailSettings>(builder.Configuration.GetSection(nameo
 
 builder.Services.AddControllersWithViews();
 
+builder.Services.AddDistributedMemoryCache();
+builder.Services.AddSession();
+
 var app = builder.Build();
 
 // This is recommended to use when a reverse proxy is used
@@ -68,6 +72,8 @@ if (!app.Environment.IsDevelopment())
 app.UseStaticFiles();
 
 app.UseRouting();
+
+app.UseSession();
 
 app.UseAuthentication();
 app.UseAuthorization();

@@ -1,13 +1,12 @@
 using Microsoft.AspNetCore.Identity;
-using System.ComponentModel.DataAnnotations.Schema;
 
-namespace Libria.Models;
+namespace Libria.Models.Entities;
 public class User : IdentityUser
 {
-    public User() 
+    public User()
     {
         BooksWished = new List<WishList>();
-        CartItems = new List<Book>();
+        BooksInCart = new List<CartUsersBooks>();
     }
 
     public string FirstName { get; set; } = null!;
@@ -16,6 +15,5 @@ public class User : IdentityUser
     /* RELATIONS */
 
     public ICollection<WishList> BooksWished { get; set; }
-    [NotMapped]
-    public ICollection<Book> CartItems { get; set; }
+    public ICollection<CartUsersBooks> BooksInCart { get; set; }
 }

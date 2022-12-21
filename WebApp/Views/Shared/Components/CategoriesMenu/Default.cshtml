@@ -1,0 +1,19 @@
+﻿@model List<string>
+@{
+	var chunks = Model
+		.Select((s, i) => new { s, i })
+		.GroupBy(x => x.i % 4)
+		.Select(g => g.Select(x => x.s).ToList()).ToList();
+}
+
+<div class="dropdown-menu" aria-labelledby="navbarDropdown">
+	@foreach (var chunk in chunks)
+	{
+		<ul>
+			@foreach (var item in chunk)
+			{
+				<li><a class="dropdown-item" href="#">@item</a></li>
+			}
+		</ul>
+	}
+</div>

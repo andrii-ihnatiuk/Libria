@@ -1,6 +1,6 @@
 ﻿@using Libria.ViewModels;
 
-@model CardDisplayViewModel
+@model BookCardViewModel
 @{
 	var book = Model.Book;
 }
@@ -38,11 +38,11 @@
 			<div class="flex-grow-0 ms-2 cardWishListAction">
 				@if (Model.Wished)
 				{
-					<input data-bookId="@book.BookId" class="cardWishRm w-100" type="submit" value="Видалити" />
+					<input data-bookId="@book.BookId" class="cardWishRm w-100" type="button" value="Видалити" />
 				}
 				else
 				{
-					<input data-bookId="@book.BookId" class="cardWishAdd w-100" type="submit" value="Бажаю" />
+					<input data-bookId="@book.BookId" class="cardWishAdd w-100" type="button" value="Бажаю" />
 				}
 			</div>
 		</div>
