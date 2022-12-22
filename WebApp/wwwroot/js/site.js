@@ -63,7 +63,8 @@ $(document).ready(function () {
 
         var bookId = clickedEl.attr('data-bookId');
         if (typeof bookId === 'undefined' || bookId === '') {
-            alert("Сталася помилка");
+            alert("Не знайдено ідентифікатор товару");
+            clickedEl.removeAttr('disabled');
             return;
         }
         $.ajax({
@@ -77,14 +78,14 @@ $(document).ready(function () {
                     clickedEl.find('svg path:first').css('fill', newFill);
                     clickedEl.attr('id', newId)
                 }
-                else alert("Sorry, an error occured");
+                else alert("Вибачте, сталася помилка");
             },
             error: function (xhr, status, err) {
                 if (xhr.status == 401) {
                     window.location.href = '/Account/Login';
                 }
                 else {
-                    alert("Failed");
+                    alert('Невдалий запит: ' + err);
                 }
             }
         }).always(function () {
@@ -97,7 +98,7 @@ $(document).ready(function () {
         $(this).attr('disabled', true);
         var bookId = $(this).attr('data-bookId');
         if (typeof bookId === 'undefined' || bookId === '') {
-            alert("Сталася помилка");
+            alert("Не знайдено ідентифікатор товару");
             $(this).removeAttr('disabled');
             return;
         }
@@ -109,14 +110,12 @@ $(document).ready(function () {
             data: { 'bookId': bookId },
             success: function (response) {
                 if (response.success == true) {
-                    if (typeof response.newQuantity !== 'undefined') {
-                        alert(`Додано!\nУ кошику ${response.newQuantity} шт.`);
-                    }
+                    alert(`Додано!\nУ кошику ${response.newQuantity} шт.\nВсього у кошику товарів на суму: ${response.totalCartPrice} грн.`);
                 }
-                else alert("Sorry, an error occured")
+                else alert("Вибачте, сталася помилка");
             },
             error: function (xhr, status, err) {
-                alert(err);
+                alert('Невдалий запит: ' + err);
             },
         }).always(function () {
             $(thisBtn).removeAttr('disabled');
@@ -125,7 +124,7 @@ $(document).ready(function () {
 
 
     /* BOOK CARD ADD TO WISH LIST */
-    $('main').on('click', '.s-item-btns', function (e) {
+    $('main').on('click', '.cardWishListAction', function (e) {
         var clickedEl = $(e.target);
         clickedEl.attr('disabled', true);
 
@@ -148,7 +147,7 @@ $(document).ready(function () {
 
         var bookId = clickedEl.attr('data-bookId');
         if (typeof bookId === 'undefined' || bookId === '') {
-            alert("Сталася помилка");
+            alert("Не знайдено ідентифікатор товару");
             clickedEl.removeAttr('disabled');
             return;
         }
@@ -164,14 +163,14 @@ $(document).ready(function () {
                         $(this).addClass(newClass).removeClass(oldClass);
                     })
                 }
-                else alert("Sorry, an error occured");
+                else alert("Вибачте, сталася помилка");
             },
             error: function (xhr, status, err) {
                 if (xhr.status == 401) {
                     window.location.href = '/Account/Login';
                 }
                 else {
-                    alert("Failed");
+                    alert('Невдалий запит: ' + err);
                 }
             }
         }).always(function () {
@@ -180,9 +179,37 @@ $(document).ready(function () {
     });
 
     /* BOOK CARD ADD TO CART */
+    $('main').on('click', '.cardCartAction', function (e) {
+        var clickedEl = $(e.target);
+        clickedEl.attr('disabled', true);
+
+        var bookId = clickedEl.attr('data-bookId');
+        if (typeof bookId === 'undefined' || bookId === '') {
+            alert("Сталася помилка");
+            clickedEl.removeAttr('disabled');
+            return;
+        }
+        $.ajax({
+            type: 'POST',
+            url: '/Cart/Add',
+            dataType: 'json',
+            data: { 'bookId': bookId },
+            success: function (response) {
+                if (response.success === true) {
+                    alert(`Додано!\nУ кошику ${response.newQuantity} шт.\nВсього у кошику товарів на суму: ${response.totalCartPrice} грн.`);
+                }
+                else alert("Вибачте, сталася помилка\n" + response.errorMessage);
+            },
+            error: function (xhr, status, err) {
+                alert('Невдалий запит: ' + err);
+            }
+        }).always(function () {
+            clickedEl.removeAttr('disabled');
+        });
+    });
 
 
-    /* CART PAGE ADD MORE TO CART BUTTON */
+    /* CART PAGE ADD MORE, REMOVE, FULL REMOVE */
     $('main').on('click', '.cart-actions', function (e) {
         var clickedEl = $(e.target);
         clickedEl.attr('disabled', true);
@@ -221,29 +248,31 @@ $(document).ready(function () {
             success: function (response) {
                 if (response.success === true) {
                     if (response.newQuantity === 0) {
-                        // full removal handling
-                        // TODO
-                        alert("Removed");
+                        // if full remove - delete element from DOM after request
+                        clickedEl.closest('.cart-item').remove();
                     }
                     else if (response.newQuantity !== 0 && response.totalItemPrice !== 'undefined' && response.totalCartPrice !== 'undefined') {
-                        // add/remove 1
-                        // TODO
-
                         if (response.newQuantity === 1) {
-                            // disable minus button
-                            // TODO
+                            // disable minus button if only 1 copy of item in cart
                             clickedEl.attr('disabled', true);
                             keepDisabled = true;
                         }
+                        else {
+                            clickedEl.siblings('.cartBtnRemove').attr('disabled', false);
+                        }
+
+                        clickedEl.siblings('span').text(response.newQuantity);
+                        clickedEl.closest('.cart-actions').find('.totalItemPrice').text(response.totalItemPrice)
                     }
                     else {
-                        alert("Unexpected error");
+                        alert("Сталася непередбачувана помилка");
                     }
+                    $('.totalCartPrice').text(response.totalCartPrice);
                 }
-                else alert("Sorry, an error occured\n" + response.errorMessage);
+                else alert("Вибачте, сталася помилка\n" + response.errorMessage);
             },
             error: function (xhr, status, err) {
-                alert('Sorry, an error occured.');
+                alert('Невдалий запит: ' + err);
             }
         }).always(function () {
             if (keepDisabled === false) {

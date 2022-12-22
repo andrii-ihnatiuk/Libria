@@ -29,11 +29,28 @@
 				}
 
 			</div>
+			<div>
+				@if (book.Available)
+				{
+					<span class="available">В наявності</span>
+				}
+				else
+				{
+					<span class="unavailable">Немає в наявності</span>
+				}
+			</div>
 		</div>
 		<div class="s-item-btns d-flex p-2">
-			<form class="flex-grow-1" method="post" asp-controller="Cart" asp-action="Add" asp-route-bookId="@book.BookId">
-				<input class="w-100" type="submit" value="Купити" />
-			</form>
+			<div class="flex-grow-1">
+				@if (book.Available)
+				{
+					<input data-bookId="@book.BookId" class="w-100 cardCartAction" type="submit" value="Купити" />
+				}
+				else
+				{
+					<input data-bookId="@book.BookId" class="w-100 cardCartAction" type="submit" value="Купити" disabled />
+				}
+			</div>
 
 			<div class="flex-grow-0 ms-2 cardWishListAction">
 				@if (Model.Wished)

@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Authorization;
 using System.Security.Claims;
 using Microsoft.EntityFrameworkCore;
 using Libria.Extensions;
+using System.Net;
 
 namespace Libria.Controllers
 {
@@ -101,8 +102,10 @@ namespace Libria.Controllers
 				.Where(b => b.BookId == bookId)
 				.Select(b => new Book { Available = b.Available, Price = b.Price, SalePrice = b.SalePrice }).FirstOrDefaultAsync();
 
-			if (currentBook == null || currentBook.Available == false)
-				return Json(new CartActionResult { Success = false });
+			if (currentBook == null)
+				return Json(new CartActionResult { Success = false, ErrorMessage = "Товар не знайдено." });
+			if (currentBook.Available == false)
+				return Json(new CartActionResult { Success = false, ErrorMessage = "Немає в наявності." });
 
 			var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
@@ -185,8 +188,8 @@ namespace Libria.Controllers
 					.Select(b => new Book { Price = b.Price, SalePrice = b.SalePrice, Available = b.Available })
 					.FirstOrDefaultAsync();
 
-			if (currentBook == null || !currentBook.Available)
-				return Json(new CartActionResult { Success = false, ErrorMessage = "Book is not available." });
+			if (currentBook == null)
+				return Json(new CartActionResult { Success = false, ErrorMessage = "Товар не знайдено." });
 
 			var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
@@ -265,6 +268,17 @@ namespace Libria.Controllers
 
 			return Json(actionResult);
 		}
+
+		//[HttpPost]
+		//public IActionResult Clear()
+		//{
+		//	var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+		//	if (userId == null)
+		//	{
+
+		//	}
+		//}
 
 
 		/* UTIL FUNCTIONS */

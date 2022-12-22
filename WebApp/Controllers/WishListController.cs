@@ -75,7 +75,10 @@ namespace Libria.Controllers
 			if (userId == null || bookId == null)
 				return Json(new { success = false });
 
-			_context.WishList.Remove(new WishList { UserId = userId, BookId = (int)bookId });
+			var record = await _context.WishList.FirstOrDefaultAsync(wl => wl.UserId == userId && wl.BookId == (int)bookId);
+			if (record == null)
+				return Json(new { success = false });
+			_context.WishList.Remove(record);
 			var res = await _context.SaveChangesAsync();
 
 			return res == 0 ? Json(new { success = false }) : Json(new { success = true });

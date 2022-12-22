@@ -253,6 +253,7 @@ body {
 }
 
 .cart-img-cont {
+    display: block;
     width: fit-content;
     max-width: 100px;
 }
