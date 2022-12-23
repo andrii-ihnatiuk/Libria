@@ -210,7 +210,7 @@ $(document).ready(function () {
 
 
     /* CART PAGE ADD MORE, REMOVE, FULL REMOVE */
-    $('main').on('click', '.cart-actions', function (e) {
+    $('main').on('click', '.cart-item-actions', function (e) {
         var clickedEl = $(e.target);
         clickedEl.attr('disabled', true);
         var bookId = clickedEl.attr('data-bookId');
@@ -262,7 +262,7 @@ $(document).ready(function () {
                         }
 
                         clickedEl.siblings('span').text(response.newQuantity);
-                        clickedEl.closest('.cart-actions').find('.totalItemPrice').text(response.totalItemPrice)
+                        clickedEl.closest('.cart-item-actions').find('.totalItemPrice').text(response.totalItemPrice)
                     }
                     else {
                         alert("Сталася непередбачувана помилка");
@@ -280,6 +280,32 @@ $(document).ready(function () {
             }
         });
     });
+
+    /* CART PAGE CLEAR CART */
+    $('main').on('click', '.btn-clear-cart', function (e) {
+        var clickedEl = $(e.target);
+        clickedEl.attr('disabled', true);
+        $.ajax({
+            type: 'POST',
+            url: '/Cart/Clear',
+            dataType: 'json',
+            success: function (response) {
+                if (response.success === true) {
+                    $('.cart-item').each(function () {
+                        $(this).remove();
+                    });
+                    $('.totalCartPrice').text(response.totalCartPrice);
+                }
+                else alert("Вибачте, сталася помилка\n" + response.errorMessage);
+            },
+            error: function (xhr, status, err) {
+                alert('Невдалий запит: ' + err);
+            }
+        }).always(function () {
+            clickedEl.removeAttr('disabled');
+        });
+    });
+
 
 });
 

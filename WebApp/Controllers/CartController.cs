@@ -269,16 +269,27 @@ namespace Libria.Controllers
 			return Json(actionResult);
 		}
 
-		//[HttpPost]
-		//public IActionResult Clear()
-		//{
-		//	var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+		[HttpPost]
+		public IActionResult Clear()
+		{
+			var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+			int res = 1;
 
-		//	if (userId == null)
-		//	{
-
-		//	}
-		//}
+			// Anonymous user
+			if (userId == null)
+			{
+				HttpContext.Session.Remove(SES_CART_KEY);
+			}
+			// Logged in user
+			else
+			{
+				res = _context.Database.ExecuteSqlInterpolated
+				(
+					$@"DELETE FROM ""CartUsersBooks"" WHERE ""UserId"" = {userId};"
+				);
+			}
+			return res == 0 ? Json(new CartActionResult { Success = false }) : Json(new CartActionResult { Success = true, TotalCartPrice = 0 });
+		}
 
 
 		/* UTIL FUNCTIONS */

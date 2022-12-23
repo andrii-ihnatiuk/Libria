@@ -1,4 +1,5 @@
-﻿@model List<string>
+﻿@using Libria.Models.Entities
+@model List<Category>
 @{
 	var chunks = Model
 		.Select((s, i) => new { s, i })
@@ -12,7 +13,7 @@
 		<ul>
 			@foreach (var item in chunk)
 			{
-				<li><a class="dropdown-item" href="#">@item</a></li>
+				<li><a class="dropdown-item" asp-controller="Category" asp-action="Index" asp-route-categoryId="@item.CategoryId">@item.Name</a></li>
 			}
 		</ul>
 	}

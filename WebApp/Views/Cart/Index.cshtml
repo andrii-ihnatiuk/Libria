@@ -21,11 +21,11 @@
 					<span>грн.</span>
 				</div>
 			</div>
-			<div class="d-flex">
-				<form method="POST" asp-controller="Cart" asp-action="Clear">
-					<button class="btn btn-outline-danger me-2 p-3" type="submit">Очистити кошик</button>
+			<div class="d-flex cart-actions">
+				<button class="btn btn-outline-danger me-2 p-3 btn-clear-cart" type="button">Очистити кошик</button>
+				<form method="POST" asp-controller="Order" asp-action="">
+					<button class="btn btn-primary p-3 btn-checkout-cart" type="submit">Замовлення</button>
 				</form>
-				<button class="btn btn-primary p-3" type="button">Замовлення</button>
 			</div>
 		</div>
 	</div>
