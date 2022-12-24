@@ -40,10 +40,13 @@ builder.Services.AddIdentity<User, IdentityRole>(options =>
 builder.Services.AddTransient<IEmailService, EmailService>();
 builder.Services.Configure<EmailSettings>(builder.Configuration.GetSection(nameof(EmailSettings)));
 
+builder.Services.AddTransient<IUserCartService, UserCartService>();
+
 builder.Services.AddControllersWithViews();
 
 builder.Services.AddDistributedMemoryCache();
 builder.Services.AddSession();
+
 
 var app = builder.Build();
 

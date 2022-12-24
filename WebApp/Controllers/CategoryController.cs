@@ -1,6 +1,7 @@
 ﻿using Libria.Data;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Security.Claims;
 
 namespace Libria.Controllers
 {
@@ -22,6 +23,16 @@ namespace Libria.Controllers
 
 			if (category == null)
 				return RedirectToAction("Error", "Home");
+
+			var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+			List<int>? wishIds = null;
+			if (userId != null)
+				wishIds = await _context.WishList.Where(wl => wl.UserId == userId).Select(wl => wl.BookId).ToListAsync();
+
+			ViewData["wishIds"] = wishIds;
+			ViewData["categoryName"] = category.Name;
+			ViewData["categoryDescription"] = category.Description;
 
 			return View(category.Books);
 		}

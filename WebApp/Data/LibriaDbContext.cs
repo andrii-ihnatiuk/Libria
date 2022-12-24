@@ -85,5 +85,19 @@ public class LibriaDbContext : IdentityDbContext<User>
             .HasOne(c => c.User)
             .WithMany(u => u.BooksInCart)
             .HasForeignKey(c => c.UserId);
+
+        // Orders - Books
+        builder.Entity<OrdersBooks>()
+            .HasKey(ob => new { ob.OrderId, ob.BookId });
+
+        builder.Entity<OrdersBooks>()
+            .HasOne(ob => ob.Book)
+            .WithMany(b => b.OrdersContain)
+            .HasForeignKey(ob => ob.BookId);
+
+        builder.Entity<OrdersBooks>()
+            .HasOne(ob => ob.Order)
+            .WithMany(o => o.Books)
+            .HasForeignKey(ob => ob.OrderId);
     }
 }

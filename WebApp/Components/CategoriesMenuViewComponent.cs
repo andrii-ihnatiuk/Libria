@@ -28,8 +28,5 @@ namespace Libria.Components
 
 			return View(categories);
 		}
-
-
-
 	}
 }

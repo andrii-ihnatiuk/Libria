@@ -12,7 +12,7 @@
 		</a>
 		<div class="s-item-details">
 			<a class="s-item-title" asp-controller="Book" asp-action="Index" asp-route-bookId="@book.BookId" title="@book.Title">
-				<span>@book.Title</span>
+				<span style="display:block;white-space:nowrap;text-overflow:ellipsis;overflow:hidden">@book.Title</span>
 			</a>
 			<div class="s-item-author">
 				<span>@(book.Authors.FirstOrDefault()?.Name ?? "Без автора")</span>

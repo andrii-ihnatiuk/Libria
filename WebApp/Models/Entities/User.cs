@@ -12,6 +12,9 @@ public class User : IdentityUser
     public string FirstName { get; set; } = null!;
     public string LastName { get; set; } = null!;
 
+    public string? Country { get; set; }
+    public string? City { get; set; }
+
     /* RELATIONS */
 
     public ICollection<WishList> BooksWished { get; set; }

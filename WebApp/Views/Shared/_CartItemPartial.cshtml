@@ -1,14 +1,20 @@
 ﻿@using Libria.ViewModels.Cart
 @model CartItemViewModel
 
+@{
+	var authors = string.Join(", ", Model.Book.Authors.Select(a => a.Name));
+}
+
 <div class="cart-item d-flex shadow mt-4">
 	<div class="d-flex flex-grow-1" style="flex-basis: 50%; overflow: hidden;">
 		<a class="cart-img-cont" asp-controller="Book" asp-action="Index" asp-route-bookId="@Model.Book.BookId" title="@Model.Book.Title">
 			<img src=@Model.Book.ImageUrl alt="product img">
 		</a>
-		<div class="d-flex flex-column align-items-start justify-content-center p-3" style="overflow: hidden">
-			<span class="cart-book-props">@Model.Book.Title</span>
-			<span class="cart-book-props">@string.Join(", ", Model.Book.Authors.Select(a => a.Name))</span>
+		<div class="d-flex flex-column align-items-start justify-content-center p-2" style="overflow: hidden">
+			<a style="max-width:100%;text-decoration:none;font-weight:600;color:black" asp-controller="Book" asp-action="Index" asp-route-bookId="@Model.Book.BookId" title="@Model.Book.Title">
+				<span class="cart-book-props">@Model.Book.Title</span>
+			</a>
+			<span class="cart-book-props" title="@authors">@authors</span>
 			<div>
 				@if (Model.Book.SalePrice < Model.Book.Price)
 				{
@@ -25,13 +31,20 @@
 		</div>
 	</div>
 	<div class="d-flex flex-grow-1 justify-content-between cart-item-actions" style="flex-basis: 50%">
-		<div class="d-flex flex-column align-items-center justify-content-center p-3">
+		<div class="d-flex flex-column align-items-center justify-content-center p-2">
 			<p class="text-center mb-1">Кількість:</p>
 			@if (Model.Book.Available == true)
 			{
 				<div class="d-flex justify-content-evenly align-items-center">
-					<button data-bookId=@Model.Book.BookId class="btn btn-outline-primary cartBtnRemove" type="button">-</button>
-					<span style="min-width:50px; max-width:100px; text-align:center">@Model.Quantity</span>
+					@if (Model.Quantity > 1)
+					{
+						<button data-bookId=@Model.Book.BookId class="btn btn-outline-primary cartBtnRemove" type="button">-</button>
+					}
+					else
+					{
+						<button data-bookId=@Model.Book.BookId class="btn btn-outline-primary cartBtnRemove" type="button" disabled>-</button>
+					}
+					<span style="min-width:30px; max-width:50px; text-align:center">@Model.Quantity</span>
 					<button data-bookId=@Model.Book.BookId class="btn btn-outline-primary cartBtnAdd" type="button">+</button>
 				</div>
 				<span class="available">В наявності</span>
@@ -40,13 +53,13 @@
 			{
 				<div class="d-flex justify-content-evenly align-items-center">
 					<button class="btn btn-outline-primary" type="button" disabled>-</button>
-					<span style="min-width:50px; max-width:100px; text-align:center">@Model.Quantity</span>
+					<span style="min-width:30px; max-width:50px; text-align:center">@Model.Quantity</span>
 					<button class="btn btn-outline-primary" type="button" disabled>+</button>
 				</div>
 				<span class="unavailable">Недоступно</span>
 			}
 		</div>
-		<div class="d-flex flex-column justify-content-center text-center p-3">
+		<div class="d-flex flex-column justify-content-center text-center p-2">
 			<span>Сума:</span>
 			<div>
 				<span class="totalItemPrice">@Model.FinalPrice</span>

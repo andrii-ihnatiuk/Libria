@@ -10,6 +10,7 @@ namespace Libria.Models.Entities
             Categories = new List<Category>();
             UsersWish = new List<WishList>();
             UsersHaveInCart = new List<CartUsersBooks>();
+            OrdersContain = new List<OrdersBooks>();
         }
 
         public int BookId { get; set; }
@@ -45,5 +46,6 @@ namespace Libria.Models.Entities
         public ICollection<Category> Categories { get; set; }
         public ICollection<WishList> UsersWish { get; set; }
         public ICollection<CartUsersBooks> UsersHaveInCart { get; set; }
+        public ICollection<OrdersBooks> OrdersContain { get; set; } 
     }
 }

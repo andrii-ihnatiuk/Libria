@@ -1,0 +1,39 @@
+﻿@using Libria.ViewModels.Cart
+@model CartItemViewModel
+
+@{
+	var authors = string.Join(", ", Model.Book.Authors.Select(a => a.Name));
+}
+
+<div class="d-flex my-1" style="font-size:14px;">
+	<div class="d-flex flex-grow-1" style="flex-basis:80%; overflow:hidden;">
+		<a class="cart-img-cont flex-shrink-0" style="width:55px; height:80px;" asp-controller="Book" asp-action="Index" asp-route-bookId="@Model.Book.BookId" title="@Model.Book.Title">
+			<img style="object-fit:cover;width:100%;" src=@Model.Book.ImageUrl alt="product img">
+		</a>
+		<div class="d-flex flex-column align-items-start justify-content-center p-2 flex-shrink-1" style="overflow:hidden">
+			<a style="max-width:100%;text-decoration:none;font-weight:600;color:black" asp-controller="Book" asp-action="Index" asp-route-bookId="@Model.Book.BookId" title="@Model.Book.Title">
+				<span class="cart-book-props">@Model.Book.Title</span>
+			</a>
+			<span class="cart-book-props" title="@authors">@authors</span>
+			<div>
+				@if (Model.Book.SalePrice < Model.Book.Price)
+				{
+					<span>@Model.Book.SalePrice</span>
+					<span>грн.</span>
+				}
+				else
+				{
+					<span>@Model.Book.Price</span>
+					<span>грн.</span>
+				}
+			</div>
+		</div>
+	</div>
+	<div class="d-flex flex-grow-1 flex-column align-items-end justify-content-center p-2" style="flex-basis:20%">
+		<p class="text-center m-0 d-inline">@Model.Quantity шт.</p>
+		<div class="d-inline">
+			<span class="totalItemPrice">@Model.FinalPrice</span>
+			<span>грн.</span>
+		</div>
+	</div>
+</div>

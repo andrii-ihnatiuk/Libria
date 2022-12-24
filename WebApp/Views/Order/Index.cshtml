@@ -1,0 +1,65 @@
+﻿@using Libria.ViewModels.Order
+@model OrderDetailsViewModel
+
+@{
+	ViewData["Title"] = "Оформлення замовлення";
+}
+
+<h3 class="my-5">Оформлення замовлення</h3>
+<div class="row flex-wrap-reverse">
+	<div class="col-12 col-sm-6">
+		<form id="order-form" method="POST" asp-controller="Order" asp-action="Place" class="needs-validation" novalidate>
+			<div class="row gx-3 mt-3 mt-sm-0">
+				<div class="col mb-2">
+					<label asp-for="FirstName" class="mb-1"></label>
+					<input asp-for="FirstName" class="form-control py-2" placeholder="Введіть ваше ім'я">
+					<span asp-validation-for="FirstName" class="invalid-feedback"></span>
+				</div>
+				<div class="col mb-2">
+					<label asp-for="LastName" class="mb-1"></label>
+					<input asp-for="LastName" class="form-control py-2" placeholder="Введіть ваше прізвище">
+				</div>
+			</div>
+			<div class="row gx-3">
+				<div class="col-12 col-md-6 mb-2">
+					<label asp-for="Email" class="mb-1"></label>
+					<input asp-for="Email" class="form-control py-2 @(ViewBag.EmailInvalid == true  ? "is-invalid" : "")" placeholder="Введіть email адресу">
+					<span asp-validation-for="Email" class="invalid-feedback"></span>
+				</div>
+				<div class="col-12 col-md-6 mb-2">
+					<label asp-for="PhoneNumber" class="mb-1"></label>
+					<input asp-for="PhoneNumber" class="form-control py-2" placeholder="Введіть номер телефону">
+					<span asp-validation-for="PhoneNumber" class="invalid-feedback"></span>
+				</div>
+			</div>
+			<div asp-validation-summary="ModelOnly" class="text-danger"></div>
+		</form>
+	</div>
+	<div class="col-12 col-sm-6">
+		<h5 class="mb-2">Зміст замовлення:</h5>
+		@foreach (var item in Model.CartItems!)
+		{
+			<partial name="_OrderItemPartial" model=@item></partial>
+		}
+	</div>
+
+</div>
+
+<div class="container mt-5 mb-3" style="position:sticky;bottom:0;">
+	<div class="d-flex p-3 shadow justify-content-between align-items-center" style="border-radius:5px;background-color:white;margin:0 -1.5rem;">
+		<div class="d-flex flex-column justify-content-center align-items-start">
+			<h3>До сплати:</h3>
+			<div class="lead">
+				<span class="totalCartPrice">@ViewData["TotalPrice"]</span>
+				<span>грн.</span>
+			</div>
+		</div>
+		<div class="d-flex cart-actions">
+			<button class="btn btn-primary p-3" type="submit" form="order-form">Оформити</button>
+		</div>
+	</div>
+</div>
+
+@section Scripts {
+	<partial name="_ValidationScriptsPartial" />
+}

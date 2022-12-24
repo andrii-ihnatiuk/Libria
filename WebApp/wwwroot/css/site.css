@@ -104,7 +104,7 @@ body {
         text-decoration: none;
         color: black;
         font-weight: 600;
-        font-size: 16px;
+        font-size: 14px;
     }
 
     .s-item-details .s-item-author {
@@ -264,6 +264,10 @@ body {
     }
 
 .cart-book-props {
+    display: block;
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
     white-space: nowrap;
 }
 

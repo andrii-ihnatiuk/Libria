@@ -1,13 +1,24 @@
 ﻿@using Libria.Models.Entities
 @using Libria.ViewModels
 @model List<Book>
+@{
+	List<int>? wishIds = null;
+	if (ViewData["wishIds"] != null)
+		wishIds = ViewData["wishIds"] as List<int>;
+	bool wished = false;
+}
 
 <div class="wl-container">
-	<h2 class="my-5">Категорія</h2>
+	<div class="my-5">
+		<h3>@ViewData["categoryName"]</h3>
+		<p class="lead">@ViewData["categoryDescription"]</p>
+	</div>
+
 	<div class="d-flex flex-wrap justify-content-between justify-content-md-start">
 		@foreach (var book in Model)
 		{
-			<partial name="_BookCardPartial" model=@(new BookCardViewModel { Book = book, Wished = true })></partial>
+			wished = wishIds != null && wishIds.Contains(book.BookId) ? true : false;
+			<partial name="_BookCardPartial" model=@(new BookCardViewModel { Book = book, Wished = wished })></partial>
 		}
 	</div>
 </div>
