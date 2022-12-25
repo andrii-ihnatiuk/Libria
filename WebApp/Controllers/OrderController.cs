@@ -32,6 +32,19 @@ namespace Libria.Controllers
 		public async Task<IActionResult> Index()
 		{
 			var orderItems = await _cartService.GetUserCartItemsAsync(HttpContext);
+			if (orderItems.Any(o => o.Book.Available == false)) // If cart contain items that are not available
+			{
+				TempData["cartItems"] = JsonSerializer.Serialize(orderItems); // save data to reduce db queries
+				TempData["modelError"] = "Не всі товари у кошику в наявності. Видаліть їх та спробуйте ще раз."; // add model error to display in cart view
+				return RedirectToAction("Index", "Cart"); // redirect to cart view
+			}
+			if (orderItems.Count == 0)
+			{
+				TempData["cartItems"] = JsonSerializer.Serialize(orderItems); // save data to reduce db queries
+				TempData["modelError"] = "Кошик пустий, мерщій за покупками!"; // add model error to display in cart view
+				return RedirectToAction("Index", "Cart");
+			}
+
 			var model = new OrderDetailsViewModel { CartItems = orderItems };
 
 			var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);

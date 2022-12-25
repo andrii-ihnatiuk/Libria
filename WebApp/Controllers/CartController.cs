@@ -3,6 +3,9 @@ using Libria.ViewModels.Cart;
 using Libria.Data;
 using Libria.Models.Entities;
 using Libria.Services;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
+using System.Text.Json;
+using Org.BouncyCastle.Crypto.Prng;
 
 namespace Libria.Controllers
 {
@@ -22,8 +25,19 @@ namespace Libria.Controllers
 		{
 			List<CartItemViewModel> cartItems;
 
-			cartItems = await _cartService.GetUserCartItemsAsync(HttpContext);
-
+			if (TempData["modelError"] != null)
+				ModelState.AddModelError(string.Empty, (string)TempData["modelError"]!);
+			if (TempData["cartItems"] != null)
+			{
+				var data = JsonSerializer.Deserialize<List<CartItemViewModel>>((string)TempData["cartItems"]!);
+				if (data != null)
+					cartItems = data;
+				else
+					cartItems = await _cartService.GetUserCartItemsAsync(HttpContext);
+			}
+			else
+				cartItems = await _cartService.GetUserCartItemsAsync(HttpContext);
+				
 			ViewData["TotalPrice"] = cartItems.Sum(i => i.TotalItemPrice);
 
 			return View(cartItems);
