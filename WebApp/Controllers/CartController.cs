@@ -24,7 +24,7 @@ namespace Libria.Controllers
 
 			cartItems = await _cartService.GetUserCartItemsAsync(HttpContext);
 
-			ViewData["TotalPrice"] = cartItems.Sum(i => i.FinalPrice);
+			ViewData["TotalPrice"] = cartItems.Sum(i => i.TotalItemPrice);
 
 			return View(cartItems);
 		}

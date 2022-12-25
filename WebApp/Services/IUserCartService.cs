@@ -5,7 +5,7 @@ namespace Libria.Services
 {
 	public interface IUserCartService
 	{
-		public Task<List<CartItemViewModel>> GetUserCartItemsAsync(HttpContext _http);
+		public Task<List<CartItemViewModel>> GetUserCartItemsAsync(HttpContext _http, bool includeAuthors = true);
 
 		public Task<CartActionResult> AddToUserCartAsync(HttpContext _http, int? bookId);
 	

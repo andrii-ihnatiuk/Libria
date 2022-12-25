@@ -1,0 +1,16 @@
+﻿@{
+	ViewData["Title"] = "Замовлення";
+}
+<div class="row justify-content-center">
+	<div class="col-lg-4">
+		<div class="alert alert-success" role="alert">
+			<h4 class="alert-heading">Замовлення #@(ViewData["OrderId"])</h4>
+			<p>Ваше замовлення прийнято до подальшої обробки.</p>
+			<hr>
+			<p class="mb-0">Найближчим часом з вами зв'яжеться наш менеджер для уточнення деталей замовлення.</p>
+		</div>
+		<div class="text-center">
+			<a class="link-dark fw-bold" asp-controller="Home" asp-action="Index">На головну</a>
+		</div>
+	</div>
+</div>

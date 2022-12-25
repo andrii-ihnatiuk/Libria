@@ -18,7 +18,7 @@ namespace Libria.Services
 			_context = context;
 		}
 
-		public async Task<List<CartItemViewModel>> GetUserCartItemsAsync(HttpContext _http)
+		public async Task<List<CartItemViewModel>> GetUserCartItemsAsync(HttpContext _http, bool includeAuthors = true)
 		{
 			List<CartItemViewModel> cartItems;
 
@@ -49,20 +49,24 @@ namespace Libria.Services
 				else
 				{
 					var itemsIds = sessionCartItems.Select(s => s.BookId).ToList();
-					cartItems = (await _context.Books
-						.Where(b => itemsIds.Contains(b.BookId))
-						.Include(b => b.Authors)
-						.ToListAsync())
+					
+					var query = _context.Books.Where(b => itemsIds.Contains(b.BookId));
+					if (includeAuthors)
+						query.Include(b => b.Authors);
+					
+					cartItems = (await query.ToListAsync())
 						.Join(sessionCartItems, b => b.BookId, s => s.BookId, (b, s) => new CartItemViewModel { Book = b, Quantity = s.Quantity })
-					.ToList();
+						.ToList();
 				}
 			}
 			// Logged in user
 			else
 			{
-				cartItems = await _context.CartUsersBooks
-					.Where(c => c.UserId == userId)
-					.Include(c => c.Book.Authors)
+				var query = _context.CartUsersBooks.Where(c => c.UserId == userId);
+				if (includeAuthors)
+					query.Include(c => c.Book.Authors);
+				
+				cartItems = await query
 					.Select(c => new CartItemViewModel { Book = c.Book, Quantity = c.Quantity })
 					.ToListAsync();
 			}
@@ -73,11 +77,13 @@ namespace Libria.Services
 				{
 					if (cartItem.Book.SalePrice != null && cartItem.Book.SalePrice < cartItem.Book.Price)
 					{
-						cartItem.FinalPrice = (decimal)cartItem.Book.SalePrice * cartItem.Quantity;
+						cartItem.TotalItemPrice = (decimal)cartItem.Book.SalePrice * cartItem.Quantity;
+						cartItem.ActiveBookPrice = (decimal)cartItem.Book.SalePrice;
 					}
 					else
 					{
-						cartItem.FinalPrice = cartItem.Book.Price * cartItem.Quantity;
+						cartItem.TotalItemPrice = cartItem.Book.Price * cartItem.Quantity;
+						cartItem.ActiveBookPrice = cartItem.Book.Price;
 					}
 				}
 			}
@@ -268,13 +274,14 @@ namespace Libria.Services
 
 		private static decimal CalcTotalItemPrice(Book book, int quantity)
 		{
-			decimal newPrice;
+			decimal totalPrice;
 			if (book.SalePrice != null && book.SalePrice < book.Price)
-				newPrice = (decimal)book.SalePrice * quantity;
+				totalPrice = (decimal)book.SalePrice * quantity;
 			else
-				newPrice = book.Price * quantity;
-			return newPrice;
+				totalPrice = book.Price * quantity;
+			return totalPrice;
 		}
+
 
 		private async Task<decimal> CalcTotalCartPriceAsync(List<CartItem> cartItems)
 		{

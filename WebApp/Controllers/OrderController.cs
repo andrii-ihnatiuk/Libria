@@ -1,9 +1,11 @@
 ﻿using Libria.Data;
 using Libria.Models;
+using Libria.Models.Entities;
 using Libria.Services;
 using Libria.ViewModels.Cart;
 using Libria.ViewModels.Order;
 using Microsoft.AspNetCore.Mvc;
+using System.ComponentModel;
 using System.Linq;
 using System.Security.Claims;
 using System.Text.Json;
@@ -46,22 +48,44 @@ namespace Libria.Controllers
 				}
 			}
 
-			ViewData["TotalPrice"] = orderItems.Sum(i => i.FinalPrice);
+			ViewData["TotalPrice"] = orderItems.Sum(i => i.TotalItemPrice);
 
 			return View(model);
 		}
 
 		[HttpPost]
-		public async Task<IActionResult> Place(OrderDetailsViewModel order)
+		public async Task<IActionResult> Place(OrderDetailsViewModel orderDetails)
 		{
 			if (ModelState.IsValid)
 			{
-				return Json(order);
+				var orderItems = await _cartService.GetUserCartItemsAsync(HttpContext, includeAuthors: false);
+				var order = new Order()
+				{
+					OrderDate = DateTime.UtcNow,
+					TotalSpent = orderItems.Sum(i => i.TotalItemPrice),
+					UserId = User.FindFirstValue(ClaimTypes.NameIdentifier),
+					Email = orderDetails.Email,
+					FirstName = orderDetails.FirstName,
+					LastName = orderDetails.LastName,
+					PhoneNumber = orderDetails.PhoneNumber,
+					OrderStatus = OrderStatuses.Processing,
+					Books = orderItems.Select(i => new OrdersBooks() { BookId = i.Book.BookId, Price = i.ActiveBookPrice, Quantity = i.Quantity }).ToList()
+				};
+				_context.Orders.Add(order);
+				var res = await _context.SaveChangesAsync();
+
+				if (res != 0)
+				{
+					_cartService.ClearUserCart(HttpContext);
+					ViewData["OrderId"] = order.OrderId;
+					return View("Success");
+				}
+				return RedirectToAction("Error", "Home");
 			}
 			else
 			{
-				order.CartItems = await _cartService.GetUserCartItemsAsync(HttpContext);
-				return View("Index", order);
+				orderDetails.CartItems = await _cartService.GetUserCartItemsAsync(HttpContext);
+				return View("Index", orderDetails);
 			}
 		}
 	}

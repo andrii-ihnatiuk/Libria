@@ -11,6 +11,8 @@ public class LibriaDbContext : IdentityDbContext<User>
     public DbSet<Category> Categories { get; set; } = null!;
     public DbSet<WishList> WishList { get; set; } = null!;
     public DbSet<CartUsersBooks> CartUsersBooks { get; set; } = null!;
+    public DbSet<Order> Orders { get; set; } = null!;
+    public DbSet<OrdersBooks> OrdersBooks { get; set; } = null!;
 
     public LibriaDbContext(DbContextOptions<LibriaDbContext> options) : base(options)
     {
