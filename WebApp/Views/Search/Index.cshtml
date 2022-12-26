@@ -1,21 +1,20 @@
-﻿@using Libria.Models.Entities
-@using Libria.ViewModels
-@model Category
+﻿@using Libria.Models.Entities;
+@using Libria.ViewModels;
 @{
-	ViewData["Title"] = $"Товари категорії \"{Model.Name}\"";
+	ViewData["Title"] = "Результати пошуку";
 	List<int>? wishIds = null;
 	if (ViewData["wishIds"] != null)
 		wishIds = ViewData["wishIds"] as List<int>;
 	bool wished = false;
 }
+@model List<Book>;
 
 <div class="my-5">
-	<h3>@Model.Name</h3>
-	<p class="lead">@Model.Description</p>
+	<h3>Результати пошуку «@ViewData["searchString"]»</h3>
 </div>
 
 <div class="d-flex flex-wrap justify-content-between justify-content-md-start">
-	@foreach (var book in Model.Books)
+	@foreach (var book in Model)
 	{
 		wished = wishIds != null && wishIds.Contains(book.BookId) ? true : false;
 		<partial name="_BookCardPartial" model=@(new BookCardViewModel { Book = book, Wished = wished })></partial>

@@ -2,23 +2,22 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
-using Microsoft.EntityFrameworkCore;
-using Libria.Models.Entities;
+using Libria.Services;
 
 namespace Libria.Controllers
 {
     public class WishListController : Controller
 	{
-		private readonly LibriaDbContext _context;
+		private readonly IWishListService _wishListService;
 
-		public WishListController(LibriaDbContext context)
+		public WishListController(IWishListService wishListService)
 		{
-			_context = context;
+			_wishListService = wishListService;
 		}
 
 		[HttpGet]
 		[Authorize]
-		public IActionResult Index()
+		public async Task<IActionResult> Index()
 		{
 			var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
@@ -27,11 +26,7 @@ namespace Libria.Controllers
 				return RedirectToAction("Error", "Home");
 			}
 
-			var wishedBooks = _context.Books.Join(_context.WishList.Where(
-				wl => wl.UserId == userId),
-				b => b.BookId, wl => wl.BookId,
-				(b, _) => b).Include(b => b.Authors).ToList();
-
+			var wishedBooks = await _wishListService.GetUserWishListBooksAsync(userId);
 
 			// OFF-LINE CODE
 			//var wishedBooks = new List<Book>()
@@ -56,15 +51,7 @@ namespace Libria.Controllers
 			if (userId == null || bookId == null)
 				return Json(new { success = false });
 
-			if (_context.Users.Any(u => u.Id == userId) == false || _context.Books.Any(b => b.BookId == bookId) == false)
-				return Json(new { success = false });
-			if (_context.WishList.Any(wl => wl.UserId == userId && wl.BookId == bookId))
-				return Json(new { success = false });
-
-			_context.WishList.Add(new WishList { UserId = userId, BookId = (int)bookId });
-			var res = await _context.SaveChangesAsync();
-
-			return res == 0 ? Json(new { success = false }) : Json(new { success = true });
+			return await _wishListService.AddToUserWishListAsync(userId, (int)bookId);
 		}
 
 		[HttpPost]
@@ -75,13 +62,7 @@ namespace Libria.Controllers
 			if (userId == null || bookId == null)
 				return Json(new { success = false });
 
-			var record = await _context.WishList.FirstOrDefaultAsync(wl => wl.UserId == userId && wl.BookId == (int)bookId);
-			if (record == null)
-				return Json(new { success = false });
-			_context.WishList.Remove(record);
-			var res = await _context.SaveChangesAsync();
-
-			return res == 0 ? Json(new { success = false }) : Json(new { success = true });
+			return await _wishListService.RemoveFromUserWishListAsync(userId, (int)bookId);
 		}
 	}
 }

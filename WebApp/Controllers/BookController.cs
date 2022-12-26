@@ -33,11 +33,6 @@ namespace Libria.Controllers
 					if (_context.WishList.Any(wl => wl.UserId == userId && wl.BookId == bookId))
 					{
 						ViewBag.IsInWishList = true;
-						_logger.LogCritical("BOOK ID IS IN WISH LIST");
-					}
-					else
-					{
-						_logger.LogCritical("NOT IN WISH LIST");
 					}
 				}
 
@@ -64,7 +59,7 @@ namespace Libria.Controllers
 			//"Lorem ipsum dolor sit amet.Lorem ipsum dolor sit amet.Lorem ipsum dolor sit amet.Lorem ipsum dolor sit amet.Lorem ipsum dolor sit amet.Lorem ipsum dolor sit amet"
 			//};
 
-			return book == null ? RedirectToAction("Error", "Home") : View(book);
+			return book == null ? NotFound() : View(book);
 		}
 	}
 }

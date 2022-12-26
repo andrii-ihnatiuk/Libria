@@ -40,7 +40,8 @@ builder.Services.AddIdentity<User, IdentityRole>(options =>
 builder.Services.AddTransient<IEmailService, EmailService>();
 builder.Services.Configure<EmailSettings>(builder.Configuration.GetSection(nameof(EmailSettings)));
 
-builder.Services.AddTransient<IUserCartService, UserCartService>();
+builder.Services.AddTransient<ICartService, CartService>();
+builder.Services.AddTransient<IWishListService, WishListService>();
 
 builder.Services.AddControllersWithViews();
 

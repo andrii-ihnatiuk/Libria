@@ -8,12 +8,12 @@ using Libria.Models.Entities;
 
 namespace Libria.Services
 {
-	public class UserCartService : IUserCartService
+	public class CartService : ICartService
 	{
 		private readonly LibriaDbContext _context;
 		private const string SES_CART_KEY = "CartItems";
 
-		public UserCartService(LibriaDbContext context)
+		public CartService(LibriaDbContext context)
 		{
 			_context = context;
 		}

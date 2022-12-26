@@ -12,9 +12,9 @@ namespace Libria.Controllers
 	public class CartController : Controller
 	{
 		private readonly ILogger<CartController> _logger;
-		private readonly IUserCartService _cartService;
+		private readonly ICartService _cartService;
 
-		public CartController(ILogger<CartController> logger, IUserCartService cartService)
+		public CartController(ILogger<CartController> logger, ICartService cartService)
 		{
 			_logger = logger;
 			_cartService = cartService;

@@ -4,16 +4,19 @@ using Microsoft.EntityFrameworkCore;
 using Libria.Models;
 using System.Security.Claims;
 using Libria.ViewModels;
+using Libria.Services;
 
 namespace Libria.Components
 {
 	public class NewBooksViewComponent : ViewComponent
 	{
 		private readonly LibriaDbContext _context;
+		private readonly IWishListService _wishListService;
 
-		public NewBooksViewComponent(LibriaDbContext context)
+		public NewBooksViewComponent(LibriaDbContext context, IWishListService wishListService)
 		{
 			_context = context;
+			_wishListService = wishListService;
 		}
 
 		public async Task<IViewComponentResult> InvokeAsync()
@@ -25,7 +28,7 @@ namespace Libria.Components
 
 			List<int>? wishIds = null;
 			if (userId != null)
-				wishIds = await _context.WishList.Where(wl => wl.UserId == userId).Select(wl => wl.BookId).ToListAsync();
+				wishIds = await _wishListService.GetUserWishListBooksIdsOnlyAsync(userId);
 
 			ViewData["wishIds"] = wishIds;
 

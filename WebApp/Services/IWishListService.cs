@@ -1,0 +1,16 @@
+﻿using Libria.Models.Entities;
+using Microsoft.AspNetCore.Mvc;
+
+namespace Libria.Services
+{
+	public interface IWishListService
+	{
+		public Task<List<Book>> GetUserWishListBooksAsync(string userId);
+
+		public Task<List<int>?> GetUserWishListBooksIdsOnlyAsync(string? userId);
+
+		public Task<JsonResult> AddToUserWishListAsync(string userId, int bookId);
+
+		public Task<JsonResult> RemoveFromUserWishListAsync(string userId, int bookId);
+	}
+}

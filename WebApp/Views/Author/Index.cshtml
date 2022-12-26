@@ -1,8 +1,7 @@
 ﻿@using Libria.Models.Entities
 @using Libria.ViewModels
-@model Category
+@model Author
 @{
-	ViewData["Title"] = $"Товари категорії \"{Model.Name}\"";
 	List<int>? wishIds = null;
 	if (ViewData["wishIds"] != null)
 		wishIds = ViewData["wishIds"] as List<int>;

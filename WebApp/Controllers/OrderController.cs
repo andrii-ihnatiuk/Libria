@@ -15,9 +15,9 @@ namespace Libria.Controllers
 	public class OrderController : Controller
 	{
 		private readonly LibriaDbContext _context;
-		private readonly IUserCartService _cartService;
+		private readonly ICartService _cartService;
 
-		public OrderController(LibriaDbContext context, IUserCartService cartService)
+		public OrderController(LibriaDbContext context, ICartService cartService)
 		{
 			_context = context;
 			_cartService = cartService;

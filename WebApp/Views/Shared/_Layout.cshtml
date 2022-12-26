@@ -30,8 +30,8 @@
 							@await Component.InvokeAsync("CategoriesMenu")
 						</li>
 					</ul>
-					<form class="d-flex flex-grow-1 me-lg-5">
-						<input class="form-control me-2" type="search" placeholder="Пошук за назвою або за автором" aria-label="Search">
+					<form method="get" asp-controller="Search" asp-action="Index" class="d-flex flex-grow-1 me-lg-5">
+						<input name="q" class="form-control me-2" type="search" placeholder="Пошук за назвою або за автором" aria-label="Search">
 						<button class="btn btn-outline-success" type="submit">Шукати</button>
 					</form>
 					<ul class="navbar-nav">

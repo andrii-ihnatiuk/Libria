@@ -6,31 +6,35 @@ using System.Security.Claims;
 
 namespace Libria.Controllers
 {
-	public class CategoryController : Controller
+	public class AuthorController : Controller
 	{
 		private readonly LibriaDbContext _context;
 		private readonly IWishListService _wishListService;
 
-		public CategoryController(LibriaDbContext context, IWishListService wishListService)
+		public AuthorController(LibriaDbContext context, IWishListService wishListService)
 		{
 			_context = context;
 			_wishListService = wishListService;
 		}
 
-		public async Task<IActionResult> Index(int? categoryId)
+		public async Task<IActionResult> Index(int? authorId)
 		{
-			if (categoryId == null)
+			if (authorId == null)
 				return RedirectToAction("Error", "Home");
 
-			var category = await _context.Categories.Where(c => c.CategoryId == categoryId).Include(c => c.Books).ThenInclude(b => b.Authors).FirstOrDefaultAsync();
-
-			if (category == null)
+			var author = await _context.Authors
+				.Where(a => a.AuthorId == authorId)
+				.Include(a => a.Books)
+				.ThenInclude(b => b.Authors)
+				.FirstOrDefaultAsync();
+				
+			if (author == null)
 				return NotFound();
 
 			var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 			ViewData["wishIds"] = await _wishListService.GetUserWishListBooksIdsOnlyAsync(userId);
 
-			return View(category);
+			return View(author);
 		}
 	}
 }

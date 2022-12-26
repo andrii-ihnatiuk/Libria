@@ -3,7 +3,7 @@ using Libria.ViewModels.Cart;
 
 namespace Libria.Services
 {
-	public interface IUserCartService
+	public interface ICartService
 	{
 		public Task<List<CartItemViewModel>> GetUserCartItemsAsync(HttpContext _http, bool includeAuthors = true);
 
