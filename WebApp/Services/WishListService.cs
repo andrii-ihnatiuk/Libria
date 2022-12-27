@@ -1,5 +1,6 @@
 ﻿using Libria.Data;
 using Libria.Models.Entities;
+using Libria.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -50,6 +51,21 @@ namespace Libria.Services
 			var res = await _context.SaveChangesAsync();
 
 			return res == 0 ? new JsonResult(new { success = false }) : new JsonResult(new { success = true });
+		}
+
+		public async Task<List<BookCardViewModel>> CheckIfBooksInUserWishListAsync(string? userId, List<BookCardViewModel> bookCards)
+		{
+			var wishIds = await GetUserWishListBooksIdsOnlyAsync(userId);
+			foreach(var bookCard in bookCards)
+			{
+				if (wishIds == null)
+					bookCard.Wished = false;
+				else if (wishIds.Contains(bookCard.Book.BookId))
+					bookCard.Wished = true;
+				else
+					bookCard.Wished = false;
+			}
+			return bookCards;
 		}
 	}
 }

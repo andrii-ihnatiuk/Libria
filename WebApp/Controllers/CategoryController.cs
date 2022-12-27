@@ -1,5 +1,6 @@
 ﻿using Libria.Data;
 using Libria.Services;
+using Libria.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
@@ -28,9 +29,14 @@ namespace Libria.Controllers
 				return NotFound();
 
 			var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-			ViewData["wishIds"] = await _wishListService.GetUserWishListBooksIdsOnlyAsync(userId);
+			var bookCards = category.Books.Select(b => new BookCardViewModel { Book = b, Wished = false }).ToList();
 
-			return View(category);
+			bookCards = await _wishListService.CheckIfBooksInUserWishListAsync(userId, bookCards);
+
+			ViewData["categoryName"] = category.Name;
+			ViewData["categoryDescription"] = category.Description;
+
+			return View(bookCards);
 		}
 	}
 }

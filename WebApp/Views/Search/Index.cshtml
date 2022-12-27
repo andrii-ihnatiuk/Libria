@@ -1,22 +1,87 @@
 ﻿@using Libria.Models.Entities;
 @using Libria.ViewModels;
+@model IndexViewModel;
 @{
 	ViewData["Title"] = "Результати пошуку";
-	List<int>? wishIds = null;
-	if (ViewData["wishIds"] != null)
-		wishIds = ViewData["wishIds"] as List<int>;
-	bool wished = false;
+	var pager = Model.PageViewModel;
+	var q = ViewData["searchString"];
+
+	int appendRight = 0, appendLeft = 0;
+	if (pager.PageNumber - 1 < 2)
+		appendRight = 3 - pager.PageNumber;
+	else if ((pager.TotalPages - pager.PageNumber) < 2)
+	{
+		appendLeft = 2 - (pager.TotalPages - pager.PageNumber);
+	}
 }
-@model List<Book>;
 
 <div class="my-5">
-	<h3>Результати пошуку «@ViewData["searchString"]»</h3>
+	<h3>Результати пошуку для «@q» - Сторінка @pager.PageNumber</h3>
+	<span>Всього результатів пошуку: <strong>@ViewData["totalItems"]</strong></span>
+	<hr />
 </div>
 
 <div class="d-flex flex-wrap justify-content-between justify-content-md-start">
-	@foreach (var book in Model)
+	@foreach (var bookCard in Model.BookCards)
 	{
-		wished = wishIds != null && wishIds.Contains(book.BookId) ? true : false;
-		<partial name="_BookCardPartial" model=@(new BookCardViewModel { Book = book, Wished = wished })></partial>
+		<partial name="_BookCardPartial" model=bookCard></partial>
 	}
 </div>
+
+@if (pager.TotalPages > 1)
+{
+	<ul class="pagination justify-content-end mt-3">
+		@if (pager.HasPreviousPage) 
+		{
+			<li class="page-item">
+				<a class="page-link" asp-controller="Search" asp-action="Index" asp-route-q="@q" asp-route-page="@(pager.PageNumber - 1)" aria-label="Previous">
+					<span aria-hidden="true">&laquo;</span>
+				</a>
+			</li>
+		}
+		else
+		{
+			<li class="page-item disabled">
+				<a class="page-link" aria-label="Previous" aria-disabled="true">
+					<span aria-hidden="true">&laquo;</span>
+				</a>
+			</li>
+		}
+
+		@for (int i = pager.PageNumber - (2 + appendLeft); i < pager.PageNumber; i++) 
+		{
+			@if (i > 0) 
+			{
+				<li class="page-item">
+					<a class="page-link" asp-controller="Search" asp-action="Index" asp-route-q="@q" asp-route-page="@i">@i</a>
+				</li>
+			}
+		}
+
+		 <li class="page-item active" aria-current="page">
+			<span class="page-link">@pager.PageNumber</span>
+		</li>
+
+		@for (int i = pager.PageNumber + 1; i <= pager.TotalPages && i <= pager.PageNumber + (2 + appendRight); i++) 
+		{
+			<li class="page-item"><a class="page-link" asp-controller="Search" asp-action="Index" asp-route-q="@q" asp-route-page="@i">@i</a></li>
+		}
+
+		@if (pager.HasNextPage) 
+		{
+			<li class="page-item">
+				<a class="page-link" asp-controller="Search" asp-action="Index" asp-route-q="@q" asp-route-page="@(pager.PageNumber + 1)" aria-label="Next">
+					<span aria-hidden="true">&raquo;</span>
+				</a>
+			</li>
+		}
+		else
+		{
+			<li class="page-item disabled">
+				<a class="page-link" aria-label="Next" aria-disabled="true">
+					<span aria-hidden="true">&raquo;</span>
+				</a>
+			</li>
+		}
+	</ul>
+}
