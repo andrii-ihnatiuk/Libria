@@ -1,0 +1,131 @@
+﻿@using Libria.ViewModels;
+@model IndexViewModel;
+@{
+	var pager = Model.PageViewModel;
+	var filter = Model.FilterViewModel;
+
+	int appendRight = 0, appendLeft = 0;
+	if (pager.PageNumber - 1 < 2)
+		appendRight = 3 - pager.PageNumber;
+	else if ((pager.TotalPages - pager.PageNumber) < 2)
+		appendLeft = 2 - (pager.TotalPages - pager.PageNumber);
+}
+
+<div class="d-flex justify-content-end mb-3">
+	<form method="get" asp-controller="@Model.ControllerName" asp-action="@Model.ActionName">
+		@if (filter.SearchString != null)
+		{
+			<input type="hidden" name="q" value="@filter.SearchString" />
+		}
+		@if (filter.CategoryId != null)
+		{
+			<input type="hidden" name="categoryId" value="@filter.CategoryId" />
+		}
+		@if (filter.AuthorId != null)
+		{
+			<input type="hidden" name="authorId" value="@filter.AuthorId" />
+		}
+		<select name="sortBy" class="form-select" onchange="this.form.submit()" asp-items="@Model.SelectListItems"></select>
+	</form>
+</div>
+
+
+<div class="d-flex flex-wrap justify-content-between justify-content-md-start">
+	@foreach (var bookCard in Model.BookCards)
+	{
+		<partial name="_BookCardPartial" model=bookCard></partial>
+	}
+</div>
+
+
+@if (pager.TotalPages > 1)
+{
+	<ul class="pagination justify-content-end mt-3">
+		@if (pager.HasPreviousPage)
+		{
+			<li class="page-item">
+				<a class="page-link"
+				   asp-controller="@Model.ControllerName"
+				   asp-action="@Model.ActionName"
+				   asp-route-q="@filter.SearchString"
+				   asp-route-categoryId="@filter.CategoryId"
+				   asp-route-authorId="@filter.AuthorId"
+				   asp-route-sortBy="@Model.CurrentSortState"
+				   asp-route-page="@(pager.PageNumber - 1)" aria-label="Previous">
+					<span aria-hidden="true">&laquo;</span>
+				</a>
+			</li>
+		}
+		else
+		{
+			<li class="page-item disabled">
+				<a class="page-link" aria-label="Previous" aria-disabled="true">
+					<span aria-hidden="true">&laquo;</span>
+				</a>
+			</li>
+		}
+
+		@for (int i = pager.PageNumber - (2 + appendLeft); i < pager.PageNumber; i++)
+		{
+			@if (i > 0)
+			{
+				<li class="page-item">
+					<a class="page-link"
+					   asp-controller="@Model.ControllerName"
+					   asp-action="@Model.ActionName"
+					   asp-route-q="@filter.SearchString"
+					   asp-route-categoryId="@filter.CategoryId"
+					   asp-route-authorId="@filter.AuthorId"
+					   asp-route-sortBy="@Model.CurrentSortState"
+					   asp-route-page="@i">
+						@i
+					</a>
+				</li>
+			}
+		}
+
+		<li class="page-item active" aria-current="page">
+			<span class="page-link">@pager.PageNumber</span>
+		</li>
+
+		@for (int i = pager.PageNumber + 1; i <= pager.TotalPages && i <= pager.PageNumber + (2 + appendRight); i++)
+		{
+			<li class="page-item">
+				<a class="page-link"
+				   asp-controller="@Model.ControllerName"
+				   asp-action="@Model.ActionName"
+				   asp-route-q="@filter.SearchString"
+				   asp-route-categoryId="@filter.CategoryId"
+				   asp-route-authorId="@filter.AuthorId"
+				   asp-route-sortBy="@Model.CurrentSortState"
+				   asp-route-page="@i">
+					@i
+				</a>
+			</li>
+		}
+
+		@if (pager.HasNextPage)
+		{
+			<li class="page-item">
+				<a class="page-link"
+				   asp-controller="@Model.ControllerName"
+				   asp-action="@Model.ActionName"
+				   asp-route-q="@filter.SearchString"
+				   asp-route-categoryId="@filter.CategoryId"
+				   asp-route-authorId="@filter.AuthorId"
+				   asp-route-sortBy="@Model.CurrentSortState"
+				   asp-route-page="@(pager.PageNumber + 1)" aria-label="Next">
+					<span aria-hidden="true">&raquo;</span>
+				</a>
+			</li>
+		}
+		else
+		{
+			<li class="page-item disabled">
+				<a class="page-link" aria-label="Next" aria-disabled="true">
+					<span aria-hidden="true">&raquo;</span>
+				</a>
+			</li>
+		}
+	</ul>
+}

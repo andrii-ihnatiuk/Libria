@@ -37,7 +37,7 @@ namespace Libria.Models.Entities
         public string? Publisher { get; set; }
 
         public decimal? SalePrice { get; set; }
-
+       
         public decimal Price { get; set; }
 
         /* RELATIONS */

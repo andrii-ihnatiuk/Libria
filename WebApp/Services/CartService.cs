@@ -50,9 +50,9 @@ namespace Libria.Services
 				{
 					var itemsIds = sessionCartItems.Select(s => s.BookId).ToList();
 					
-					var query = _context.Books.Where(b => itemsIds.Contains(b.BookId));
+					var query = _context.Books.AsNoTracking().Where(b => itemsIds.Contains(b.BookId));
 					if (includeAuthors)
-						query.Include(b => b.Authors);
+						query.Include(b => b.Authors.Select(a => new Author { Name = a.Name }));
 					
 					cartItems = (await query.ToListAsync())
 						.Join(sessionCartItems, b => b.BookId, s => s.BookId, (b, s) => new CartItemViewModel { Book = b, Quantity = s.Quantity })
@@ -62,9 +62,9 @@ namespace Libria.Services
 			// Logged in user
 			else
 			{
-				var query = _context.CartUsersBooks.Where(c => c.UserId == userId);
+				var query = _context.CartUsersBooks.AsNoTracking().Where(c => c.UserId == userId);
 				if (includeAuthors)
-					query.Include(c => c.Book.Authors);
+					query.Include(c => c.Book.Authors.Select(a => new Author { Name = a.Name }));
 				
 				cartItems = await query
 					.Select(c => new CartItemViewModel { Book = c.Book, Quantity = c.Quantity })
@@ -75,7 +75,7 @@ namespace Libria.Services
 			{
 				foreach (var cartItem in cartItems)
 				{
-					if (cartItem.Book.SalePrice != null && cartItem.Book.SalePrice < cartItem.Book.Price)
+					if (cartItem.Book.SalePrice < cartItem.Book.Price)
 					{
 						cartItem.TotalItemPrice = (decimal)cartItem.Book.SalePrice * cartItem.Quantity;
 						cartItem.ActiveBookPrice = (decimal)cartItem.Book.SalePrice;
@@ -275,7 +275,7 @@ namespace Libria.Services
 		private static decimal CalcTotalItemPrice(Book book, int quantity)
 		{
 			decimal totalPrice;
-			if (book.SalePrice != null && book.SalePrice < book.Price)
+			if (book.SalePrice < book.Price)
 				totalPrice = (decimal)book.SalePrice * quantity;
 			else
 				totalPrice = book.Price * quantity;
@@ -293,7 +293,7 @@ namespace Libria.Services
 			decimal totalCartPrice = 0;
 			foreach (var item in cartBooks)
 			{
-				if (item.Book.SalePrice != null && item.Book.SalePrice < item.Book.Price)
+				if (item.Book.SalePrice < item.Book.Price)
 				{
 					totalCartPrice += (decimal)item.Book.SalePrice * item.Quantity;
 				}

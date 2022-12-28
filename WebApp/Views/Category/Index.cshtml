@@ -1,18 +1,13 @@
-﻿@using Libria.Models.Entities
-@using Libria.ViewModels
-@model List<BookCardViewModel>
+﻿@using Libria.ViewModels
+@model IndexViewModel
 @{
 	ViewData["Title"] = $"Товари категорії \"{ViewData["categoryName"]}\"";
 }
 
-<div class="my-5">
+<div class="mt-5 mb-3">
 	<h3>@ViewData["categoryName"]</h3>
 	<p class="lead">@ViewData["categoryDescription"]</p>
+	<span>Книг у категорії: <strong>@Model.PageViewModel.ItemsCount</strong></span>
 </div>
 
-<div class="d-flex flex-wrap justify-content-between justify-content-md-start">
-	@foreach (var bookCard in Model)
-	{
-		<partial name="_BookCardPartial" model=@bookCard></partial>
-	}
-</div>
+<partial name="_BooksGridPartial" model=@Model></partial>

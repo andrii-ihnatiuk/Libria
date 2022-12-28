@@ -17,10 +17,19 @@ namespace Libria.Services
 
 		public async Task<List<Book>> GetUserWishListBooksAsync(string userId)
 		{
-			return await _context.Books.Join(_context.WishList.Where(
-				wl => wl.UserId == userId),
+			return await _context.Books.AsNoTracking()
+				.Join(_context.WishList.Where(wl => wl.UserId == userId),
 				b => b.BookId, wl => wl.BookId,
-				(b, _) => b).Include(b => b.Authors).ToListAsync();
+				(b, _) => b).Select(b => new Book 
+				{ 
+					BookId = b.BookId,
+					Title = b.Title,
+					Available = b.Available,
+					ImageUrl = b.ImageUrl,
+					Price = b.Price,
+					SalePrice = b.SalePrice,
+					Authors = b.Authors.Select(a => new Author { Name = a.Name }).ToList(),
+				}).ToListAsync();
 		}
 
 		public async Task<List<int>?> GetUserWishListBooksIdsOnlyAsync(string? userId)
@@ -53,7 +62,7 @@ namespace Libria.Services
 			return res == 0 ? new JsonResult(new { success = false }) : new JsonResult(new { success = true });
 		}
 
-		public async Task<List<BookCardViewModel>> CheckIfBooksInUserWishListAsync(string? userId, List<BookCardViewModel> bookCards)
+		public async Task CheckIfBooksInUserWishListAsync(string? userId, List<BookCardViewModel> bookCards)
 		{
 			var wishIds = await GetUserWishListBooksIdsOnlyAsync(userId);
 			foreach(var bookCard in bookCards)
@@ -65,7 +74,6 @@ namespace Libria.Services
 				else
 					bookCard.Wished = false;
 			}
-			return bookCards;
 		}
 	}
 }
