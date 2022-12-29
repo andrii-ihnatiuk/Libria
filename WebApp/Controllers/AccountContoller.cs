@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Libria.Controllers
 {
-    public class AccountController : Controller
+	public class AccountController : Controller
 	{
 		private readonly UserManager<User> _userManager;
 		private readonly SignInManager<User> _signInManager;
@@ -67,7 +67,7 @@ namespace Libria.Controllers
 		[HttpGet]
 		public IActionResult Login(string? returnUrl)
 		{
-			if (returnUrl == null)
+			if (returnUrl == null && string.IsNullOrEmpty(Request.Headers["Referer"]) == false)
 			{
 				var path = new Uri(Request.Headers["Referer"].ToString());
 				ViewData["returnUrl"] = path.PathAndQuery.ToString();
@@ -86,6 +86,11 @@ namespace Libria.Controllers
 
 				if (result.Succeeded)
 				{
+					var user = await _userManager.FindByEmailAsync(model.Email);
+					if (await _userManager.IsInRoleAsync(user, "admin"))
+					{
+						return RedirectToAction("Index", "Dashboard", new { area = "Admin" });
+					}
 					if (!string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl))
 					{
 						return LocalRedirect(returnUrl);
@@ -187,6 +192,11 @@ namespace Libria.Controllers
 				ViewBag.PasswordMismatch = true;
 			}
 			return View(model);
+		}
+
+		public IActionResult AccessDenied()
+		{
+			return View();
 		}
 	}
 }

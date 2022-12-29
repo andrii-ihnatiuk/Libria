@@ -1,0 +1,28 @@
+﻿@using Libria.Areas.Admin.Models;
+@model DashboardViewModel
+<partial name="_SideBarPartial" model="@Model"></partial>
+
+<div class="w-100 p-3">
+	<div class="p-3">
+		<div class="d-flex flex-wrap justify-content-between align-items-start">
+			<h2>Замовлення</h2>
+			<a asp-area="" asp-controller="Home" asp-action="Index">В магазин</a>
+		</div>
+
+		<div class="d-flex flex-wrap w-100">
+			<div class="me-4">
+				<label for="datePicker" class="form-label mb-1">Замовлення за день</label>
+				<input class="form-control" id="datePicker" type="date" placeholder="Оберіть дату" />
+			</div>
+			<div>
+				<label for="filterSelect" class="form-label mb-1">Відображати</label>
+				<select class="form-select" id="filterSelect">
+					<option selected>Усі</option>
+					<option value="1">Завершені</option>
+					<option value="2">Очікуючі</option>
+					<option value="3">Відправлені</option>
+				</select>
+			</div>
+		</div>
+	</div>
+</div>
