@@ -81,7 +81,7 @@ namespace Libria.Controllers
 					FirstName = orderDetails.FirstName,
 					LastName = orderDetails.LastName,
 					PhoneNumber = orderDetails.PhoneNumber,
-					OrderStatus = OrderStatuses.Processing,
+					OrderStatus = OrderStatus.Pending,
 					Books = orderItems.Select(i => new OrdersBooks() { BookId = i.Book.BookId, Price = i.ActiveBookPrice, Quantity = i.Quantity }).ToList()
 				};
 				_context.Orders.Add(order);

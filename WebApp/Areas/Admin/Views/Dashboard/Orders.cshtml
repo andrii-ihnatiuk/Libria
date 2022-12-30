@@ -1,6 +1,10 @@
 ﻿@using Libria.Areas.Admin.Models;
-@model DashboardViewModel
-<partial name="_SideBarPartial" model="@Model"></partial>
+@using Libria.Data;
+@using Libria.Models.Entities;
+@using Libria.Areas.Admin.ViewModels;
+
+@model DashboardOrdersViewModel;
+<partial name="_SideBarPartial" model="@Model.SidebarViewModel"></partial>
 
 <div class="w-100 p-3">
 	<div class="p-3">
@@ -9,20 +13,46 @@
 			<a asp-area="" asp-controller="Home" asp-action="Index">В магазин</a>
 		</div>
 
-		<div class="d-flex flex-wrap w-100">
-			<div class="me-4">
-				<label for="datePicker" class="form-label mb-1">Замовлення за день</label>
-				<input class="form-control" id="datePicker" type="date" placeholder="Оберіть дату" />
+		<form method="get" asp-controller="Dashboard" asp-action="Orders">
+			<div class="d-flex flex-wrap w-100 mt-5">
+				<div class="me-4">
+					<label for="datePicker" class="form-label mb-1">Замовлення за день</label>
+					<input name="date" value="@Model.CurrentDateFilter?.ToString("yyy-MM-dd")" class="form-control" id="datePicker" type="date" placeholder="Оберіть дату" />
+				</div>
+				<div class="me-4">
+					<label for="filterSelect" class="form-label mb-1">Відображати</label>
+					<select name="show" class="form-select" asp-items="@Model.OrderStatusSelectItems" id="filterSelect"></select>
+				</div>
+				<button type="submit" class="btn btn-outline-primary align-self-end">Фільтрувати</button>
 			</div>
-			<div>
-				<label for="filterSelect" class="form-label mb-1">Відображати</label>
-				<select class="form-select" id="filterSelect">
-					<option selected>Усі</option>
-					<option value="1">Завершені</option>
-					<option value="2">Очікуючі</option>
-					<option value="3">Відправлені</option>
-				</select>
-			</div>
+		</form>
+
+		<div class="mt-4">
+			<table class="table table-bordered table-hover">
+				<thead>
+					<tr class="table-primary">
+						<th scope="col">ID</th>
+						<th scope="col">Дата</th>
+						<th scope="col">Замовник</th>
+						<th scope="col">Сума, грн</th>
+						<th scope="col">Статус</th>
+						<th scope="col">Дії</th>
+					</tr>
+				</thead>
+				<tbody>
+					@foreach (var order in Model.Orders)
+					{
+						<tr>
+							<th scope="row">@order.OrderId</th>
+							<td>@order.OrderDate</td>
+							<td>@(order.FirstName + " " + order.LastName)</td>
+							<td>@order.TotalSpent</td>
+							<td>@order.OrderStatus</td>
+							<td><a href="#">Дії</a></td>
+						</tr>
+					}
+				</tbody>
+			</table>
 		</div>
 	</div>
 </div>

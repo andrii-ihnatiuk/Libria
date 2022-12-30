@@ -1,4 +1,5 @@
 ﻿using Libria.Areas.Admin.Models;
+using Libria.Areas.Admin.ViewModels;
 using Libria.Data;
 using Libria.Models.Entities;
 using Microsoft.AspNetCore.Authorization;
@@ -23,35 +24,54 @@ namespace Libria.Areas.Admin.Controllers
             ViewData["usersCount"] = await _context.Users.CountAsync();
             var newOrders = await _context.Orders
                 .AsNoTracking()
-                .Where(o => o.OrderStatus == OrderStatuses.Processing)
+                .Where(o => o.OrderStatus == OrderStatus.Pending)
                 .Select(o => new Order { TotalSpent = o.TotalSpent, OrderStatus = o.OrderStatus })
                 .ToListAsync();
             ViewData["newOrdersCount"] = newOrders.Count;
             ViewData["newOrdersPrice"] = newOrders.Sum(o => o.TotalSpent);
 
-            var viewModel = new DashboardViewModel
-            {
-                ActiveMenuItem = MenuItemNames.Main
-            };
+            var viewModel = new SidebarViewModel(MenuItemType.Main);
+
             return View(viewModel);
         }
 
-        public async Task<IActionResult> Orders()
+        public async Task<IActionResult> Orders(DateTime? date, string show = OrderFilterOptions.All)
         {
-            var orders = await _context.Orders.AsNoTracking()
-                .Select(o => new Order
-                {
-                    OrderDate = o.OrderDate,
-                    OrderStatus = o.OrderStatus,
-                    TotalSpent = o.TotalSpent,
-                    FirstName = o.FirstName,
-                    LastName = o.LastName,
-                }).ToListAsync();
+            var query = _context.Orders.AsNoTracking();
 
-            var viewModel = new DashboardViewModel
+            switch (show)
             {
-                ActiveMenuItem = MenuItemNames.Orders
+                case OrderFilterOptions.Pending:
+                    query = query.Where(o => o.OrderStatus == OrderStatus.Pending);
+                    break;
+                case OrderFilterOptions.Sent:
+					query = query.Where(o => o.OrderStatus == OrderStatus.Sent); 
+                    break;
+                case OrderFilterOptions.Finished:
+					query = query.Where(o => o.OrderStatus == OrderStatus.Finished);
+					break;
+                default:
+                    break;
+            }
+
+            if (date != null)
+            {
+                date = DateTime.SpecifyKind(date.Value, DateTimeKind.Utc);
+                query = query.Where(o => o.OrderDate.Date == date.Value.Date);
+            }
+
+            var orders = await query.ToListAsync();
+
+            var viewModel = new DashboardOrdersViewModel(orders)
+            {
+                Orders = orders,
+                CurrentDateFilter = date,
+                CurrentOrderStatusFilter = show
             };
+            var item = viewModel.OrderStatusSelectItems.Find(i => i.Value == show);
+            if (item != null)
+                item.Selected = true;
+
             return View(viewModel);
         }
     }
