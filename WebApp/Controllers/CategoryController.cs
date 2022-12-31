@@ -47,9 +47,6 @@ namespace Libria.Controllers
 				ActionName = "Index",
 				CurrentSortState = sortBy
 			};
-			var selectItem = viewModel.SelectListItems.Find(i => i.Value == sortBy);
-			if (selectItem != null)
-				selectItem.Selected = true;
 
 			var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 			await _wishListService.CheckIfBooksInUserWishListAsync(userId, searchResult.Data);

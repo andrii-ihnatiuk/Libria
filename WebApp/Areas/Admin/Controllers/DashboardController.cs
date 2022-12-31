@@ -2,6 +2,7 @@
 using Libria.Areas.Admin.ViewModels;
 using Libria.Data;
 using Libria.Models.Entities;
+using Libria.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -35,9 +36,10 @@ namespace Libria.Areas.Admin.Controllers
             return View(viewModel);
         }
 
-        public async Task<IActionResult> Orders(DateTime? date, string show = OrderFilterOptions.All)
+        public async Task<IActionResult> Orders(DateTime? date, string show = OrderFilterOptions.All, int page = 1)
         {
             var query = _context.Orders.AsNoTracking();
+            var pageSize = 2; // just for testing
 
             switch (show)
             {
@@ -60,17 +62,41 @@ namespace Libria.Areas.Admin.Controllers
                 query = query.Where(o => o.OrderDate.Date == date.Value.Date);
             }
 
-            var orders = await query.ToListAsync();
+            var count = await query.CountAsync();
 
-            var viewModel = new DashboardOrdersViewModel(orders)
+            var pageViewModel = new PageViewModel(count, page, pageSize);
+
+            // In case there is 0 results just output
+			if (page > pageViewModel.TotalPages && pageViewModel.TotalPages != 0 || page < 1)
+				return NotFound();
+
+            List<Order> orders;
+            if (pageViewModel.TotalPages > 0)
             {
-                Orders = orders,
-                CurrentDateFilter = date,
-                CurrentOrderStatusFilter = show
+			    orders = await query
+                    .OrderByDescending(o => o.OrderId)
+                    .Skip((page - 1) * pageSize)
+                    .Take(pageSize)
+                    .ToListAsync();
+            }
+            else
+            {
+                orders = new();
+            }
+
+            var viewModel = new DashboardOrdersViewModel(orders, pageViewModel)
+            {
+                CurrentDateFilter = date?.ToString("yyy-MM-dd"),
+				CurrentOrderStatusFilter = show,
             };
-            var item = viewModel.OrderStatusSelectItems.Find(i => i.Value == show);
-            if (item != null)
-                item.Selected = true;
+
+            return View(viewModel);
+        }
+
+        public async Task<IActionResult> Categories(string? q)
+        {
+            var categories = await _context.Categories.ToListAsync();
+            var viewModel = new DashboardCategoriesViewModel(categories);
 
             return View(viewModel);
         }

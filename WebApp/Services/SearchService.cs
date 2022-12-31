@@ -73,7 +73,7 @@ namespace Libria.Services
 
 			var totalPages = (int)Math.Ceiling((double)count / pageSize);
 
-			if (page > totalPages || page < 1)
+			if (page > totalPages && totalPages != 0 || page < 1)
 				return null;
 
 			List<BookCardViewModel> pageItems;

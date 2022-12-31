@@ -24,6 +24,17 @@ namespace Libria.ViewModels
 			new SelectListItem { Text = "Від найдешевших", Value = SortState.PriceAsc },
 		};
 
-		public string CurrentSortState { get; set; } = SortState.Default;
+		private string _currentSortState = SortState.Default;
+		public string CurrentSortState 
+		{
+			get => _currentSortState;
+			set
+			{
+				var selectItem = SelectListItems.Find(i => i.Value == value);
+				if (selectItem != null)
+					selectItem.Selected = true;
+				_currentSortState = value;
+			}
+		}
 	}
 }

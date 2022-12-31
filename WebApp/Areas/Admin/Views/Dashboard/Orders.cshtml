@@ -4,6 +4,11 @@
 @using Libria.Areas.Admin.ViewModels;
 
 @model DashboardOrdersViewModel;
+
+@{
+	var pager = Model.PageViewModel;
+}
+
 <partial name="_SideBarPartial" model="@Model.SidebarViewModel"></partial>
 
 <div class="w-100 p-3">
@@ -17,7 +22,7 @@
 			<div class="d-flex flex-wrap w-100 mt-5">
 				<div class="me-4">
 					<label for="datePicker" class="form-label mb-1">Замовлення за день</label>
-					<input name="date" value="@Model.CurrentDateFilter?.ToString("yyy-MM-dd")" class="form-control" id="datePicker" type="date" placeholder="Оберіть дату" />
+					<input name="date" value="@Model.CurrentDateFilter" class="form-control" id="datePicker" type="date" placeholder="Оберіть дату" />
 				</div>
 				<div class="me-4">
 					<label for="filterSelect" class="form-label mb-1">Відображати</label>
@@ -26,6 +31,92 @@
 				<button type="submit" class="btn btn-outline-primary align-self-end">Фільтрувати</button>
 			</div>
 		</form>
+
+
+		@if (pager.TotalPages > 1)
+		{
+			<ul class="pagination justify-content-start mt-3">
+				@if (pager.HasPreviousPage)
+				{
+					<li class="page-item">
+						<a class="page-link"
+						   asp-controller="Dashboard"
+						   asp-action="Orders"
+						   asp-route-date="@Model.CurrentDateFilter"
+						   asp-route-show="@Model.CurrentOrderStatusFilter"
+						   asp-route-page="@(pager.PageNumber - 1)" aria-label="Previous">
+							<span aria-hidden="true">&laquo;</span>
+						</a>
+					</li>
+				}
+				else
+				{
+					<li class="page-item disabled">
+						<a class="page-link" aria-label="Previous" aria-disabled="true">
+							<span aria-hidden="true">&laquo;</span>
+						</a>
+					</li>
+				}
+
+				@for (int i = pager.PageNumber - (2 + pager.AppendLeft); i < pager.PageNumber; i++)
+				{
+					@if (i > 0)
+					{
+						<li class="page-item">
+							<a class="page-link"
+							   asp-controller="Dashboard"
+							   asp-action="Orders"
+							   asp-route-date="@Model.CurrentDateFilter"
+							   asp-route-show="@Model.CurrentOrderStatusFilter"
+							   asp-route-page="@i">
+								@i
+							</a>
+						</li>
+					}
+				}
+
+				<li class="page-item active" aria-current="page">
+					<span class="page-link">@pager.PageNumber</span>
+				</li>
+
+				@for (int i = pager.PageNumber + 1; i <= pager.TotalPages && i <= pager.PageNumber + (2 + pager.AppendRight); i++)
+				{
+					<li class="page-item">
+						<a class="page-link"
+						   asp-controller="Dashboard"
+						   asp-action="Orders"
+						   asp-route-date="@Model.CurrentDateFilter"
+						   asp-route-show="@Model.CurrentOrderStatusFilter"
+						   asp-route-page="@i">
+							@i
+						</a>
+					</li>
+				}
+
+				@if (pager.HasNextPage)
+				{
+					<li class="page-item">
+						<a class="page-link"
+						   asp-controller="Dashboard"
+						   asp-action="Orders"
+						   asp-route-date="@Model.CurrentDateFilter"
+						   asp-route-show="@Model.CurrentOrderStatusFilter"
+						   asp-route-page="@(pager.PageNumber + 1)" aria-label="Next">
+							<span aria-hidden="true">&raquo;</span>
+						</a>
+					</li>
+				}
+				else
+				{
+					<li class="page-item disabled">
+						<a class="page-link" aria-label="Next" aria-disabled="true">
+							<span aria-hidden="true">&raquo;</span>
+						</a>
+					</li>
+				}
+			</ul>
+		}
+
 
 		<div class="mt-4">
 			<table class="table table-bordered table-hover">
@@ -48,7 +139,7 @@
 							<td>@(order.FirstName + " " + order.LastName)</td>
 							<td>@order.TotalSpent</td>
 							<td>@order.OrderStatus</td>
-							<td><a href="#">Дії</a></td>
+							<td><a href="#">Перегляд</a></td>
 						</tr>
 					}
 				</tbody>
