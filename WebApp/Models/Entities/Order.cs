@@ -17,7 +17,7 @@
 
 		public DateTime OrderDate { get; set; }
 		public decimal TotalSpent { get; set; }
-		public string? OrderStatus { get; set; }
+		public string OrderStatus { get; set; } = Data.OrderStatus.Pending;
 
 		public ICollection<OrdersBooks> Books { get; set; } = null!;
 	}

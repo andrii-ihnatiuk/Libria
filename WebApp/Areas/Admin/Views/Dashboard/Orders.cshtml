@@ -139,7 +139,7 @@
 							<td>@(order.FirstName + " " + order.LastName)</td>
 							<td>@order.TotalSpent</td>
 							<td>@order.OrderStatus</td>
-							<td><a href="#">Перегляд</a></td>
+							<td><a asp-controller="Dashboard" asp-action="Order" asp-route-id="@order.OrderId">Перегляд</a></td>
 						</tr>
 					}
 				</tbody>

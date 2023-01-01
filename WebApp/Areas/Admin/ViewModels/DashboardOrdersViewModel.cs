@@ -20,8 +20,10 @@ namespace Libria.Areas.Admin.ViewModels
         {
             new SelectListItem { Text = "Усі", Value = OrderFilterOptions.All },
             new SelectListItem { Text = OrderStatus.Pending, Value = OrderFilterOptions.Pending },
+            new SelectListItem { Text = OrderStatus.Confirmed, Value = OrderFilterOptions.Confirmed },
             new SelectListItem { Text = OrderStatus.Sent, Value = OrderFilterOptions.Sent },
-            new SelectListItem { Text = OrderStatus.Finished, Value = OrderFilterOptions.Finished }
+            new SelectListItem { Text = OrderStatus.Finished, Value = OrderFilterOptions.Finished },
+            new SelectListItem { Text = OrderStatus.Canceled, Value = OrderFilterOptions.Canceled }
         };
 
         private string _currentOrderStatusFilter = OrderFilterOptions.All;

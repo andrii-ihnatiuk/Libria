@@ -1,0 +1,74 @@
+﻿@using Libria.Areas.Admin.Models;
+@using Libria.Areas.Admin.ViewModels;
+@using Libria.Models.Entities;
+@using Libria.ViewModels.Order;
+
+@model DashboardOrderDetailsViewModel;
+
+<partial name="_SideBarPartial" model="@new SidebarViewModel(MenuItemType.Orders)"></partial>
+
+<div class="w-100 p-3">
+	<div class="p-3">
+		<div class="d-flex flex-wrap justify-content-between align-items-start">
+			<h2>Номер замовлення: #<span class="text-danger">@Model.Order.OrderId</span></h2>
+			<a asp-area="" asp-controller="Home" asp-action="Index">В магазин</a>
+		</div>
+
+		<form method="post" asp-controller="Dashboard" asp-action="Order">
+			<div class="my-4 d-flex">
+				<h4 class="me-3 mb-0">Статус:</h4>
+				<div class="me-3">
+					<select name="status" class="form-select" asp-items="@Model.OrderStatusSelectItems"></select>
+				</div>
+				<button type="submit" class="btn btn-outline-primary align-self-end">Оновити</button>
+			</div>
+			<input type="hidden" name="id" value="@Model.Order.OrderId"/>
+		</form>
+
+		<div class="row">
+			<div class="col">
+				<table class="table">
+					<thead>
+						<tr>
+							<th scope="col">Деталі замовлення</th>
+							<th scope="col"></th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr>
+							<th scope="row">Ім'я</th>
+							<td>@Model.Order.FirstName</td>
+						</tr>
+						<tr>
+							<th scope="row">Прізвище</th>
+							<td>@Model.Order.LastName</td>
+						</tr>
+						<tr>
+							<th scope="row">Номер телефону</th>
+							<td>@Model.Order.PhoneNumber</td>
+						</tr>
+						<tr>
+							<th scope="row">E-mail</th>
+							<td>@Model.Order.Email</td>
+						</tr>
+						<tr>
+							<th scope="row">Час замовлення</th>
+							<td>@Model.Order.OrderDate</td>
+						</tr>
+						<tr>
+							<th scope="row">Сумарно</th>
+							<td>@Model.Order.TotalSpent грн.</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+			<div class="col">
+				<h5 class="mb-0" style="padding:.5rem 0">Зміст замовлення:</h5>
+				@foreach (var item in Model.OrderItems)
+				{
+					<partial name="_OrderItemPartial" model=@item></partial>
+				}
+			</div>
+		</div>
+	</div>
+</div>

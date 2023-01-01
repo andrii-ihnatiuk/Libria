@@ -3,6 +3,7 @@ using Libria.Areas.Admin.ViewModels;
 using Libria.Data;
 using Libria.Models.Entities;
 using Libria.ViewModels;
+using Libria.ViewModels.Cart;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -46,13 +47,19 @@ namespace Libria.Areas.Admin.Controllers
                 case OrderFilterOptions.Pending:
                     query = query.Where(o => o.OrderStatus == OrderStatus.Pending);
                     break;
-                case OrderFilterOptions.Sent:
+				case OrderFilterOptions.Confirmed:
+					query = query.Where(o => o.OrderStatus == OrderStatus.Confirmed);
+					break;
+				case OrderFilterOptions.Sent:
 					query = query.Where(o => o.OrderStatus == OrderStatus.Sent); 
                     break;
                 case OrderFilterOptions.Finished:
 					query = query.Where(o => o.OrderStatus == OrderStatus.Finished);
 					break;
-                default:
+                case OrderFilterOptions.Canceled:
+					query = query.Where(o => o.OrderStatus == OrderStatus.Canceled);
+                    break;
+				default:
                     break;
             }
 
@@ -91,6 +98,70 @@ namespace Libria.Areas.Admin.Controllers
             };
 
             return View(viewModel);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> Order(int? id = null)
+        {
+            if (id == null)
+                return NotFound();
+
+			var order = await _context.Orders
+                .AsNoTracking()
+                .Where(o => o.OrderId == id).FirstOrDefaultAsync();
+
+            if (order == null)
+                return NotFound();
+
+            var orderBooks = await _context.Books
+                .Join(_context.OrdersBooks.Where(o => o.OrderId == order.OrderId),
+                b => b.BookId,
+                o => o.BookId,
+                (b, o) => new CartItemViewModel
+                {
+                    Book = new Book
+                    {
+                        BookId = b.BookId,
+                        Title = b.Title,
+                        ImageUrl = b.ImageUrl,
+                        Authors = b.Authors.Select(a => new Author { Name = a.Name }).ToList(),
+                    },
+                    ActiveBookPrice = o.Price,
+                    Quantity = o.Quantity,
+                    TotalItemPrice = o.Price * o.Quantity
+                }).ToListAsync();
+
+            var viewModel = new DashboardOrderDetailsViewModel
+            {
+                Order = order,
+                OrderItems = orderBooks,
+                CurrentOrderStatus = order.OrderStatus
+            };
+
+            return View(viewModel);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Order(string? status, int? id = null)
+        {
+            if (status != OrderStatus.Pending && status != OrderStatus.Confirmed 
+                && status != OrderStatus.Sent && status != OrderStatus.Finished 
+                && status != OrderStatus.Canceled || id == null)
+            {
+                return BadRequest();
+            }
+
+            var order = await _context.Orders
+                .Where(o => o.OrderId == id)
+
+                .FirstOrDefaultAsync();
+            if (order == null)
+                return NotFound();
+
+            order.OrderStatus = status;
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction("Order");
         }
 
         public async Task<IActionResult> Categories(string? q)

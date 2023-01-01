@@ -5,6 +5,8 @@ using System.Security.Claims;
 using Libria.Extensions;
 using Libria.Data;
 using Libria.Models.Entities;
+using System.Diagnostics;
+using static System.Reflection.Metadata.BlobBuilder;
 
 namespace Libria.Services
 {
@@ -22,21 +24,6 @@ namespace Libria.Services
 		{
 			List<CartItemViewModel> cartItems;
 
-			// OFF-LINE CODE
-			//cartItems = new List<CartItemViewModel>()
-			//{
-			//	new CartItemViewModel
-			//	{
-			//		Book = new Book { Title = "Book in cart", Authors = new List<Author>() { new Author { Name = "Author #1" } }, Price = 1200, SalePrice = 1000, ImageUrl = "img/book_cover/1.jpg"  },
-			//		Quantity = 2
-			//	},
-			//	new CartItemViewModel
-			//	{
-			//		Book = new Book { Title = "Book #2", Authors = new List<Author>() { new Author { Name = "Author #2" } }, Price = 500, SalePrice = 500, Available = false, ImageUrl = "img/book_cover/2.png"  },
-			//		Quantity = 3
-			//	}
-			//};
-
 			var userId = _http.User.FindFirstValue(ClaimTypes.NameIdentifier);
 			// Anonymous user
 			if (userId == null)
@@ -52,8 +39,31 @@ namespace Libria.Services
 					
 					var query = _context.Books.AsNoTracking().Where(b => itemsIds.Contains(b.BookId));
 					if (includeAuthors)
-						query.Include(b => b.Authors.Select(a => new Author { Name = a.Name }));
-					
+					{
+						query = query
+							.Select(b => new Book
+							{
+								BookId = b.BookId,
+								Title = b.Title,
+								Price = b.Price,
+								SalePrice = b.SalePrice,
+								ImageUrl = b.ImageUrl,
+								Authors = b.Authors.Select(a => new Author { Name = a.Name }).ToList()
+							});
+					}
+					else
+					{
+						query = query
+							.Select(b => new Book
+							{
+								BookId = b.BookId,
+								Title = b.Title,
+								Price = b.Price,
+								SalePrice = b.SalePrice,
+								ImageUrl = b.ImageUrl,
+							});
+					}
+						
 					cartItems = (await query.ToListAsync())
 						.Join(sessionCartItems, b => b.BookId, s => s.BookId, (b, s) => new CartItemViewModel { Book = b, Quantity = s.Quantity })
 						.ToList();
@@ -64,11 +74,40 @@ namespace Libria.Services
 			{
 				var query = _context.CartUsersBooks.AsNoTracking().Where(c => c.UserId == userId);
 				if (includeAuthors)
-					query.Include(c => c.Book.Authors.Select(a => new Author { Name = a.Name }));
-				
-				cartItems = await query
-					.Select(c => new CartItemViewModel { Book = c.Book, Quantity = c.Quantity })
-					.ToListAsync();
+				{
+					cartItems = await query
+						.Select(c => new CartItemViewModel
+						{
+							Book = new Book
+							{
+								BookId = c.BookId,
+								Title = c.Book.Title,
+								Price = c.Book.Price,
+								SalePrice = c.Book.SalePrice,
+								ImageUrl = c.Book.ImageUrl,
+								Authors = c.Book.Authors.Select(a => new Author { Name = a.Name }).ToList()
+							},
+							Quantity = c.Quantity
+						})
+						.ToListAsync();
+				}
+				else
+				{
+					cartItems = await query
+						.Select(c => new CartItemViewModel
+						{
+							Book = new Book
+							{
+								BookId = c.BookId,
+								Title = c.Book.Title,
+								Price = c.Book.Price,
+								SalePrice = c.Book.SalePrice,
+								ImageUrl = c.Book.ImageUrl,
+							},
+							Quantity = c.Quantity
+						})
+						.ToListAsync();
+				}
 			}
 
 			if (cartItems.Count > 0)
