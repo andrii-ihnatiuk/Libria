@@ -22,13 +22,15 @@ namespace Libria.Areas.Admin.ViewModels
             new SidebarMenuItem
             {
                 ItemType = MenuItemType.Orders,
-                ActionName = "Orders",
+				ControllerName = "Orders",
+				ActionName = "Index",
                 Name = "Замовлення"
             },
             new SidebarMenuItem
             {
                 ItemType = MenuItemType.Categories,
-                ActionName = "Categories",
+                ControllerName = "Categories",
+                ActionName = "Index",
                 Name = "Категорії"
             },
             new SidebarMenuItem

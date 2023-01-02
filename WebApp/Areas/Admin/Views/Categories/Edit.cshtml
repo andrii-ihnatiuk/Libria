@@ -1,0 +1,38 @@
+﻿@using Libria.Areas.Admin.Models;
+@using Libria.Areas.Admin.ViewModels;
+@using Libria.Models.Entities;
+@model DashboardCategoryViewModel;
+
+<partial name="_SideBarPartial" model="@new SidebarViewModel(MenuItemType.Categories)"></partial>
+
+<div class="container-fluid p-4">
+	<div class="d-flex flex-wrap justify-content-between align-items-start">
+		<h2>@Model.PageTitle</h2>
+		<a asp-area="" asp-controller="Home" asp-action="Index">В магазин</a>
+	</div>
+
+	<form method="post" asp-controller="Categories" asp-action="@Model.ActionName" class="needs-validation" role="form" novalidate>
+		<div class="mt-5">
+			<div class="mb-3">
+				<label for="categoryName" class="form-label">Назва</label>
+				<input asp-for="Name" class="form-control" id="categoryName" placeholder="Введіть назву" />
+				<span asp-validation-for="Name" class="invalid-feedback"></span>
+			</div>
+			<div class="mb-3">
+				<label for="categoryDescription" class="form-label">Опис категорії</label>
+				<textarea asp-for="Description" class="form-control" id="categoryDescription" placeholder="Введіть опис категорії" rows="4" aria-describedby="descriptionHelpBox"></textarea>
+				<div id="descriptionHelpBox" class="form-text">
+					Опис категорії може складати максимум 2000 символів
+				</div>
+				<span asp-validation-for="Description" class="invalid-feedback"></span>
+			</div>
+		</div>
+		<input type="hidden" name="id" value="@Model.Id" />
+
+		<button type="submit" class="btn btn-outline-success">Зберегти</button>
+	</form>
+</div>
+
+@section Scripts {
+	<partial name="_ValidationScriptsPartial" />
+}

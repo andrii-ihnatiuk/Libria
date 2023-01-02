@@ -18,7 +18,7 @@
 			<a asp-area="" asp-controller="Home" asp-action="Index">В магазин</a>
 		</div>
 
-		<form method="get" asp-controller="Dashboard" asp-action="Orders">
+		<form method="get" asp-controller="Orders" asp-action="Index">
 			<div class="d-flex flex-wrap w-100 mt-5">
 				<div class="me-4">
 					<label for="datePicker" class="form-label mb-1">Замовлення за день</label>
@@ -40,8 +40,8 @@
 				{
 					<li class="page-item">
 						<a class="page-link"
-						   asp-controller="Dashboard"
-						   asp-action="Orders"
+						   asp-controller="Orders"
+						   asp-action="Index"
 						   asp-route-date="@Model.CurrentDateFilter"
 						   asp-route-show="@Model.CurrentOrderStatusFilter"
 						   asp-route-page="@(pager.PageNumber - 1)" aria-label="Previous">
@@ -64,8 +64,8 @@
 					{
 						<li class="page-item">
 							<a class="page-link"
-							   asp-controller="Dashboard"
-							   asp-action="Orders"
+							   asp-controller="Orders"
+							   asp-action="Index"
 							   asp-route-date="@Model.CurrentDateFilter"
 							   asp-route-show="@Model.CurrentOrderStatusFilter"
 							   asp-route-page="@i">
@@ -83,8 +83,8 @@
 				{
 					<li class="page-item">
 						<a class="page-link"
-						   asp-controller="Dashboard"
-						   asp-action="Orders"
+						   asp-controller="Orders"
+						   asp-action="Index"
 						   asp-route-date="@Model.CurrentDateFilter"
 						   asp-route-show="@Model.CurrentOrderStatusFilter"
 						   asp-route-page="@i">
@@ -97,8 +97,8 @@
 				{
 					<li class="page-item">
 						<a class="page-link"
-						   asp-controller="Dashboard"
-						   asp-action="Orders"
+						   asp-controller="Orders"
+						   asp-action="Index"
 						   asp-route-date="@Model.CurrentDateFilter"
 						   asp-route-show="@Model.CurrentOrderStatusFilter"
 						   asp-route-page="@(pager.PageNumber + 1)" aria-label="Next">
@@ -122,12 +122,12 @@
 			<table class="table table-bordered table-hover">
 				<thead>
 					<tr class="table-primary">
-						<th scope="col">ID</th>
-						<th scope="col">Дата</th>
-						<th scope="col">Замовник</th>
-						<th scope="col">Сума, грн</th>
-						<th scope="col">Статус</th>
-						<th scope="col">Дії</th>
+						<th scope="col" style="width:5%">ID</th>
+						<th scope="col" style="width:18%">Дата</th>
+						<th scope="col" style="width:18%">Замовник</th>
+						<th scope="col" style="width:18%">Сума, грн</th>
+						<th scope="col" style="width:18%">Статус</th>
+						<th scope="col" style="width:5%">Дії</th>
 					</tr>
 				</thead>
 				<tbody>
@@ -139,7 +139,7 @@
 							<td>@(order.FirstName + " " + order.LastName)</td>
 							<td>@order.TotalSpent</td>
 							<td>@order.OrderStatus</td>
-							<td><a asp-controller="Dashboard" asp-action="Order" asp-route-id="@order.OrderId">Перегляд</a></td>
+							<td><a asp-controller="Orders" asp-action="Details" asp-route-id="@order.OrderId">Перегляд</a></td>
 						</tr>
 					}
 				</tbody>
