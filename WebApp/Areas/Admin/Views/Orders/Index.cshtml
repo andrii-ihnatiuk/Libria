@@ -11,139 +11,137 @@
 
 <partial name="_SideBarPartial" model="@Model.SidebarViewModel"></partial>
 
-<div class="w-100 p-3">
-	<div class="p-3">
-		<div class="d-flex flex-wrap justify-content-between align-items-start">
-			<h2>Замовлення</h2>
-			<a asp-area="" asp-controller="Home" asp-action="Index">В магазин</a>
-		</div>
+<div class="container-fluid p-4">
+	<div class="d-flex flex-wrap justify-content-between align-items-start">
+		<h2>Замовлення</h2>
+		<a asp-area="" asp-controller="Home" asp-action="Index">В магазин</a>
+	</div>
 
-		<form method="get" asp-controller="Orders" asp-action="Index">
-			<div class="d-flex flex-wrap w-100 mt-5">
-				<div class="me-4">
-					<label for="datePicker" class="form-label mb-1">Замовлення за день</label>
-					<input name="date" value="@Model.CurrentDateFilter" class="form-control" id="datePicker" type="date" placeholder="Оберіть дату" />
-				</div>
-				<div class="me-4">
-					<label for="filterSelect" class="form-label mb-1">Відображати</label>
-					<select name="show" class="form-select" asp-items="@Model.OrderStatusSelectItems" id="filterSelect"></select>
-				</div>
-				<button type="submit" class="btn btn-outline-primary align-self-end">Фільтрувати</button>
+	<form method="get" asp-controller="Orders" asp-action="Index">
+		<div class="d-flex flex-wrap w-100 mt-5">
+			<div class="me-4">
+				<label for="datePicker" class="form-label mb-1">Замовлення за день</label>
+				<input name="date" value="@Model.CurrentDateFilter" class="form-control" id="datePicker" type="date" placeholder="Оберіть дату" />
 			</div>
-		</form>
+			<div class="me-4">
+				<label for="filterSelect" class="form-label mb-1">Відображати</label>
+				<select name="show" class="form-select" asp-items="@Model.OrderStatusSelectItems" id="filterSelect"></select>
+			</div>
+			<button type="submit" class="btn btn-outline-primary align-self-end">Фільтрувати</button>
+		</div>
+	</form>
 
 
-		@if (pager.TotalPages > 1)
-		{
-			<ul class="pagination justify-content-start mt-3">
-				@if (pager.HasPreviousPage)
-				{
-					<li class="page-item">
-						<a class="page-link"
-						   asp-controller="Orders"
-						   asp-action="Index"
-						   asp-route-date="@Model.CurrentDateFilter"
-						   asp-route-show="@Model.CurrentOrderStatusFilter"
-						   asp-route-page="@(pager.PageNumber - 1)" aria-label="Previous">
-							<span aria-hidden="true">&laquo;</span>
-						</a>
-					</li>
-				}
-				else
-				{
-					<li class="page-item disabled">
-						<a class="page-link" aria-label="Previous" aria-disabled="true">
-							<span aria-hidden="true">&laquo;</span>
-						</a>
-					</li>
-				}
-
-				@for (int i = pager.PageNumber - (2 + pager.AppendLeft); i < pager.PageNumber; i++)
-				{
-					@if (i > 0)
-					{
-						<li class="page-item">
-							<a class="page-link"
-							   asp-controller="Orders"
-							   asp-action="Index"
-							   asp-route-date="@Model.CurrentDateFilter"
-							   asp-route-show="@Model.CurrentOrderStatusFilter"
-							   asp-route-page="@i">
-								@i
-							</a>
-						</li>
-					}
-				}
-
-				<li class="page-item active" aria-current="page">
-					<span class="page-link">@pager.PageNumber</span>
+	@if (pager.TotalPages > 1)
+	{
+		<ul class="pagination justify-content-start mt-4 mb-3">
+			@if (pager.HasPreviousPage)
+			{
+				<li class="page-item">
+					<a class="page-link"
+			   asp-controller="Orders"
+			   asp-action="Index"
+			   asp-route-date="@Model.CurrentDateFilter"
+			   asp-route-show="@Model.CurrentOrderStatusFilter"
+			   asp-route-page="@(pager.PageNumber - 1)" aria-label="Previous">
+						<span aria-hidden="true">&laquo;</span>
+					</a>
 				</li>
+			}
+			else
+			{
+				<li class="page-item disabled">
+					<a class="page-link" aria-label="Previous" aria-disabled="true">
+						<span aria-hidden="true">&laquo;</span>
+					</a>
+				</li>
+			}
 
-				@for (int i = pager.PageNumber + 1; i <= pager.TotalPages && i <= pager.PageNumber + (2 + pager.AppendRight); i++)
+			@for (int i = pager.PageNumber - (2 + pager.AppendLeft); i < pager.PageNumber; i++)
+			{
+				@if (i > 0)
 				{
 					<li class="page-item">
 						<a class="page-link"
-						   asp-controller="Orders"
-						   asp-action="Index"
-						   asp-route-date="@Model.CurrentDateFilter"
-						   asp-route-show="@Model.CurrentOrderStatusFilter"
-						   asp-route-page="@i">
+			   asp-controller="Orders"
+			   asp-action="Index"
+			   asp-route-date="@Model.CurrentDateFilter"
+			   asp-route-show="@Model.CurrentOrderStatusFilter"
+			   asp-route-page="@i">
 							@i
 						</a>
 					</li>
 				}
+			}
 
-				@if (pager.HasNextPage)
+			<li class="page-item active" aria-current="page">
+				<span class="page-link">@pager.PageNumber</span>
+			</li>
+
+			@for (int i = pager.PageNumber + 1; i <= pager.TotalPages && i <= pager.PageNumber + (2 + pager.AppendRight); i++)
+			{
+				<li class="page-item">
+					<a class="page-link"
+			   asp-controller="Orders"
+			   asp-action="Index"
+			   asp-route-date="@Model.CurrentDateFilter"
+			   asp-route-show="@Model.CurrentOrderStatusFilter"
+			   asp-route-page="@i">
+						@i
+					</a>
+				</li>
+			}
+
+			@if (pager.HasNextPage)
+			{
+				<li class="page-item">
+					<a class="page-link"
+			   asp-controller="Orders"
+			   asp-action="Index"
+			   asp-route-date="@Model.CurrentDateFilter"
+			   asp-route-show="@Model.CurrentOrderStatusFilter"
+			   asp-route-page="@(pager.PageNumber + 1)" aria-label="Next">
+						<span aria-hidden="true">&raquo;</span>
+					</a>
+				</li>
+			}
+			else
+			{
+				<li class="page-item disabled">
+					<a class="page-link" aria-label="Next" aria-disabled="true">
+						<span aria-hidden="true">&raquo;</span>
+					</a>
+				</li>
+			}
+		</ul>
+	}
+
+
+	<div class="mt-4">
+		<table class="table table-bordered table-hover">
+			<thead>
+				<tr class="table-primary">
+					<th scope="col" style="width:5%">ID</th>
+					<th scope="col" style="width:18%">Дата</th>
+					<th scope="col" style="width:18%">Замовник</th>
+					<th scope="col" style="width:18%">Сума, грн</th>
+					<th scope="col" style="width:18%">Статус</th>
+					<th scope="col" style="width:5%">Дії</th>
+				</tr>
+			</thead>
+			<tbody>
+				@foreach (var order in Model.Orders)
 				{
-					<li class="page-item">
-						<a class="page-link"
-						   asp-controller="Orders"
-						   asp-action="Index"
-						   asp-route-date="@Model.CurrentDateFilter"
-						   asp-route-show="@Model.CurrentOrderStatusFilter"
-						   asp-route-page="@(pager.PageNumber + 1)" aria-label="Next">
-							<span aria-hidden="true">&raquo;</span>
-						</a>
-					</li>
-				}
-				else
-				{
-					<li class="page-item disabled">
-						<a class="page-link" aria-label="Next" aria-disabled="true">
-							<span aria-hidden="true">&raquo;</span>
-						</a>
-					</li>
-				}
-			</ul>
-		}
-
-
-		<div class="mt-4">
-			<table class="table table-bordered table-hover">
-				<thead>
-					<tr class="table-primary">
-						<th scope="col" style="width:5%">ID</th>
-						<th scope="col" style="width:18%">Дата</th>
-						<th scope="col" style="width:18%">Замовник</th>
-						<th scope="col" style="width:18%">Сума, грн</th>
-						<th scope="col" style="width:18%">Статус</th>
-						<th scope="col" style="width:5%">Дії</th>
+					<tr>
+						<th scope="row">@order.OrderId</th>
+						<td>@order.OrderDate</td>
+						<td>@(order.FirstName + " " + order.LastName)</td>
+						<td>@order.TotalSpent</td>
+						<td>@order.OrderStatus</td>
+						<td><a asp-controller="Orders" asp-action="Details" asp-route-id="@order.OrderId">Перегляд</a></td>
 					</tr>
-				</thead>
-				<tbody>
-					@foreach (var order in Model.Orders)
-					{
-						<tr>
-							<th scope="row">@order.OrderId</th>
-							<td>@order.OrderDate</td>
-							<td>@(order.FirstName + " " + order.LastName)</td>
-							<td>@order.TotalSpent</td>
-							<td>@order.OrderStatus</td>
-							<td><a asp-controller="Orders" asp-action="Details" asp-route-id="@order.OrderId">Перегляд</a></td>
-						</tr>
-					}
-				</tbody>
-			</table>
-		</div>
+				}
+			</tbody>
+		</table>
 	</div>
 </div>

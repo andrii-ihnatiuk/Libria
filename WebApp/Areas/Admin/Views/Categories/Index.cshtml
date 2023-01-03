@@ -25,10 +25,10 @@
 	</a>
 
 
-	<div class="row w-100 mt-5">
+	<div class="row mt-5">
 		@foreach (var categoryCard in Model.CategoryCards)
 		{
-			<div class="col-3" style="min-height:250px;">
+			<div class="col-3 mb-3" style="min-height:250px;">
 				<div class="card shadow-sm text-dark bg-light h-100">
 					<div class="card-body d-flex flex-column justify-content-center align-items-center">
 						<h2 class="card-title m-0 text-center mt-auto w-100">@categoryCard.Category.Name</h2>

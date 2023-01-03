@@ -1,0 +1,184 @@
+﻿@using Libria.Areas.Admin.ViewModels;
+
+@model DashboardProductsViewModel;
+
+@{
+	var pager = Model.PageViewModel;
+}
+
+<partial name="_SideBarPartial" model="@Model.SidebarViewModel"></partial>
+
+<div class="container-fluid p-4">
+	<div class="d-flex flex-wrap justify-content-between align-items-start">
+		<h2>Товари</h2>
+		<a asp-area="" asp-controller="Home" asp-action="Index">В магазин</a>
+	</div>
+
+	<form method="get" asp-controller="Products" asp-action="Index">
+		<div class="d-flex flex-wrap w-100 mt-5">
+			<div class="me-4">
+				<label for="filterSelect" class="form-label mb-1">Категорія</label>
+				<select name="category" class="form-select" asp-items="@Model.CategorySelectItems" id="filterSelect"></select>
+			</div>
+			<div class="me-4">
+				<label for="searchFilter" class="form-label mb-1">Пошук</label>
+				<input name="q" type="search" class="form-control" id="searchFilter" value="@Model.CurrentSearchString" placeholder="Пошук за назвою" />
+			</div>
+			<button type="submit" class="btn btn-outline-primary align-self-end">Фільтрувати</button>
+		</div>
+	</form>
+
+	@if (pager.TotalPages > 1)
+	{
+		<ul class="pagination justify-content-start mt-4 mb-3">
+			@if (pager.HasPreviousPage)
+			{
+				<li class="page-item">
+					<a class="page-link"
+			   asp-controller="Products"
+			   asp-action="Index"
+			   asp-route-category="@Model.CurrentCategoryId"
+			   asp-route-q="@Model.CurrentSearchString"
+			   asp-route-page="@(pager.PageNumber - 1)" aria-label="Previous">
+						<span aria-hidden="true">&laquo;</span>
+					</a>
+				</li>
+			}
+			else
+			{
+				<li class="page-item disabled">
+					<a class="page-link" aria-label="Previous" aria-disabled="true">
+						<span aria-hidden="true">&laquo;</span>
+					</a>
+				</li>
+			}
+
+			@for (int i = pager.PageNumber - (2 + pager.AppendLeft); i < pager.PageNumber; i++)
+			{
+				@if (i > 0)
+				{
+					<li class="page-item">
+						<a class="page-link"
+			   asp-controller="Products"
+			   asp-action="Index"
+			   asp-route-category="@Model.CurrentCategoryId"
+			   asp-route-q="@Model.CurrentSearchString"
+			   asp-route-page="@i">
+							@i
+						</a>
+					</li>
+				}
+			}
+
+			<li class="page-item active" aria-current="page">
+				<span class="page-link">@pager.PageNumber</span>
+			</li>
+
+			@for (int i = pager.PageNumber + 1; i <= pager.TotalPages && i <= pager.PageNumber + (2 + pager.AppendRight); i++)
+			{
+				<li class="page-item">
+					<a class="page-link"
+			   asp-controller="Products"
+			   asp-action="Index"
+			   asp-route-category="@Model.CurrentCategoryId"
+			   asp-route-q="@Model.CurrentSearchString"
+			   asp-route-page="@i">
+						@i
+					</a>
+				</li>
+			}
+
+			@if (pager.HasNextPage)
+			{
+				<li class="page-item">
+					<a class="page-link"
+			   asp-controller="Products"
+			   asp-action="Index"
+			   asp-route-category="@Model.CurrentCategoryId"
+			   asp-route-q="@Model.CurrentSearchString"
+			   asp-route-page="@(pager.PageNumber + 1)" aria-label="Next">
+						<span aria-hidden="true">&raquo;</span>
+					</a>
+				</li>
+			}
+			else
+			{
+				<li class="page-item disabled">
+					<a class="page-link" aria-label="Next" aria-disabled="true">
+						<span aria-hidden="true">&raquo;</span>
+					</a>
+				</li>
+			}
+		</ul>
+	}
+
+
+	<div class="mt-3">
+		<div class="text-muted mb-2"><small>Всього результатів: @Model.TotalItemsFound</small></div>
+		<table class="table table-bordered table-hover">
+			<thead>
+				<tr class="table-primary">
+					<th scope="col" style="width:5%">ID</th>
+					<th scope="col" style="width:5%">Зображення</th>
+					<th scope="col" style="width:20%">Назва</th>
+					<th scope="col" style="width:20%">Категорії</th>
+					<th scope="col" style="width:15%">Автори</th>
+					<th scope="col" style="width:8%">Ціна</th>
+					<th scope="col" style="width:8%">Акційна ціна</th>
+					<th scope="col" style="width:5%">Наявність</th>
+					<th scope="col" style="width:5%">Кількість</th>
+					<th scope="col" style="width:9%">Дії</th>
+				</tr>
+			</thead>
+			<tbody>
+				@foreach (var product in Model.Products)
+				{
+					<tr>
+						<th scope="row">@product.BookId</th>
+						<td>
+							<a class="cart-img-cont ms-auto me-auto" style="width:55px; height:80px;" asp-area="" asp-controller="Book" asp-action="Index" asp-route-bookId="@product.BookId" title="@product.Title">
+								<img style="object-fit:cover;width:100%;" src=@product.ImageUrl alt="product img">
+							</a>
+						</td>
+						<td>
+							<div class="td-content">@product.Title</div>
+						</td>
+						<td>
+							<div class="td-content">@(string.Join(", ", product.Categories.Select(c => c.Name)))</div>
+						</td>
+						<td>
+							<div class="td-content">@(string.Join(", ", product.Authors.Select(a => a.Name)))</div>
+						</td>
+						<td>
+							<div class="td-content">@product.Price грн</div>
+						</td>
+						<td>
+							<div class="td-content">@product.SalePrice грн</div>
+						</td>
+						<td>
+							<div class="td-content">@(product.Available ? "Так" : "Ні")</div>
+						</td>
+						<td>
+							<div class="td-content">@product.Quantity</div>
+						</td>
+						<td>
+							<div class="td-actions">
+								<a asp-controller="Products" asp-action="Edit" asp-route-id="@product.BookId" class="td-actions-btn td-btn-edit">
+									<svg width="24" height="24" fill="none" xmlns="http://www.w3.org/2000/svg"><g clip-path="url(#a)" fill-rule="evenodd" clip-rule="evenodd" fill="#ced4da"><path d="M21.707 7.293a1 1 0 0 1 0 1.414l-13 13A1 1 0 0 1 8 22H4a1 1 0 0 1-1-1v-4a1 1 0 0 1 .293-.707l13-13a1 1 0 1 1 1.414 1.414L5 17.414V20h2.586L20.293 7.293a1 1 0 0 1 1.414 0z" /><path d="M16.293 3.293a1 1 0 0 1 1.414 0l4 4a1 1 0 0 1-1.414 1.414l-4-4a1 1 0 0 1 0-1.414zM17.293 11.707l-4-4 1.414-1.414 4 4-1.414 1.414z" /></g><defs><clipPath id="a"><path fill="#ced4da" d="M0 0h24v24H0z" /></clipPath></defs></svg>
+								</a>
+								<a asp-controller="Products" asp-action="Delete" asp-route-id="@product.BookId" class="td-actions-btn td-btn-remove">
+									<svg width="24" height="24" xmlns="http://www.w3.org/2000/svg" fill="none" style="pointer-events: none">
+										<g>
+											<path fill-rule="evenodd" clip-rule="evenodd" d="m6,7a1,1 0 0 1 1,1l0,11a1,1 0 0 0 1,1l8,0a1,1 0 0 0 1,-1l0,-11a1,1 0 1 1 2,0l0,11a3,3 0 0 1 -3,3l-8,0a3,3 0 0 1 -3,-3l0,-11a1,1 0 0 1 1,-1z" fill="#ced4da" id="svg_1" />
+											<path fill-rule="evenodd" clip-rule="evenodd" d="m10,8a1,1 0 0 1 1,1l0,8a1,1 0 1 1 -2,0l0,-8a1,1 0 0 1 1,-1zm4,0a1,1 0 0 1 1,1l0,8a1,1 0 1 1 -2,0l0,-8a1,1 0 0 1 1,-1zm-10,-3a1,1 0 0 1 1,-1l14,0a1,1 0 1 1 0,2l-14,0a1,1 0 0 1 -1,-1zm4,-2a1,1 0 0 1 1,-1l6,0a1,1 0 1 1 0,2l-6,0a1,1 0 0 1 -1,-1z" fill="#ced4da" id="svg_2" />
+										</g>
+									</svg>
+								</a>
+							</div>
+						</td>
+					</tr>
+				}
+			</tbody>
+		</table>
+	</div>
+</div>

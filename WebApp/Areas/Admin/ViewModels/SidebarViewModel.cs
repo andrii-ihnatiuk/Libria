@@ -36,7 +36,8 @@ namespace Libria.Areas.Admin.ViewModels
             new SidebarMenuItem
             {
                 ItemType = MenuItemType.Products,
-                ActionName = "Products",
+                ControllerName = "Products",
+                ActionName = "Index",
                 Name = "Товари"
             }
         };

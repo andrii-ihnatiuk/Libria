@@ -1,22 +1,4 @@
-﻿body {
-    min-height: 100vh;
-    margin: 0 !important;
-    font-family: var(--bs-font-sans-serif);
-    font-size: 1rem;
-    font-weight: 400;
-    line-height: 1.5;
-    color: #212529;
-    background-color: #fff;
-}
-
-main {
-    display: flex;
-    flex-wrap: nowrap;
-    height: 100vh;
-    overflow-x: auto;
-}
-
-a {
+﻿a {
   color: #0077cc;
 }
 
