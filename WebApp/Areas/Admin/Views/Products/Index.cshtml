@@ -8,7 +8,7 @@
 
 <partial name="_SideBarPartial" model="@Model.SidebarViewModel"></partial>
 
-<div class="container-fluid p-4">
+<div class="container-fluid p-4 overflow-auto">
 	<div class="d-flex flex-wrap justify-content-between align-items-start">
 		<h2>Товари</h2>
 		<a asp-area="" asp-controller="Home" asp-action="Index">В магазин</a>
@@ -163,10 +163,10 @@
 						</td>
 						<td>
 							<div class="td-actions">
-								<a asp-controller="Products" asp-action="Edit" asp-route-id="@product.BookId" class="td-actions-btn td-btn-edit">
+								<a asp-controller="Products" asp-action="Edit" asp-route-id="@product.BookId" class="td-actions-btn td-btn-edit" title="Редагувати">
 									<svg width="24" height="24" fill="none" xmlns="http://www.w3.org/2000/svg"><g clip-path="url(#a)" fill-rule="evenodd" clip-rule="evenodd" fill="#ced4da"><path d="M21.707 7.293a1 1 0 0 1 0 1.414l-13 13A1 1 0 0 1 8 22H4a1 1 0 0 1-1-1v-4a1 1 0 0 1 .293-.707l13-13a1 1 0 1 1 1.414 1.414L5 17.414V20h2.586L20.293 7.293a1 1 0 0 1 1.414 0z" /><path d="M16.293 3.293a1 1 0 0 1 1.414 0l4 4a1 1 0 0 1-1.414 1.414l-4-4a1 1 0 0 1 0-1.414zM17.293 11.707l-4-4 1.414-1.414 4 4-1.414 1.414z" /></g><defs><clipPath id="a"><path fill="#ced4da" d="M0 0h24v24H0z" /></clipPath></defs></svg>
 								</a>
-								<a asp-controller="Products" asp-action="Delete" asp-route-id="@product.BookId" class="td-actions-btn td-btn-remove">
+								<a class="td-actions-btn td-btn-remove" title="Видалити" href="" data-remove-id="@product.BookId" data-modal-title="@product.Title" data-bs-toggle="modal" data-bs-target="#confirmDeleteModal">
 									<svg width="24" height="24" xmlns="http://www.w3.org/2000/svg" fill="none" style="pointer-events: none">
 										<g>
 											<path fill-rule="evenodd" clip-rule="evenodd" d="m6,7a1,1 0 0 1 1,1l0,11a1,1 0 0 0 1,1l8,0a1,1 0 0 0 1,-1l0,-11a1,1 0 1 1 2,0l0,11a3,3 0 0 1 -3,3l-8,0a3,3 0 0 1 -3,-3l0,-11a1,1 0 0 1 1,-1z" fill="#ced4da" id="svg_1" />
@@ -180,5 +180,29 @@
 				}
 			</tbody>
 		</table>
+	</div>
+</div>
+
+
+<!-- Modal -->
+<div class="modal fade" id="confirmDeleteModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h5 class="modal-title" id="exampleModalLabel"></h5>
+				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+			</div>
+			<div class="modal-body">
+				<p>Ви впевнені що хочете видалити цей товар?</p>
+				<span>Результат дії не можна відмінити.</span>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Відміна</button>
+				<form method="post" asp-controller="Products" asp-action="Remove">
+					<input id="modal-remove-id" type="hidden" name="productId" />
+					<button type="submit" class="btn btn-danger">Видалити</button>
+				</form>
+			</div>
+		</div>
 	</div>
 </div>

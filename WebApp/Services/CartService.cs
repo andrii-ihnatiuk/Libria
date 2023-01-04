@@ -47,6 +47,7 @@ namespace Libria.Services
 								Title = b.Title,
 								Price = b.Price,
 								SalePrice = b.SalePrice,
+								Available = b.Available,
 								ImageUrl = b.ImageUrl,
 								Authors = b.Authors.Select(a => new Author { Name = a.Name }).ToList()
 							});
@@ -60,6 +61,7 @@ namespace Libria.Services
 								Title = b.Title,
 								Price = b.Price,
 								SalePrice = b.SalePrice,
+								Available = b.Available,
 								ImageUrl = b.ImageUrl,
 							});
 					}
@@ -84,6 +86,7 @@ namespace Libria.Services
 								Title = c.Book.Title,
 								Price = c.Book.Price,
 								SalePrice = c.Book.SalePrice,
+								Available = c.Book.Available,
 								ImageUrl = c.Book.ImageUrl,
 								Authors = c.Book.Authors.Select(a => new Author { Name = a.Name }).ToList()
 							},
@@ -102,6 +105,7 @@ namespace Libria.Services
 								Title = c.Book.Title,
 								Price = c.Book.Price,
 								SalePrice = c.Book.SalePrice,
+								Available = c.Book.Available,
 								ImageUrl = c.Book.ImageUrl,
 							},
 							Quantity = c.Quantity

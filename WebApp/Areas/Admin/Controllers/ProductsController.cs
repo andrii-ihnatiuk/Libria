@@ -83,5 +83,96 @@ namespace Libria.Areas.Admin.Controllers
 
             return View(viewModel);
         }
+
+        public async Task<IActionResult> Remove(int? productId = null)
+        {
+            if (productId == null)
+                return BadRequest();
+
+            var book = await _context.Books
+                .Select(b => new Book { BookId = b.BookId })
+                .FirstOrDefaultAsync(b => b.BookId == productId);
+
+            if (book == null)
+                return NotFound();
+
+            _context.Books.Remove(book);
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction("Index");
+        }
+
+        public async Task<IActionResult> Edit(int? id = null)
+        {
+            if (id == null)
+                return BadRequest();
+
+            var book = await _context.Books
+                .AsNoTracking()
+                .Select(b => new Book
+                {
+                    BookId = b.BookId,
+					Title = b.Title,
+					Description = b.Description,
+					Available = b.Available,
+					ImageUrl = b.ImageUrl,
+					Isbn = b.Isbn,
+					Language = b.Language,
+					Pages = b.Pages,
+					Price = b.Price,
+					SalePrice = b.SalePrice,
+					Publisher = b.Publisher,
+					Quantity = b.Quantity,
+					PublicationYear = b.PublicationYear,
+
+                    Authors = b.Authors.Select(a => new Author { AuthorId = a.AuthorId }).ToList(),
+                    Categories = b.Categories.Select(c => new Category { CategoryId = c.CategoryId }).ToList()
+				})
+                .FirstOrDefaultAsync(b => b.BookId == id);
+
+            if (book == null)
+                return NotFound();
+
+            // Select book's active relations
+            var authorSelectItems = await _context.Authors
+                .Select(a => new SelectListItem { Text = a.Name, Value = a.AuthorId.ToString() })
+                .ToListAsync();
+            var categorySelectItems = await _context.Categories
+                .Select(c => new SelectListItem { Text = c.Name, Value = c.CategoryId.ToString() })
+                .ToListAsync();
+
+            // Set items as selected if book is already related to given entity
+			authorSelectItems.ForEach(i =>
+			{
+				if (book.Authors.Any(a => a.AuthorId == int.Parse(i.Value)))
+					i.Selected = true;
+			});
+            categorySelectItems.ForEach(i =>
+            {
+                if (book.Categories.Any(c => c.CategoryId == int.Parse(i.Value)))
+                    i.Selected = true;
+            });
+
+			var viewModel = new DashboardProductViewModel()
+            {
+                Title = book.Title,
+                Description = book.Description,
+                Available = book.Available,
+                ImageUrl = book.ImageUrl,
+                Isbn = book.Isbn,
+                Language = book.Language,
+                Pages = book.Pages,
+                Price = book.Price,
+                SalePrice = book.SalePrice,
+                Publisher = book.Publisher,
+                Quantity = book.Quantity,
+                PublicationYear = book.PublicationYear,
+
+                AuthorSelectItems = authorSelectItems,
+                CategorySelectItems = categorySelectItems
+			};
+
+            return View(viewModel);
+        }
     }
 }

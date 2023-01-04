@@ -3,10 +3,16 @@
     $("#confirmDeleteModal").on("show.bs.modal", function (event) {
         var button = event.relatedTarget;
 
-        var categoryId = button.getAttribute("data-category-id");
-        var categoryName = button.getAttribute("data-category-name");
+        var removeId = button.getAttribute("data-remove-id");
+        var title = button.getAttribute("data-modal-title");
 
-        $("#confirmDeleteModal").find(".modal-title").text(categoryName);
-        $("#modal-category-id").attr("value", categoryId);
+        $("#confirmDeleteModal").find(".modal-title").text(title);
+        $("#modal-remove-id").attr("value", removeId);
+    });
+
+    $(".chosen-select").chosen({
+        disable_search_threshold: 10,
+        no_results_text: "Упс, нічого не знайдено: ",
+        width: "100%"
     });
 })

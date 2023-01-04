@@ -1,0 +1,100 @@
+﻿@using Libria.Areas.Admin.Models;
+@using Libria.Areas.Admin.ViewModels;
+@using Libria.Models.Entities;
+
+@model DashboardProductViewModel;
+
+<partial name="_SideBarPartial" model="@new SidebarViewModel(MenuItemType.Products)"></partial>
+
+<div class="container-fluid p-4 overflow-auto">
+	<div class="d-flex flex-wrap justify-content-between align-items-start">
+		<h2>@Model.PageTitle</h2>
+		<a asp-area="" asp-controller="Home" asp-action="Index">В магазин</a>
+	</div>
+
+	<form method="post" asp-controller="@Model.ControllerName" asp-action="@Model.ActionName" class="needs-validation" role="form" novalidate>
+		<div class="row">
+			<div class="col">
+				<input asp-for="Title" class="form-control form-control-lg mt-5" type="text" placeholder="Назва продукту" />
+				<span asp-validation-for="Title" class="invalid-feedback"></span>
+			</div>
+		</div>
+		<div class="row mt-5">
+			<div class="col-8">
+				<h3 class="mb-4">Характеристики товару</h3>
+				<div class="mb-3 row">
+					<label for="price" class="col-sm-2 col-form-label">Ціна (₴)*</label>
+					<div class="col-sm-10">
+						<input asp-for="Price" type="number" min="0" step=".1" placeholder="0,0" class="form-control" id="price">
+						<span asp-validation-for="Price" class="invalid-feedback"></span>
+					</div>
+				</div>
+				<div class="mb-3 row">
+					<label for="salePrice" class="col-sm-2 col-form-label">Акційна ціна (₴)</label>
+					<div class="col-sm-10">
+						<input asp-for="SalePrice" type="number" min="0" step=".1" placeholder="0,0" class="form-control" id="salePrice">
+					</div>
+				</div>
+				<div class="mb-3 row">
+					<label for="language" class="col-sm-2 col-form-label">Мова</label>
+					<div class="col-sm-10">
+						<input asp-for="Language" type="text" class="form-control" id="language" placeholder="Не вказано">
+					</div>
+				</div>
+				<div class="mb-3 row">
+					<label for="pages" class="col-sm-2 col-form-label">Кількість сторінок</label>
+					<div class="col-sm-10">
+						<input asp-for="Pages" type="number" min="0" step="1" placeholder="Не вказано" class="form-control" id="pages">
+					</div>
+				</div>
+				<div class="mb-3 row">
+					<label for="pages" class="col-sm-2 col-form-label">Рік видання</label>
+					<div class="col-sm-10">
+						<input asp-for="PublicationYear" type="number" min="1900" step="1" placeholder="Не вказано" class="form-control" id="pages">
+					</div>
+				</div>
+				<div class="mb-3 row">
+					<label for="pages" class="col-sm-2 col-form-label">ISBN</label>
+					<div class="col-sm-10">
+						<input asp-for="Isbn" type="text" placeholder="Не вказано" class="form-control" id="pages">
+					</div>
+				</div>
+			</div>
+			<div class="col-4">
+				<h3 class="mb-4">Зображення</h3>
+				<input class="form-control" type="file" id="formFile">
+			</div>
+		</div>
+
+		<div class="row">
+			<div class="col-4">
+				<div class="mb-3">
+					<label for="authorSelect" class="h5">Автори</label>
+					<select asp-items="@Model.AuthorSelectItems" id="authorSelect" multiple name="selectedAuthors" class="chosen-select" hidden data-placeholder="Оберіть авторів"></select>
+				</div>
+			</div>
+			<div class="col-4">
+				<div class="mb-3">
+					<label for="categorySelect" class="h5">Категорії</label>
+					<select asp-items="@Model.CategorySelectItems" id="categorySelect" multiple name="selectedCategories" class="chosen-select" hidden data-placeholder="Оберіть категорії"></select>
+				</div>
+			</div>
+		</div>
+		<div class="row">
+			<div class="col-sm-8 col">
+				<div class="mb-3">
+					<label for="description" class="h5">Опис товару</label>
+					<textarea asp-for="Description" class="form-control" id="description" rows="8" placeholder="Опишіть товар"></textarea>
+				</div>
+			</div>
+		</div>
+		<div>
+			<button class="btn btn-outline-success" type="submit">Зберегти</button>
+		</div>
+	</form>
+
+</div>
+
+@section Scripts {
+	<partial name="_ValidationScriptsPartial" />
+}

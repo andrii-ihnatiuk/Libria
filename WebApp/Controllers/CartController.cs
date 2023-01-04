@@ -1,11 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Libria.ViewModels.Cart;
-using Libria.Data;
-using Libria.Models.Entities;
 using Libria.Services;
-using Microsoft.AspNetCore.Mvc.ModelBinding;
 using System.Text.Json;
-using Org.BouncyCastle.Crypto.Prng;
 
 namespace Libria.Controllers
 {
