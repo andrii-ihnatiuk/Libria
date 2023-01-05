@@ -254,13 +254,13 @@ body {
 
 .cart-img-cont {
     display: block;
-    width: fit-content;
     max-width: 100px;
 }
 
     .cart-img-cont img {
         height: 100%;
-        object-fit: contain;
+        max-width: 100%;
+        object-fit: cover;
     }
 
 .cart-book-props {
