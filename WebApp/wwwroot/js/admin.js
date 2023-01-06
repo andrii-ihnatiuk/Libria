@@ -26,4 +26,13 @@
             $("#imagePreview").attr("src", reader.result)
         }
     })
+
+    $("#availableSwitch").on("change", function () {
+        if ($(this).prop("checked") === true) {
+            $("label.form-check-label").text("В наявності");
+        }
+        else {
+            $("label.form-check-label").text("Немає в наявності");
+        }
+    })
 })

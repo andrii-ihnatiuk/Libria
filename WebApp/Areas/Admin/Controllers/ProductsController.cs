@@ -135,24 +135,8 @@ namespace Libria.Areas.Admin.Controllers
 				return NotFound();
 
 			// Select book's active relations
-			var authorSelectItems = await _context.Authors
-				.Select(a => new SelectListItem { Text = a.Name, Value = a.AuthorId.ToString() })
-				.ToListAsync();
-			var categorySelectItems = await _context.Categories
-				.Select(c => new SelectListItem { Text = c.Name, Value = c.CategoryId.ToString() })
-				.ToListAsync();
-
-			// Set items as selected if book is already related to given entity
-			authorSelectItems.ForEach(i =>
-			{
-				if (book.Authors.Any(a => a.AuthorId == int.Parse(i.Value)))
-					i.Selected = true;
-			});
-			categorySelectItems.ForEach(i =>
-			{
-				if (book.Categories.Any(c => c.CategoryId == int.Parse(i.Value)))
-					i.Selected = true;
-			});
+			var authorSelectItems = await GetAuthorSelectListItemsAsync(book.Authors);
+			var categorySelectItems = await GetCategorySelectListItemsAsync(book.Categories);
 
 			var viewModel = new DashboardProductViewModel()
 			{
@@ -192,7 +176,6 @@ namespace Libria.Areas.Admin.Controllers
 				if (book == null)
 					return NotFound();
 
-
 				// Update product image
 				var fileSaveResult = await SaveProductImage(model.FileUpload, book.ImageUrl);
 
@@ -205,6 +188,8 @@ namespace Libria.Areas.Admin.Controllers
 					case FileSaveStatus.LargeFile:
 						ModelState.AddModelError(nameof(model.FileUpload), fileSaveResult.ErrorMessage);
 						ViewBag.FileUploadError = true;
+						model.AuthorSelectItems = await GetAuthorSelectListItemsAsync(model.SelectedAuthors.Select(id => new Author { AuthorId = id }).ToList());
+						model.CategorySelectItems = await GetCategorySelectListItemsAsync(model.SelectedCategories.Select(id => new Category { CategoryId = id }).ToList());
 						return View(model);
 					case FileSaveStatus.Error:
 						return Problem(fileSaveResult.ErrorMessage);
@@ -212,7 +197,7 @@ namespace Libria.Areas.Admin.Controllers
 						return Problem("Сталася невідома помилка.");
 				}
 
-				// Update produc authors and categories
+				// Update product authors and categories
 				List<Author> newAuthors;
 				List<Category> newCategories;
 
@@ -252,6 +237,10 @@ namespace Libria.Areas.Admin.Controllers
 				return RedirectToAction("Edit");
 
 			}
+
+			model.AuthorSelectItems = await GetAuthorSelectListItemsAsync(model.SelectedAuthors.Select(id => new Author { AuthorId = id }).ToList());
+			model.CategorySelectItems = await GetCategorySelectListItemsAsync(model.SelectedCategories.Select(id => new Category { CategoryId = id }).ToList());
+
 			return View(model);
 		}
 
@@ -311,6 +300,8 @@ namespace Libria.Areas.Admin.Controllers
 					case FileSaveStatus.LargeFile:
 						ModelState.AddModelError(nameof(model.FileUpload), fileSaveResult.ErrorMessage);
 						ViewBag.FileUploadError = true;
+						model.AuthorSelectItems = await GetAuthorSelectListItemsAsync(model.SelectedAuthors.Select(id => new Author { AuthorId = id }).ToList());
+						model.CategorySelectItems = await GetCategorySelectListItemsAsync(model.SelectedCategories.Select(id => new Category { CategoryId = id }).ToList());
 						return View("Edit", model);
 					case FileSaveStatus.Error:
 						return Problem(fileSaveResult.ErrorMessage);
@@ -324,6 +315,9 @@ namespace Libria.Areas.Admin.Controllers
 				return RedirectToAction("Index");
 			}
 
+			model.AuthorSelectItems = await GetAuthorSelectListItemsAsync(model.SelectedAuthors.Select(id => new Author { AuthorId = id }).ToList());
+			model.CategorySelectItems = await GetCategorySelectListItemsAsync(model.SelectedCategories.Select(id => new Category { CategoryId = id }).ToList());
+			
 			return View("Edit", model);
 		}
 
@@ -381,5 +375,35 @@ namespace Libria.Areas.Admin.Controllers
 			return result;
 		}
 
+		private async Task<List<SelectListItem>> GetAuthorSelectListItemsAsync(IEnumerable<Author> selectedAuthors)
+		{
+			var listItems =  await _context.Authors
+				.Select(a => new SelectListItem 
+				{ 
+					Text = a.Name, 
+					Value = a.AuthorId.ToString()
+				})
+				.ToListAsync();
+			listItems.ForEach(i =>
+			{
+				if (selectedAuthors.Any(c => c.AuthorId == int.Parse(i.Value)))
+					i.Selected = true;
+			});
+			return listItems;
+		}
+
+		private async Task<List<SelectListItem>> GetCategorySelectListItemsAsync(IEnumerable<Category> selectedCategories)
+		{
+			var listItems = await _context.Categories
+				.Select(c => new SelectListItem { Text = c.Name, Value = c.CategoryId.ToString() })
+				.ToListAsync();
+
+			listItems.ForEach(i =>
+			{
+				if (selectedCategories.Any(c => c.CategoryId == int.Parse(i.Value)))
+					i.Selected = true;
+			});
+			return listItems;
+		}
 	}
 }

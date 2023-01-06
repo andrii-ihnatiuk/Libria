@@ -5,6 +5,8 @@ using Libria.Models;
 using Libria.Data;
 using Libria.Services;
 using Libria.Models.Entities;
+using System.Globalization;
+using Microsoft.AspNetCore.Localization;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -63,6 +65,16 @@ app.Use((context, next) =>
 		context.Request.Scheme = "https";
 	}
 	return next(context);
+});
+
+var supportedCultures = new[] { new CultureInfo("en-US") };
+app.UseRequestLocalization(new RequestLocalizationOptions
+{
+	DefaultRequestCulture = new RequestCulture("en-US"),
+	// Formatting numbers, dates, etc.
+	SupportedCultures = supportedCultures,
+	// UI strings which can be localized.
+	SupportedUICultures = supportedCultures
 });
 
 // Configure the HTTP request pipeline.

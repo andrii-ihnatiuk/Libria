@@ -13,10 +13,13 @@
 	</div>
 
 	<form method="post" enctype="multipart/form-data" asp-controller="@Model.ControllerName" asp-action="@Model.ActionName" class="needs-validation" role="form" novalidate>
-		<div class="row">
-			<div class="col">
-				<input asp-for="Title" class="form-control form-control-lg mt-5" type="text" placeholder="Назва продукту" />
+		<div class="d-flex flex-wrap flex-md-nowrap mt-5">
+			<div class="flex-grow-1 me-0 me-md-4" style="flex-basis:85%;">
+				<input asp-for="Title" class="form-control form-control-lg" type="text" placeholder="Назва продукту" />
 				<span asp-validation-for="Title" class="invalid-feedback"></span>
+			</div>
+			<div class="flex-grow-1 mt-2 mt-md-0" style="min-width:150px; flex-basis:15%">
+				<button class="btn btn-lg btn-outline-success w-100" type="submit">Зберегти</button>
 			</div>
 		</div>
 		<div class="row flex-wrap-reverse mt-5">
@@ -25,16 +28,25 @@
 					<div class="col">
 						<h3 class="mb-4">Характеристики товару</h3>
 						<div class="mb-3 row">
+							<label for="price" class="col-sm-2 col-form-label">Наявність</label>
+							<div class="col-sm-10">
+								<div class="form-check form-switch">
+									<input class="form-check-input" asp-for="Available" type="checkbox" role="switch" id="availableSwitch">
+									<label class="form-check-label" for="availableSwitch">@(Model.Available ? "В наявності" : "Немає в наявності")</label>
+								</div>
+							</div>
+						</div>
+						<div class="mb-3 row">
 							<label for="price" class="col-sm-2 col-form-label">Ціна (₴)*</label>
 							<div class="col-sm-10">
-								<input asp-for="Price" type="number" min="0" step=".1" placeholder="0,0" class="form-control" id="price">
+								<input asp-for="Price" type="number" min="0" step="1" placeholder="0.0" class="form-control" id="price">
 								<span asp-validation-for="Price" class="invalid-feedback"></span>
 							</div>
 						</div>
 						<div class="mb-3 row">
 							<label for="salePrice" class="col-sm-2 col-form-label">Акційна ціна (₴)</label>
 							<div class="col-sm-10">
-								<input asp-for="SalePrice" type="number" min="0" step=".1" placeholder="0,0" class="form-control" id="salePrice">
+								<input asp-for="SalePrice" type="number" min="0" step="1" placeholder="0.0" class="form-control" id="salePrice">
 							</div>
 						</div>
 						<div class="mb-3 row">
@@ -62,6 +74,12 @@
 								<span asp-validation-for="Isbn" class="invalid-feedback"></span>
 							</div>
 						</div>
+						<div class="mb-3 row">
+							<label for="pages" class="col-sm-2 col-form-label">Кількість</label>
+							<div class="col-sm-10">
+								<input asp-for="Quantity" type="number" min="0" step="1" placeholder="Не вказано" class="form-control" id="pages">
+							</div>
+						</div>
 					</div>
 				</div>
 				<div class="row">
@@ -86,13 +104,10 @@
 						</div>
 					</div>
 				</div>
-				<div>
-					<button class="btn btn-outline-success" type="submit">Зберегти</button>
-				</div>
 			</div>
 			<div class="col-lg-3 col-12">
 				<h3 class="mb-4">Зображення</h3>
-				<input type="hidden" name="bookId" value="@Model.BookId"/>
+				<input type="hidden" name="bookId" value="@Model.BookId" />
 				<input asp-for="FileUpload" class="form-control @(ViewBag.FileUploadError == true ? "is-invalid" : "")" title="product image" type="file" accept=".jpg, .jpeg, .png" id="formFile" />
 				<span asp-validation-for="FileUpload" class="invalid-feedback"></span>
 				<img id="imagePreview" src="@Model.ImageUrl" style="width:50%;object-fit:contain" class="rounded rounded-3 border border-1 my-3" alt="product image" />
