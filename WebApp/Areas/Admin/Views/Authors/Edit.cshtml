@@ -1,0 +1,39 @@
+﻿@using Libria.Areas.Admin.Models;
+@using Libria.Areas.Admin.ViewModels;
+@using Libria.Models.Entities;
+
+@model DashboardAuthorViewModel;
+
+<partial name="_SideBarPartial" model="@new SidebarViewModel(MenuItemType.Authors)"></partial>
+
+<div class="container-fluid p-4 overflow-auto">
+	<div class="d-flex flex-wrap justify-content-between align-items-start">
+		<h2>@Model.PageTitle</h2>
+		<a asp-area="" asp-controller="Home" asp-action="Index">В магазин</a>
+	</div>
+
+	<form method="post" asp-controller="Authors" asp-action="@Model.ActionName" class="needs-validation" role="form" novalidate>
+		<div class="mt-5">
+			<div class="mb-3">
+				<label for="authorName" class="form-label">Назва</label>
+				<input asp-for="Name" class="form-control" id="authorName" placeholder="Введіть ім'я автора" />
+				<span asp-validation-for="Name" class="invalid-feedback"></span>
+			</div>
+			<div class="mb-3">
+				<label for="authorDescription" class="form-label">Опис автора</label>
+				<textarea asp-for="Description" class="form-control" id="authorDescription" placeholder="Введіть опис автора" rows="4" aria-describedby="descriptionHelpBox"></textarea>
+				<div id="descriptionHelpBox" class="form-text">
+					Опис автора може складати максимум 2000 символів
+				</div>
+				<span asp-validation-for="Description" class="invalid-feedback"></span>
+			</div>
+		</div>
+		<input type="hidden" name="id" value="@Model.Id" />
+
+		<button type="submit" class="btn btn-outline-success">Зберегти</button>
+	</form>
+</div>
+
+@section Scripts {
+	<partial name="_ValidationScriptsPartial" />
+}

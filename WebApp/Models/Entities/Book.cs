@@ -11,6 +11,7 @@ namespace Libria.Models.Entities
             UsersWish = new List<WishList>();
             UsersHaveInCart = new List<CartUsersBooks>();
             OrdersContain = new List<OrdersBooks>();
+            Notifications = new List<Notification>();
         }
 
         public int BookId { get; set; }
@@ -36,7 +37,7 @@ namespace Libria.Models.Entities
 
         public string? Publisher { get; set; }
 
-        public decimal? SalePrice { get; set; }
+        public decimal SalePrice { get; set; }
        
         public decimal Price { get; set; }
 
@@ -47,5 +48,6 @@ namespace Libria.Models.Entities
         public ICollection<WishList> UsersWish { get; set; }
         public ICollection<CartUsersBooks> UsersHaveInCart { get; set; }
         public ICollection<OrdersBooks> OrdersContain { get; set; } 
+        public ICollection<Notification> Notifications { get; set; }
     }
 }

@@ -223,7 +223,7 @@ namespace Libria.Areas.Admin.Controllers
 				book.Title = model.Title;
 				book.Description = model.Description;
 				book.Price = model.Price;
-				book.SalePrice = model.SalePrice == null || model.SalePrice > model.Price ? model.Price : model.SalePrice;
+				book.SalePrice = model.SalePrice == null || model.SalePrice > model.Price ? model.Price : (decimal)model.SalePrice;
 				book.Pages = model.Pages;
 				book.Quantity = model.Quantity;
 				book.Available = model.Available;
@@ -278,7 +278,7 @@ namespace Libria.Areas.Admin.Controllers
 					Quantity = model.Quantity,
 					Description = model.Description,
 					Price = model.Price,
-					SalePrice = model.SalePrice == null || model.SalePrice > model.Price ? model.Price : model.SalePrice,
+					SalePrice = model.SalePrice == null || model.SalePrice > model.Price ? model.Price : (decimal)model.SalePrice,
 					Pages = model.Pages,
 					Available = model.Available,
 					Isbn = model.Isbn,

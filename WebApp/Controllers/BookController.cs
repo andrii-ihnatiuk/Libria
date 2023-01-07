@@ -1,19 +1,21 @@
 ﻿using Libria.Data;
-using Libria.Models;
-using Microsoft.AspNetCore.Identity;
+using Libria.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
 
 namespace Libria.Controllers
 {
-	public class BookController : Controller
+    public class BookController : Controller
 	{
 		private readonly LibriaDbContext _context;
+		private readonly INotificationService _notificationService;
 		private readonly ILogger<BookController> _logger;
-		public BookController(LibriaDbContext context, ILogger<BookController> logger)
+
+		public BookController(LibriaDbContext context, ILogger<BookController> logger, INotificationService notificationService)
 		{
 			_context = context;
+			_notificationService = notificationService;
 			_logger = logger;
 		}
 
@@ -21,7 +23,7 @@ namespace Libria.Controllers
 		{
 			if (bookId == null)
 			{
-				return RedirectToAction("Error", "Home");
+				return BadRequest();
 			}
 
 			if (User.Identity != null && User.Identity.IsAuthenticated)
@@ -42,24 +44,17 @@ namespace Libria.Controllers
 							  where b.BookId == bookId
 							  select b).Include(b => b.Authors).Include(b => b.Categories).FirstOrDefaultAsync();
 
-
-			// OFF-LINE CODE
-			//var cats = new[] { new Category { Name = "Наука і техніка" }, new Category { Name = "Історія" } };
-			//var book = new Book
-			//{
-			//	BookId = 1,
-			//	Title = "BoOok 1",
-			//	ImageUrl = "img/book_cover/1.jpg",
-			//	SalePrice = 1200,
-			//	Price = 1000,
-			//	Categories = cats,
-			//	Authors = new List<Author> { new Author { Name = "Author 1" } },
-			//	Description = "Lorem ipsum dolor sit amet.Lorem ipsum dolor sit amet.Lorem ipsum dolor sit amet.Lorem ipsum dolor sit amet.Lorem ipsum dolor sit amet.Lorem ipsum dolor sit amet." +
-			//"Lorem ipsum dolor sit amet.Lorem ipsum dolor sit amet.Lorem ipsum dolor sit amet.Lorem ipsum dolor sit amet.Lorem ipsum dolor sit amet.Lorem ipsum dolor sit amet" +
-			//"Lorem ipsum dolor sit amet.Lorem ipsum dolor sit amet.Lorem ipsum dolor sit amet.Lorem ipsum dolor sit amet.Lorem ipsum dolor sit amet.Lorem ipsum dolor sit amet"
-			//};
-
 			return book == null ? NotFound() : View(book);
+		}
+
+		public async Task<IActionResult> NotifyPriceDrop(int? bookId, string? userEmail)
+		{
+			if (bookId == null || userEmail == null)
+				return BadRequest();
+
+			var res = await _notificationService.SubscribeForNotificationAsync(userEmail, (int)bookId, NotificationType.PriceDrop);
+
+			return Json(new { status = res });
 		}
 	}
 }

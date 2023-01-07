@@ -5,6 +5,7 @@
         Main,
         Orders,
         Categories,
-        Products
+        Authors,
+        Products,
     }
 }

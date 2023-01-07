@@ -28,6 +28,11 @@
 		</div>
 	</form>
 
+	<a class="d-inline-flex justify-content-center align-items-center py-2 mt-3 text-decoration-none link-dark" asp-controller="Products" asp-action="Create">
+		<svg width="24" height="24" fill="none" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd" d="M12 5a1 1 0 0 1 1 1v12a1 1 0 1 1-2 0V6a1 1 0 0 1 1-1z" fill="#212529" /><path fill-rule="evenodd" clip-rule="evenodd" d="M5 12a1 1 0 0 1 1-1h12a1 1 0 1 1 0 2H6a1 1 0 0 1-1-1z" fill="#212529" /></svg>
+		<span class="ms-2">Додати товар</span>
+	</a>
+
 	@if (pager.TotalPages > 1)
 	{
 		<ul class="pagination justify-content-start mt-4 mb-3">
@@ -156,7 +161,7 @@
 							<div class="td-content">@product.SalePrice грн</div>
 						</td>
 						<td>
-							<div class="td-content">@(product.Available ? "Так" : "Ні")</div>
+							<div class="td-content fw-bold @(product.Available ? "text-success" : "text-danger")">@(product.Available ? "Так" : "Ні")</div>
 						</td>
 						<td>
 							<div class="td-content">@product.Quantity</div>

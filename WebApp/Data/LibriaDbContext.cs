@@ -14,6 +14,7 @@ public class LibriaDbContext : IdentityDbContext<User>
     public DbSet<CartUsersBooks> CartUsersBooks { get; set; } = null!;
     public DbSet<Order> Orders { get; set; } = null!;
     public DbSet<OrdersBooks> OrdersBooks { get; set; } = null!;
+    public DbSet<Notification> Notifications { get; set; } = null!;
 
     public LibriaDbContext(DbContextOptions<LibriaDbContext> options) : base(options)
     {
@@ -24,9 +25,14 @@ public class LibriaDbContext : IdentityDbContext<User>
     {
         base.OnModelCreating(builder);
 
-        // Seed tables
+        // Notification entity
+        builder.Entity<Notification>()
+            .Property(n => n.NotificationType)
+            .HasConversion<int>(); // store enum as int in db
 
-        builder.Entity<Book>()
+		// Seed tables
+
+		builder.Entity<Book>()
             .HasData(new[]
             {
                 new Book { BookId = 1, Title = "Test book", Description = "Book description", Quantity = 100 },
@@ -134,5 +140,11 @@ public class LibriaDbContext : IdentityDbContext<User>
             .HasOne(ob => ob.Order)
             .WithMany(o => o.Books)
             .HasForeignKey(ob => ob.OrderId);
-    }
+
+        // Notifications - Books 
+        builder.Entity<Book>()
+            .HasMany(b => b.Notifications)
+            .WithOne(n => n.TargetBook)
+            .HasForeignKey(n => n.TargetBookId);
+	}
 }

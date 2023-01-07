@@ -1,16 +1,16 @@
 ﻿@using Libria.Areas.Admin.ViewModels;
 
-@model DashboardCategoriesViewModel;
+@model DashboardAuthorsViewModel;
 
 <partial name="_SideBarPartial" model="@Model.SidebarViewModel"></partial>
 
 <div class="container-fluid p-4 overflow-auto">
 	<div class="d-flex flex-wrap justify-content-between align-items-start">
-		<h2>Категорії</h2>
+		<h2>Автори</h2>
 		<a asp-area="" asp-controller="Home" asp-action="Index">В магазин</a>
 	</div>
 
-	<form method="get" asp-controller="Categories" asp-action="Index">
+	<form method="get" asp-controller="Authors" asp-action="Index">
 		<div class="d-flex mt-5">
 			<div class="me-3">
 				<input type="search" class="form-control" name="q" value="@Model.CurrentSearchString" placeholder="Пошук категорій" />
@@ -19,26 +19,26 @@
 		</div>
 	</form>
 
-	<a class="d-inline-flex justify-content-center align-items-center py-2 mt-3 text-decoration-none link-dark" asp-controller="Categories" asp-action="Create">
+	<a class="d-inline-flex justify-content-center align-items-center py-2 mt-3 text-decoration-none link-dark" asp-controller="Authors" asp-action="Create">
 		<svg width="24" height="24" fill="none" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd" d="M12 5a1 1 0 0 1 1 1v12a1 1 0 1 1-2 0V6a1 1 0 0 1 1-1z" fill="#212529" /><path fill-rule="evenodd" clip-rule="evenodd" d="M5 12a1 1 0 0 1 1-1h12a1 1 0 1 1 0 2H6a1 1 0 0 1-1-1z" fill="#212529" /></svg>
-		<span class="ms-2">Додати категорію</span>
+		<span class="ms-2">Додати автора</span>
 	</a>
 
 
 	<div class="row mt-5">
-		@foreach (var categoryCard in Model.CategoryCards)
+		@foreach (var authorCard in Model.AuthorCards)
 		{
 			<div class="col-3 mb-3" style="min-height:250px;min-width:250px">
 				<div class="card shadow-sm text-dark bg-light h-100">
 					<div class="card-body d-flex flex-column justify-content-center align-items-center">
-						<h2 class="card-title m-0 text-center mt-auto w-100">@categoryCard.Category.Name</h2>
-						<span class="py-2 text-primary mt-auto">@categoryCard.ItemsCount товарів всього</span>
+						<h2 class="card-title m-0 text-center mt-auto w-100">@authorCard.Author.Name</h2>
+						<span class="py-2 text-primary mt-auto">@authorCard.ItemsCount книг всього</span>
 					</div>
 					<div class="card-header p-0 d-flex shadow-sm text-center w-100">
-						<button type="button" style="border:0" class="d-block w-50 p-2 border-1 border-end border-top" data-remove-id="@categoryCard.Category.CategoryId" data-modal-title="@categoryCard.Category.Name" data-bs-toggle="modal" data-bs-target="#confirmDeleteModal">
+						<button type="button" style="border:0" class="d-block w-50 p-2 border-1 border-end border-top" data-remove-id="@authorCard.Author.AuthorId" data-modal-title="@authorCard.Author.Name" data-bs-toggle="modal" data-bs-target="#confirmDeleteModal">
 							Видалити
 						</button>
-						<a class="d-block w-50 text-decoration-none link-dark p-2 border-1 border-start border-top" asp-controller="Categories" asp-action="Edit" asp-route-id="@categoryCard.Category.CategoryId">
+						<a class="d-block w-50 text-decoration-none link-dark p-2 border-1 border-start border-top" asp-controller="Authors" asp-action="Edit" asp-route-id="@authorCard.Author.AuthorId">
 							Редагувати
 						</a>
 					</div>
@@ -58,13 +58,13 @@
 				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
 			</div>
 			<div class="modal-body">
-				<p>Ви впевнені що хочете видалити цю категорію?</p>
+				<p>Ви впевнені що хочете видалити цього автора?</p>
 				<span>Результат дії не можна відмінити.</span>
 			</div>
 			<div class="modal-footer">
 				<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Відміна</button>
-				<form method="post" asp-controller="Categories" asp-action="Remove">
-					<input id="modal-remove-id" type="hidden" name="categoryId" />
+				<form method="post" asp-controller="Authors" asp-action="Remove">
+					<input id="modal-remove-id" type="hidden" name="authorId" />
 					<button type="submit" class="btn btn-danger">Видалити</button>
 				</form>
 			</div>

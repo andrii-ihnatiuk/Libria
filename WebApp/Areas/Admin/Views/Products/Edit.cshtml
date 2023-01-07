@@ -39,14 +39,14 @@
 						<div class="mb-3 row">
 							<label for="price" class="col-sm-2 col-form-label">Ціна (₴)*</label>
 							<div class="col-sm-10">
-								<input asp-for="Price" type="number" min="0" step="1" placeholder="0.0" class="form-control" id="price">
+								<input asp-for="Price" type="number" min="0" placeholder="0.0" class="form-control" id="price">
 								<span asp-validation-for="Price" class="invalid-feedback"></span>
 							</div>
 						</div>
 						<div class="mb-3 row">
 							<label for="salePrice" class="col-sm-2 col-form-label">Акційна ціна (₴)</label>
 							<div class="col-sm-10">
-								<input asp-for="SalePrice" type="number" min="0" step="1" placeholder="0.0" class="form-control" id="salePrice">
+								<input asp-for="SalePrice" type="number" min="0" placeholder="0.0" class="form-control" id="salePrice">
 							</div>
 						</div>
 						<div class="mb-3 row">

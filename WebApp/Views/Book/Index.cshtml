@@ -138,7 +138,7 @@
 		</div>
 
 		<div class="mt-4">
-			<a class="bp-inform-me text-black" href="#">Повідомити про зниження вартості</a>
+			<a class="bp-inform-me text-black" asp-controller="Book" asp-action="NotifyPriceDrop" asp-route-bookId="@Model.BookId" asp-route-userEmail="some-user@example.com">Повідомити про зниження вартості</a>
 		</div>
 	</div>
 </div>

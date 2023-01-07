@@ -45,6 +45,7 @@ builder.Services.Configure<EmailSettings>(builder.Configuration.GetSection(nameo
 builder.Services.AddTransient<ICartService, CartService>();
 builder.Services.AddTransient<IWishListService, WishListService>();
 builder.Services.AddTransient<ISearchService, SearchService>();
+builder.Services.AddTransient<INotificationService, NotificationService>();
 
 builder.Services.AddControllersWithViews();
 
