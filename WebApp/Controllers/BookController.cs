@@ -2,6 +2,7 @@
 using Libria.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Net.Mail;
 using System.Security.Claims;
 
 namespace Libria.Controllers
@@ -47,12 +48,15 @@ namespace Libria.Controllers
 			return book == null ? NotFound() : View(book);
 		}
 
-		public async Task<IActionResult> NotifyPriceDrop(int? bookId, string? userEmail)
+		[HttpPost]
+		public async Task<IActionResult> NotifyMe(int? bookId, string? userEmail, NotificationType? type)
 		{
-			if (bookId == null || userEmail == null)
+			if (bookId == null || userEmail == null || type == null)
+				return BadRequest();
+			if (!MailAddress.TryCreate(userEmail, out _))
 				return BadRequest();
 
-			var res = await _notificationService.SubscribeForNotificationAsync(userEmail, (int)bookId, NotificationType.PriceDrop);
+			var res = await _notificationService.SubscribeForNotificationAsync(userEmail, (int)bookId, (NotificationType)type);
 
 			return Json(new { status = res });
 		}

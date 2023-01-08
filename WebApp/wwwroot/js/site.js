@@ -307,6 +307,57 @@ $(document).ready(function () {
     });
 
 
+    $("#subscribeNotificationModal").on("show.bs.modal", function () {
+        modalEl = this;
+        // get an instance of form falidator
+        let validator = $("#subscribeNotificationForm").validate();
+        if (validator !== undefined) {
+            // override default submit behaviour
+            validator.settings.submitHandler = function (form, event) {
+                bootstrap.Modal.getInstance(modalEl).hide();
+
+                let bookId = $(form).find("input[name='bookId']").val();
+                let type = $(form).find("input[name='type']").val();
+                let userEmail = $(form).find("input[name='userEmail']").val();
+                if (bookId === undefined || type === undefined || userEmail === undefined) {
+                    alert("Вибачте, щось пішло не так");
+                }
+                else {
+                    $.ajax({
+                        type: "POST",
+                        url: "/Book/NotifyMe",
+                        dataType: "json",
+                        data: { "bookId": bookId, "userEmail": userEmail, "type": type },
+                        success: function (response) {
+                            let toastObj = $("#notificationToast");
+                            // success
+                            if (response.status === 0) {
+                                toastObj.removeClass("bg-danger bg-secondary");
+                                toastObj.addClass("bg-primary");
+                                let about = type == "PriceDrop" ? "про зниження ціни" : "про наявність товару"
+                                toastObj.find(".toast-body").text("Ми сповістимо вас " + about);
+                            }
+                            // already registered
+                            else if (response.status === 2) {
+                                toastObj.removeClass("bg-primary bg-danger");
+                                toastObj.addClass("bg-secondary");
+                                toastObj.find(".toast-body").text("Ви вже підписані на це сповіщення");
+                            }
+                            // failed
+                            else {
+                                toastObj.removeClass("bg-primary bg-secondary");
+                                toastObj.addClass("bg-danger");
+                                toastObj.find(".toast-body").text("Вибачте, щось пішло не так");
+                            }
+                            toastObj.toast("show");
+                        }
+
+                    });
+                }
+            }
+        }
+    });
+
 });
 
 

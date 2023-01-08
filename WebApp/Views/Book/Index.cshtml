@@ -1,4 +1,5 @@
-﻿@using Libria.Models.Entities
+﻿@using Libria.Data;
+@using Libria.Models.Entities
 
 @model Book
 @{
@@ -48,7 +49,7 @@
 			<div class="d-flex justify-content-between flex-wrap">
 				<div class="feature-name">Автор</div>
 				<div class="feature-value">
-					@foreach(var author in authors)
+					@foreach (var author in authors)
 					{
 						if (author.AuthorId != -1)
 						{
@@ -138,7 +139,7 @@
 		</div>
 
 		<div class="mt-4">
-			<a class="bp-inform-me text-black" asp-controller="Book" asp-action="NotifyPriceDrop" asp-route-bookId="@Model.BookId" asp-route-userEmail="some-user@example.com">Повідомити про зниження вартості</a>
+			<a class="bp-inform-me text-black" data-bs-toggle="modal" data-bs-target="#subscribeNotificationModal">@(Model.Available ? "Повідомити про зниження вартості" : "Повідомити про наявність")</a>
 		</div>
 	</div>
 </div>
@@ -146,3 +147,44 @@
 <div class="row pt-4">
 	<div style="font-size: 22px;color: black;font-weight: 500;">Відгуки</div>
 </div>
+
+
+<!-- Modal -->
+<div class="modal fade" id="subscribeNotificationModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h5 class="modal-title" id="exampleModalLabel">Сповіщення про товар</h5>
+				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+			</div>
+			<form role="form" class="needs-validation" id="subscribeNotificationForm" novalidate>
+				<div class="modal-body">
+					<label for="exampleFormControlInput1" class="form-label">Куди надсилати сповіщення?</label>
+					<input type="email" class="form-control" name="userEmail" placeholder="Введіть свою email адресу" data-val="true" data-val-email="Введіть правильну email адресу" data-val-required="Це поле не може бути пустим" id="Email" />
+					<span class="invalid-feedback field-validation-valid" data-valmsg-for="userEmail" data-valmsg-replace="true"></span>
+					<input type="hidden" name="bookId" value="@Model.BookId" />
+					<input type="hidden" name="type" value="@(Model.Available ? NotificationType.PriceDrop : NotificationType.Availability)" />
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Відміна</button>
+					<button id="btnSubscribeNotification" type="submit" class="btn btn-primary">Підтвердити</button>
+				</div>
+			</form>
+		</div>
+	</div>
+</div>
+
+<div class="position-fixed top-0 start-50 translate-middle-x p-3" style="z-index: 11">
+	<div id="notificationToast" class="toast align-items-center text-white bg-primary border-0" role="alert" aria-live="assertive" aria-atomic="true" data-bs-delay="3000">
+		<div class="d-flex">
+			<div class="toast-body">
+				Ми вас сповістимо
+			</div>
+			<button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+		</div>
+	</div>
+</div>
+
+@section Scripts {
+	<partial name="_ValidationScriptsPartial" />
+}
