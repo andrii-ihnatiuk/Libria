@@ -60,5 +60,18 @@ namespace Libria.Controllers
 
 			return Json(new { status = res });
 		}
+
+		[HttpGet]
+		public IActionResult UnsubscribeNotification(int? subscriptionId, string? userEmail, int? bookId) 
+		{
+			if (subscriptionId == null || userEmail == null || bookId == null)
+				return BadRequest();
+
+			NotificationRegisterStatus res = _notificationService.Unsubscribe((int)subscriptionId, userEmail, (int)bookId);
+			if (res == NotificationRegisterStatus.Failed)
+				return NotFound();
+
+			return View();
+		}
 	}
 }

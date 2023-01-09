@@ -149,8 +149,9 @@ namespace Libria.Controllers
 					var callbackUrl = Url.Action(nameof(ResetPassword), "Account", new { uid = user.Id, token }, protocol: HttpContext?.Request.Scheme);
 
 					var subject = "Запит на відновлення доступу";
-					string message = $@"<p>Для зміни пароля перейдіть за</p><a href=""{callbackUrl}"">наступним посиланням</a>";
-					var response = await _emailService.SendEmailAsync(user.Email, subject, message);
+					List<string> message = new() { $@"<p>Для зміни пароля перейдіть за</p><a href=""{callbackUrl}"">наступним посиланням</a>" };
+					List<string> toEmail = new() { user.Email };
+					var response = await _emailService.SendEmailAsync(toEmail, subject, message);
 
 					if (response == EmailStatus.ErrorResult) return RedirectToAction("Error", "Home");
 				}
@@ -162,7 +163,7 @@ namespace Libria.Controllers
 		[HttpGet]
 		public IActionResult ResetPassword(string? uid = null, string? token = null)
 		{
-			return (uid == null || token == null) ? RedirectToAction("Error", "Home") : View();
+			return (uid == null || token == null) ? BadRequest() : View();
 		}
 
 		[HttpPost]
@@ -174,7 +175,7 @@ namespace Libria.Controllers
 				var user = await _userManager.FindByIdAsync(model.Uid);
 				if (user == null)
 				{
-					return RedirectToAction("Error", "Home");
+					return NotFound();
 				}
 				var result = await _userManager.ResetPasswordAsync(user, model.Token, model.Password);
 				if (result.Succeeded)

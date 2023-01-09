@@ -2,11 +2,13 @@
 using Libria.Areas.Admin.ViewModels;
 using Libria.Data;
 using Libria.Models.Entities;
+using Libria.Services;
 using Libria.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Hosting.Internal;
 
 namespace Libria.Areas.Admin.Controllers
 {
@@ -15,10 +17,12 @@ namespace Libria.Areas.Admin.Controllers
 	public class ProductsController : Controller
 	{
 		private readonly LibriaDbContext _context;
+		private readonly IServiceProvider _serviceProvider;
 
-		public ProductsController(LibriaDbContext context)
+		public ProductsController(LibriaDbContext context, IServiceProvider serviceProvider)
 		{
 			_context = context;
+			_serviceProvider = serviceProvider;
 		}
 
 		public async Task<IActionResult> Index(int category = -1, string? q = null, int page = 1)
@@ -176,6 +180,11 @@ namespace Libria.Areas.Admin.Controllers
 				if (book == null)
 					return NotFound();
 
+				// keep original values to check if we need to send
+				// notification about price drop or availability to users
+				decimal originalPrice = book.SalePrice;
+				bool originalAvailability = book.Available;
+
 				// Update product image
 				var fileSaveResult = await SaveProductImage(model.FileUpload, book.ImageUrl);
 
@@ -232,7 +241,24 @@ namespace Libria.Areas.Admin.Controllers
 				book.PublicationYear = model.PublicationYear;
 				book.Language = model.Language;
 
-				await _context.SaveChangesAsync();
+				try
+				{
+					await _context.SaveChangesAsync();
+
+					if (book.Available)
+					{
+						// price drop notification
+						if (book.SalePrice < originalPrice)
+							_ = FireAndForgetNotificationSend(_serviceProvider, NotificationType.PriceDrop, book);
+						// availability notification
+						if (originalAvailability == false)
+							_ = FireAndForgetNotificationSend(_serviceProvider, NotificationType.Availability, book);
+					}
+				}
+				catch
+				{
+					return Problem("Something went wrong while writing to the database.");
+				}
 
 				return RedirectToAction("Edit");
 
@@ -286,7 +312,7 @@ namespace Libria.Areas.Admin.Controllers
 					PublicationYear = model.PublicationYear,
 					Language = model.Language,
 					Authors = model.SelectedAuthors.Select(id => new Author { AuthorId = id }).ToList(),
-					Categories = model.SelectedCategories.Select(id => new Category { CategoryId = id}).ToList()
+					Categories = model.SelectedCategories.Select(id => new Category { CategoryId = id }).ToList()
 				};
 
 				var fileSaveResult = await SaveProductImage(model.FileUpload, book.ImageUrl);
@@ -317,7 +343,7 @@ namespace Libria.Areas.Admin.Controllers
 
 			model.AuthorSelectItems = await GetAuthorSelectListItemsAsync(model.SelectedAuthors.Select(id => new Author { AuthorId = id }).ToList());
 			model.CategorySelectItems = await GetCategorySelectListItemsAsync(model.SelectedCategories.Select(id => new Category { CategoryId = id }).ToList());
-			
+
 			return View("Edit", model);
 		}
 
@@ -377,10 +403,10 @@ namespace Libria.Areas.Admin.Controllers
 
 		private async Task<List<SelectListItem>> GetAuthorSelectListItemsAsync(IEnumerable<Author> selectedAuthors)
 		{
-			var listItems =  await _context.Authors
-				.Select(a => new SelectListItem 
-				{ 
-					Text = a.Name, 
+			var listItems = await _context.Authors
+				.Select(a => new SelectListItem
+				{
+					Text = a.Name,
 					Value = a.AuthorId.ToString()
 				})
 				.ToListAsync();
@@ -404,6 +430,21 @@ namespace Libria.Areas.Admin.Controllers
 					i.Selected = true;
 			});
 			return listItems;
+		}
+
+		private async Task FireAndForgetNotificationSend(IServiceProvider serviceProvider, NotificationType notificationType, Book book)
+		{
+			using (IServiceScope scope = serviceProvider.CreateScope())
+			{
+				var notificationService = scope.ServiceProvider.GetService<INotificationService>();
+				if (notificationService == null)
+					return;
+
+				if (notificationType == NotificationType.PriceDrop)
+					await notificationService.NotifyPriceDropAsync(book);
+				else
+					await notificationService.NotifyAvailableAsync(book);
+			}
 		}
 	}
 }
