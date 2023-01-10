@@ -155,7 +155,7 @@ body {
 
 
 .cover-container {
-    min-height: 420px;
+    max-height: 600px;
 }
 
     .cover-container img {

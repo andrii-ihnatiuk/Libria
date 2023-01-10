@@ -134,7 +134,7 @@
 				{
 					<tr>
 						<th scope="row">@order.OrderId</th>
-						<td>@order.OrderDate</td>
+						<td>@order.OrderDate.ToString("dd.MM.yyyy HH:mm:ss")</td>
 						<td>@(order.FirstName + " " + order.LastName)</td>
 						<td>@order.TotalSpent</td>
 						<td>@order.OrderStatus</td>

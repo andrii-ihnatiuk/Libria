@@ -312,7 +312,8 @@ namespace Libria.Areas.Admin.Controllers
 					PublicationYear = model.PublicationYear,
 					Language = model.Language,
 					Authors = model.SelectedAuthors.Select(id => new Author { AuthorId = id }).ToList(),
-					Categories = model.SelectedCategories.Select(id => new Category { CategoryId = id }).ToList()
+					Categories = model.SelectedCategories.Select(id => new Category { CategoryId = id }).ToList(),
+					CreatedAt = DateTime.UtcNow
 				};
 
 				var fileSaveResult = await SaveProductImage(model.FileUpload, book.ImageUrl);

@@ -15,6 +15,7 @@ public class LibriaDbContext : IdentityDbContext<User>
     public DbSet<Order> Orders { get; set; } = null!;
     public DbSet<OrdersBooks> OrdersBooks { get; set; } = null!;
     public DbSet<Notification> Notifications { get; set; } = null!;
+    public DbSet<Review> Reviews { get; set; } = null!;
 
     public LibriaDbContext(DbContextOptions<LibriaDbContext> options) : base(options)
     {
@@ -146,5 +147,11 @@ public class LibriaDbContext : IdentityDbContext<User>
             .HasMany(b => b.Notifications)
             .WithOne(n => n.TargetBook)
             .HasForeignKey(n => n.TargetBookId);
+
+        // Reviews - Books
+        builder.Entity<Book>()
+            .HasMany(b => b.Reviews)
+            .WithOne()
+            .HasForeignKey(r => r.BookId);
 	}
 }

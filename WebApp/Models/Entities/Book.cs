@@ -12,6 +12,7 @@ namespace Libria.Models.Entities
             UsersHaveInCart = new List<CartUsersBooks>();
             OrdersContain = new List<OrdersBooks>();
             Notifications = new List<Notification>();
+            Reviews = new List<Review>();
         }
 
         public int BookId { get; set; }
@@ -41,6 +42,8 @@ namespace Libria.Models.Entities
        
         public decimal Price { get; set; }
 
+        public DateTime CreatedAt { get; set; }
+
         /* RELATIONS */
 
         public ICollection<Author> Authors { get; set; }
@@ -49,5 +52,6 @@ namespace Libria.Models.Entities
         public ICollection<CartUsersBooks> UsersHaveInCart { get; set; }
         public ICollection<OrdersBooks> OrdersContain { get; set; } 
         public ICollection<Notification> Notifications { get; set; }
+        public ICollection<Review> Reviews { get; set; }
     }
 }

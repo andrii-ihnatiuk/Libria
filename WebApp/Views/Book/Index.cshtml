@@ -27,7 +27,7 @@
 
 <div class="row pt-2">
 	<div class="col-6 col-md-3">
-		<div class="cover-container">
+		<div class="cover-container position-sticky top-0">
 			<img alt="product" src="@Model.ImageUrl" />
 		</div>
 	</div>
@@ -100,7 +100,7 @@
 		</div>
 	</div>
 
-	<div class="cl-12 col-md-3">
+	<div class="col-12 col-md-3">
 		@if (Model.SalePrice < Model.Price)
 		{
 			<div class="bp-sale-price">@Model.SalePrice грн.</div>
