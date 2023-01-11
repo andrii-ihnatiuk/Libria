@@ -40,10 +40,7 @@ namespace Libria.Controllers
 				}
 
 			}
-
 			var book = await SelectBook((int)bookId);
-
-			book.Reviews.Add(new Review { ReviewDate = DateTime.UtcNow, Username = "Ігнатюк Андрій", StarsQuantity = 3, Text = "Привіт, нещодавно прочитав цю книгу і от що я скажу, на цьому білому світі немає книги краще, дитина була дуже задоволена і увесь час із подивом слухала мої слова." });
 
 			return book == null ? NotFound() : View(book);
 		}
@@ -56,7 +53,7 @@ namespace Libria.Controllers
 			if (!MailAddress.TryCreate(userEmail, out _))
 				return BadRequest();
 
-			var res = await _notificationService.SubscribeForNotificationAsync(userEmail, (int)bookId, (NotificationType)type);
+			var res = await _notificationService.SubscribeForNotificationAsync(userEmail.Trim(), (int)bookId, (NotificationType)type);
 
 			return Json(new { status = res });
 		}
@@ -86,7 +83,14 @@ namespace Libria.Controllers
 			if (book == null)
 				return NotFound();
 
-			book.Reviews.Add(new Review { ReviewDate = DateTime.UtcNow, Text = reviewText, StarsQuantity = (int)starsQuantity, Username = "Test" });
+			_context.Books.Attach(book);
+
+			var userName = await _context.Users
+				.Where(u => u.Id == User.FindFirstValue(ClaimTypes.NameIdentifier))
+				.Select(u => string.Concat(u.FirstName, " ", u.LastName))
+				.FirstOrDefaultAsync();
+
+			book.Reviews.Add(new Review { ReviewDate = DateTime.UtcNow, Text = reviewText.Trim(), StarsQuantity = (int)starsQuantity, Username = userName ?? "" });
 			await _context.SaveChangesAsync();
 
 			return RedirectToAction("Index", new { bookId });
@@ -109,9 +113,9 @@ namespace Libria.Controllers
 				Title = b.Title,
 				Publisher = b.Publisher,
 				Language = b.Language,
-				Authors = b.Authors.Select(a => new Author { AuthorId = a.AuthorId, Name = a.Name }).ToList(),
-				Categories = b.Categories.Select(c => new Category { CategoryId = c.CategoryId, Name = c.Name }).ToList(),
-				Reviews = b.Reviews.Select(r => new Review { ReviewDate = r.ReviewDate, StarsQuantity = r.StarsQuantity, Text = r.Text, Username = r.Username }).ToList()
+				Authors = b.Authors.Select(a => new Author { AuthorId = a.AuthorId, Name = a.Name }).OrderBy(a => a.Name).ToList(),
+				Categories = b.Categories.Select(c => new Category { CategoryId = c.CategoryId, Name = c.Name }).OrderBy(c => c.Name).ToList(),
+				Reviews = b.Reviews.Select(r => new Review { Id = r.Id, ReviewDate = r.ReviewDate, StarsQuantity = r.StarsQuantity, Text = r.Text, Username = r.Username }).OrderByDescending(r => r.ReviewDate).ToList()
 			}).FirstOrDefaultAsync(b => b.BookId == bookId);
 		}
 	}

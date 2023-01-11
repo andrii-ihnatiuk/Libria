@@ -2,8 +2,6 @@
 using Libria.Areas.Admin.ViewModels;
 using Libria.Data;
 using Libria.Models.Entities;
-using Libria.ViewModels;
-using Libria.ViewModels.Cart;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;

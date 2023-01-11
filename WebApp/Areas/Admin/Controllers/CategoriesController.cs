@@ -87,8 +87,8 @@ namespace Libria.Areas.Admin.Controllers
 				if (category == null)
 					return NotFound();
 
-				category.Name = model.Name;
-				category.Description = model.Description;
+				category.Name = model.Name.Trim();
+				category.Description = model.Description?.Trim();
 
 				await _context.SaveChangesAsync();
 				return RedirectToAction("Index");
@@ -107,7 +107,7 @@ namespace Libria.Areas.Admin.Controllers
 		{
 			if (ModelState.IsValid)
 			{
-				var category = new Category { Name = model.Name, Description = model.Description };
+				var category = new Category { Name = model.Name.Trim(), Description = model.Description?.Trim() };
 
 				_context.Categories.Add(category);
 

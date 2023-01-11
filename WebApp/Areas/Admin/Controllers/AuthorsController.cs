@@ -87,8 +87,8 @@ namespace Libria.Areas.Admin.Controllers
 				if (author == null)
 					return NotFound();
 
-				author.Name = model.Name;
-				author.Description = model.Description;
+				author.Name = model.Name.Trim();
+				author.Description = model.Description?.Trim();
 
 				await _context.SaveChangesAsync();
 				return RedirectToAction("Index");
@@ -107,7 +107,7 @@ namespace Libria.Areas.Admin.Controllers
 		{
 			if (ModelState.IsValid)
 			{
-				var author = new Author { Name = model.Name, Description = model.Description };
+				var author = new Author { Name = model.Name.Trim(), Description = model.Description?.Trim() };
 
 				_context.Authors.Add(author);
 

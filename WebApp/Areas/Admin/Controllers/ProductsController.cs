@@ -8,7 +8,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Hosting.Internal;
 
 namespace Libria.Areas.Admin.Controllers
 {
@@ -34,7 +33,7 @@ namespace Libria.Areas.Admin.Controllers
 			if (category != -1)
 				query = query.Where(b => b.Categories.Any(c => c.CategoryId == category));
 			if (q != null)
-				query = query.Where(b => EF.Functions.ILike(b.Title, $"%{q}%"));
+				query = query.Where(b => EF.Functions.ILike(b.Title, $"%{q.Trim()}%"));
 
 			query = query
 				.Select(b => new Book
@@ -229,17 +228,17 @@ namespace Libria.Areas.Admin.Controllers
 
 
 				// Update properties
-				book.Title = model.Title;
-				book.Description = model.Description;
+				book.Title = model.Title.Trim();
+				book.Description = model.Description?.Trim();
 				book.Price = model.Price;
 				book.SalePrice = model.SalePrice == null || model.SalePrice > model.Price ? model.Price : (decimal)model.SalePrice;
 				book.Pages = model.Pages;
 				book.Quantity = model.Quantity;
 				book.Available = model.Available;
-				book.Isbn = model.Isbn;
-				book.Publisher = model.Publisher;
-				book.PublicationYear = model.PublicationYear;
-				book.Language = model.Language;
+				book.Isbn = model.Isbn?.Trim();
+				book.Publisher = model.Publisher?.Trim();
+				book.PublicationYear = model.PublicationYear?.Trim();
+				book.Language = model.Language?.Trim();
 
 				try
 				{
@@ -300,17 +299,17 @@ namespace Libria.Areas.Admin.Controllers
 			{
 				Book book = new()
 				{
-					Title = model.Title,
+					Title = model.Title.Trim(),
 					Quantity = model.Quantity,
-					Description = model.Description,
+					Description = model.Description?.Trim(),
 					Price = model.Price,
 					SalePrice = model.SalePrice == null || model.SalePrice > model.Price ? model.Price : (decimal)model.SalePrice,
 					Pages = model.Pages,
 					Available = model.Available,
-					Isbn = model.Isbn,
-					Publisher = model.Publisher,
-					PublicationYear = model.PublicationYear,
-					Language = model.Language,
+					Isbn = model.Isbn?.Trim(),
+					Publisher = model.Publisher?.Trim(),
+					PublicationYear = model.PublicationYear?.Trim(),
+					Language = model.Language?.Trim(),
 					Authors = model.SelectedAuthors.Select(id => new Author { AuthorId = id }).ToList(),
 					Categories = model.SelectedCategories.Select(id => new Category { CategoryId = id }).ToList(),
 					CreatedAt = DateTime.UtcNow
