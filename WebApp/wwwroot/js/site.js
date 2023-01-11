@@ -28,6 +28,36 @@ $(document).ready(function () {
         readOnly: true,
         useGradient: false,
     });
+    $('.review-rating').starRating({
+        starSize: 15,
+        strokeWidth: 0,
+        activeColor: '#ffa700',
+        readOnly: true,
+        useGradient: false,
+    });
+    $('.review-create-rating').starRating({
+        starSize: 35,
+        strokeWidth: 0,
+        totalStars: 5,
+        initialRating: 3,
+        activeColor: "orange",
+        ratedColor: "orange",
+        readOnly: false,
+        useFullStars: true,
+        useGradient: false,
+        disableAfterRate: false,
+        callback: function (currentRating, $el) {
+            let starsQuantity = $("starsQuantity");
+            if (starsQuantity === "undefined") {
+                alert("Щось пішло не так");
+                return;
+            }
+            starsQuantity.val(currentRating);
+        }
+    });
+    $("#reviewText").on("input", function () {
+        $("#reviewTextHelpBox span").text(`${1000 - $(this).val().length}`)
+    })
 
     /* SHOW MORE SHOW LESS */
     $('.bp-description').readall({

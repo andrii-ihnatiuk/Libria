@@ -69,13 +69,14 @@ app.Use((context, next) =>
 });
 
 var supportedCultures = new[] { new CultureInfo("en-US") };
+var supportedUICultures = new[] { new CultureInfo("en-US"), new CultureInfo("uk") };
 app.UseRequestLocalization(new RequestLocalizationOptions
 {
 	DefaultRequestCulture = new RequestCulture("en-US"),
 	// Formatting numbers, dates, etc.
 	SupportedCultures = supportedCultures,
 	// UI strings which can be localized.
-	SupportedUICultures = supportedCultures
+	SupportedUICultures = supportedUICultures
 });
 
 // Configure the HTTP request pipeline.

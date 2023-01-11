@@ -25,9 +25,9 @@
 	</div>
 </div>
 
-<div class="row pt-2">
+<div class="row">
 	<div class="col-6 col-md-3">
-		<div class="cover-container position-sticky top-0">
+		<div class="cover-container position-sticky" style="top:1rem">
 			<img alt="product" src="@Model.ImageUrl" />
 		</div>
 	</div>
@@ -89,7 +89,7 @@
 			<hr class="my-2" />
 			<div class="d-flex justify-content-between flex-wrap">
 				<div class="feature-name">Рік видання</div>
-				<div class="feature-value">@Model.PublicationYear</div>
+				<div class="feature-value">@Model.PublicationYear р</div>
 			</div>
 			<hr class="my-2" />
 		</div>
@@ -139,17 +139,28 @@
 		</div>
 
 		<div class="mt-4">
-			<a class="bp-inform-me text-black" data-bs-toggle="modal" data-bs-target="#subscribeNotificationModal">@(Model.Available ? "Повідомити про зниження вартості" : "Повідомити про наявність")</a>
+			<a class="bp-inform-me text-black" href="" data-bs-toggle="modal" data-bs-target="#subscribeNotificationModal">@(Model.Available ? "Повідомити про зниження вартості" : "Повідомити про наявність")</a>
 		</div>
 	</div>
 </div>
 
-<div class="row pt-4">
+<div class="row my-4">
 	<div style="font-size: 22px;color: black;font-weight: 500;">Відгуки</div>
+	<div class="mt-2">
+		@foreach (var review in Model.Reviews)
+		{
+			<div class="my-2">
+				<partial name="_ReviewPartial" model="review"></partial>
+			</div>
+		}
+	</div>
+	<div class="mt-2">
+		<button class="btn btn-light w-100 text-muted" style="font-weight:500" data-bs-toggle="modal" data-bs-target="#reviewCreateModal">Написати відгук</button>
+	</div>
 </div>
 
 
-<!-- Modal -->
+<!-- Notification subscribe Modal -->
 <div class="modal fade" id="subscribeNotificationModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
 	<div class="modal-dialog">
 		<div class="modal-content">
@@ -174,6 +185,7 @@
 	</div>
 </div>
 
+<!-- Notification subscribe Toast -->
 <div class="position-fixed top-0 start-50 translate-middle-x p-3" style="z-index: 11">
 	<div id="notificationToast" class="toast align-items-center text-white bg-primary border-0" role="alert" aria-live="assertive" aria-atomic="true" data-bs-delay="3000">
 		<div class="d-flex">
@@ -184,6 +196,57 @@
 		</div>
 	</div>
 </div>
+
+<!-- Review create Modal -->
+@if (User?.Identity?.IsAuthenticated == true)
+{
+	<div class="modal fade" id="reviewCreateModal" tabindex="-1" aria-labelledby="reviewModalLabel" aria-hidden="true">
+		<div class="modal-dialog modal-dialog-centered">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title" id="reviewModalLabel">Додати відгук</h5>
+					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+				</div>
+				<form method="post" asp-controller="Book" asp-action="AddReview" role="form" class="needs-validation" id="reviewCreateForm" novalidate>
+					<div class="modal-body">
+						<div class="review-create-rating d-flex justify-content-center"></div>
+						<div class="text-center">Як сильно вам сподобався товар?</div>
+
+						<div id="reviewTextHelpBox" class="form-text mt-4">Залишилось <span>1000</span> символів</div>
+						<textarea name="reviewText" class="form-control" style="max-height:400px;min-height:80px;" id="reviewText" placeholder="Поділіться своїми враженнями від товару" rows="6" aria-describedby="reviewTextHelpBox" data-val="true" data-val-required="Це поле не може бути пустим" data-val-length-max="1000" data-val-length="Перевищено ліміт символів"></textarea>
+						<span class="invalid-feedback field-validation-valid" data-valmsg-for="reviewText" data-valmsg-replace="true"></span>
+
+						<input type="hidden" name="bookId" value="@Model.BookId" />
+						<input type="hidden" name="starsQuantity" value="3" id="starsQuantity">
+					</div>
+					<div class="modal-footer">
+						<button id="btnPlaceReview" type="submit" class="btn btn-primary w-100">Розміщення відгуку</button>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+}
+else
+{
+	<div class="modal fade" id="reviewCreateModal" tabindex="-1" aria-labelledby="reviewModalLabel" aria-hidden="true">
+		<div class="modal-dialog modal-dialog-centered">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title" id="reviewModalLabel">Додати відгук</h5>
+				</div>
+				<div class="modal-body">
+					<div>
+						Лише авторизовані користувачі можуть залишати відгуки. Авторизуйтесь, або створіть новий акаунт щоб відкрити усі можливості.
+					</div>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-primary w-100" data-bs-dismiss="modal" aria-label="Close">Зрозуміло</button>
+				</div>
+			</div>
+		</div>
+	</div>
+}
 
 @section Scripts {
 	<partial name="_ValidationScriptsPartial" />

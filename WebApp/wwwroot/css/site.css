@@ -306,6 +306,11 @@ body {
     stroke-linejoin: round;
 }
 
+/* override */
+.review-rating .jq-star {
+    cursor: default;
+}
+
 /* un-used */
 .jq-shadow {
     -webkit-filter: drop-shadow( -2px -2px 2px #888 );

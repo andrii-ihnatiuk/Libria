@@ -1,4 +1,5 @@
 ﻿using Libria.Data;
+using Libria.Models.Entities;
 using Libria.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -20,12 +21,11 @@ namespace Libria.Controllers
 			_logger = logger;
 		}
 
+		[HttpGet]
 		public async Task<IActionResult> Index(int? bookId = null)
 		{
 			if (bookId == null)
-			{
 				return BadRequest();
-			}
 
 			if (User.Identity != null && User.Identity.IsAuthenticated)
 			{
@@ -41,9 +41,9 @@ namespace Libria.Controllers
 
 			}
 
-			var book = await (from b in _context.Books
-							  where b.BookId == bookId
-							  select b).Include(b => b.Authors).Include(b => b.Categories).FirstOrDefaultAsync();
+			var book = await SelectBook((int)bookId);
+
+			book.Reviews.Add(new Review { ReviewDate = DateTime.UtcNow, Username = "Ігнатюк Андрій", StarsQuantity = 3, Text = "Привіт, нещодавно прочитав цю книгу і от що я скажу, на цьому білому світі немає книги краще, дитина була дуже задоволена і увесь час із подивом слухала мої слова." });
 
 			return book == null ? NotFound() : View(book);
 		}
@@ -72,6 +72,47 @@ namespace Libria.Controllers
 				return NotFound();
 
 			return View();
+		}
+
+		[HttpPost]
+		public async Task<IActionResult> AddReview(int? bookId, string? reviewText, int? starsQuantity)
+		{
+			if (User.Identity?.IsAuthenticated == false || bookId == null || reviewText == null || starsQuantity == null || starsQuantity < 0 || starsQuantity > 5)
+				return BadRequest();
+			if (reviewText.Length > 1000)
+				return Problem("Текст відгуку перевищує 1000 символів");
+
+			var book = await SelectBook((int)bookId);
+			if (book == null)
+				return NotFound();
+
+			book.Reviews.Add(new Review { ReviewDate = DateTime.UtcNow, Text = reviewText, StarsQuantity = (int)starsQuantity, Username = "Test" });
+			await _context.SaveChangesAsync();
+
+			return RedirectToAction("Index", new { bookId });
+		}
+
+		private async Task<Book?> SelectBook(int bookId)
+		{
+			return await _context.Books.Select(b => new Book
+			{
+				BookId = b.BookId,
+				Available = b.Available,
+				Description = b.Description,
+				Isbn = b.Isbn,
+				ImageUrl = b.ImageUrl,
+				Pages = b.Pages,
+				Price = b.Price,
+				SalePrice = b.SalePrice,
+				PublicationYear = b.PublicationYear,
+				Quantity = b.Quantity,
+				Title = b.Title,
+				Publisher = b.Publisher,
+				Language = b.Language,
+				Authors = b.Authors.Select(a => new Author { AuthorId = a.AuthorId, Name = a.Name }).ToList(),
+				Categories = b.Categories.Select(c => new Category { CategoryId = c.CategoryId, Name = c.Name }).ToList(),
+				Reviews = b.Reviews.Select(r => new Review { ReviewDate = r.ReviewDate, StarsQuantity = r.StarsQuantity, Text = r.Text, Username = r.Username }).ToList()
+			}).FirstOrDefaultAsync(b => b.BookId == bookId);
 		}
 	}
 }

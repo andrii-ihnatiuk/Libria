@@ -1,0 +1,23 @@
+﻿@using Libria.Models.Entities;
+@using System.Globalization;
+
+@model Review
+
+<div class="review-container d-flex flex-column p-3 rounded rounded-2 bg-light">
+	<div class="review-title-container d-flex justify-content-between mb-2">
+		<div class="review-title-left d-flex flex-column">
+			<div class="review-from" style="font-weight:500">
+				@Model.Username
+			</div>
+			<div class="review-date text-muted small">
+				@Model.ReviewDate.ToString("dd MMMM yyyy", CultureInfo.GetCultureInfo("uk")) р
+			</div>
+		</div>
+		<div class="review-title-right">
+			<div class="review-rating" data-rating="@Model.StarsQuantity"></div>
+		</div>
+	</div>
+	<div class="review-text">
+		@Model.Text
+	</div>
+</div>

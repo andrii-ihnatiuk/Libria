@@ -158,7 +158,7 @@
       var $polygonRight;
       var leftClass;
       var rightClass;
-      var s = this.settings;
+      //var s = this.settings;
 
       $.each(this.$stars, function(index, star){
         $polygonLeft = $(star).find('[data-side="left"]');
@@ -171,26 +171,28 @@
         $polygonLeft.attr('class', 'svg-'  + leftClass + '-' + this._uid);
         $polygonRight.attr('class', 'svg-'  + rightClass + '-' + this._uid);
 
-        // get color for level
-        var ratedColorsIndex = endIndex >= 0 ? Math.ceil(endIndex) : 0;
+        // useless shit, prevents from reselecting already rated stars (they are not colored as hovered)
 
-        var ratedColor;
-        if (s.ratedColors && s.ratedColors.length && s.ratedColors[ratedColorsIndex]) {
-          ratedColor = s.ratedColors[ratedColorsIndex];
-        } else {
-          ratedColor = this._defaults.ratedColor;
-        }
+        //// get color for level
+        //var ratedColorsIndex = endIndex >= 0 ? Math.ceil(endIndex) : 0;
 
-        // only override colors in rated stars and when rated number is valid
-        if (stateClass === 'rated' && endIndex > -1) {
-          // limit to painting only to rated stars, and specific case for half star
-          if (index <= Math.ceil(endIndex) || (index < 1 && endIndex < 0)) {
-            $polygonLeft.attr('style', 'fill:'+ratedColor);
-          }
-          if (index <= endIndex) {
-            $polygonRight.attr('style', 'fill:'+ratedColor);
-          }
-        }
+        //var ratedColor;
+        //if (s.ratedColors && s.ratedColors.length && s.ratedColors[ratedColorsIndex]) {
+        //  ratedColor = s.ratedColors[ratedColorsIndex];
+        //} else {
+        //  ratedColor = this._defaults.ratedColor;
+        //}
+
+        //// only override colors in rated stars and when rated number is valid
+        //if (stateClass === 'rated' && endIndex > -1) {
+        //  // limit to painting only to rated stars, and specific case for half star
+        //  if (index <= Math.ceil(endIndex) || (index < 1 && endIndex < 0)) {
+        //    $polygonLeft.attr('style', 'fill:'+ratedColor);
+        //  }
+        //  if (index <= endIndex) {
+        //    $polygonRight.attr('style', 'fill:'+ratedColor);
+        //  }
+        //}
       }.bind(this));
     },
 

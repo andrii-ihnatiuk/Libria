@@ -8,5 +8,7 @@
 		public string Text { get; set; } = null!;
 		public int StarsQuantity { get; set; }
 		public DateTime ReviewDate { get; set; }
+
+		public Book Book { get; set; } = null!;
 	}
 }

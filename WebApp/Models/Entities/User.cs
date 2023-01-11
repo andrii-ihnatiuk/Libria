@@ -1,4 +1,6 @@
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Identity;
+using System.Security.Claims;
 
 namespace Libria.Models.Entities;
 public class User : IdentityUser
@@ -15,8 +17,8 @@ public class User : IdentityUser
     public string? Country { get; set; }
     public string? City { get; set; }
 
-    /* RELATIONS */
+	/* RELATIONS */
 
-    public ICollection<WishList> BooksWished { get; set; }
+	public ICollection<WishList> BooksWished { get; set; }
     public ICollection<CartUsersBooks> BooksInCart { get; set; }
 }

@@ -151,7 +151,7 @@ public class LibriaDbContext : IdentityDbContext<User>
         // Reviews - Books
         builder.Entity<Book>()
             .HasMany(b => b.Reviews)
-            .WithOne()
+            .WithOne(r => r.Book)
             .HasForeignKey(r => r.BookId);
 	}
 }
