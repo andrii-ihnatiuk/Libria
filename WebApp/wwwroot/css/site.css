@@ -17,23 +17,23 @@ body {
     margin-bottom: 60px;
 }
 
-.dropdown-menu ul {
+.dropdown-menu.categories-drop ul {
     list-style: none;
     padding: 0;
 }
 
-.dropdown-menu.show {
+.dropdown-menu.categories-drop.show {
     display: flex;
     position: absolute !important;
 }
 
-.dropdown-menu li .dropdown-item {
+.dropdown-menu.categories-drop li .dropdown-item {
     color: black;
     font-size: 1em;
     padding: 0.5em 1em;
 }
 
-.dropdown-menu {
+.dropdown-menu.categories-drop {
     border: none;
     border-radius: 0.2em;
     padding: 0.7em;
@@ -41,10 +41,10 @@ body {
 }
 
 
-/* CAROUSEL STYLES */
+    /* CAROUSEL STYLES */
 
 
-.carousel-item, .carousel-item img {
+    .carousel-item, .carousel-item img {
     margin: auto;
     position: absolute;
     top: 0;
@@ -149,11 +149,28 @@ body {
     opacity: 0;
 }
 
+/* PROFILE PAGE STYLES */
 
+.dropdown-toggle::after {
+    vertical-align: unset;
+    color: #212529;
+}
+
+.nav-pills a.nav-link.link-dark:hover {
+    background-color: rgba(13, 110, 253, 0.25);
+}
+
+.info-item-wrapper {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
+}
+.info-item {
+    min-height: 48px;
+}
 
 /* BOOK PAGE STYLES */
-
-
 .cover-container {
     max-height: 600px;
 }

@@ -2,8 +2,11 @@
 using Libria.Models.Entities;
 using Libria.Services;
 using Libria.ViewModels.Account;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using System.Security.Claims;
 
 namespace Libria.Controllers
 {
@@ -13,14 +16,58 @@ namespace Libria.Controllers
 		private readonly SignInManager<User> _signInManager;
 		private readonly ILogger<AccountController> _logger;
 		private readonly IEmailService _emailService;
+		private readonly LibriaDbContext _context;
 
-		public AccountController(ILogger<AccountController> logger, UserManager<User> userManager, SignInManager<User> signInManager, IEmailService emailService)
+		public AccountController(ILogger<AccountController> logger, UserManager<User> userManager, SignInManager<User> signInManager, IEmailService emailService, LibriaDbContext context)
 		{
 			_logger = logger;
 			_userManager = userManager;
 			_signInManager = signInManager;
 			_emailService = emailService;
+			_context = context;
 		}
+
+		[HttpGet]
+		[Authorize]
+		public async Task<IActionResult> Index()
+		{
+			var user = await _userManager.GetUserAsync(User);
+
+			return View(user);
+		}
+
+		[HttpGet]
+		[Authorize]
+		public async Task<IActionResult> ActiveOrders()
+		{
+			var identifier = User.FindFirstValue(ClaimTypes.NameIdentifier);
+			if (identifier == null)
+				return Problem("User identifier not found");
+
+			var orders = await _context.Orders
+				.Where(o => o.UserId == identifier)
+				.Select(o => new Order
+				{
+					OrderId = o.OrderId, 
+					Books = o.Books.Select(ob => 
+					new OrdersBooks
+					{
+						Price = ob.Price,
+						Quantity = ob.Quantity,
+						Book = new Book { BookId = ob.Book.BookId, Title = ob.Book.Title, Authors = ob.Book.Authors.Select(a => new Author { Name = a.Name }).ToList() }
+					}).ToList(),
+					OrderDate = o.OrderDate,
+					TotalSpent = o.TotalSpent,
+					FirstName = o.FirstName,
+					LastName = o.LastName,
+					PhoneNumber = o.PhoneNumber,
+					Email = o.Email,
+					OrderStatus = o.OrderStatus 
+				}).ToListAsync();
+			
+
+			return View(orders);
+        }
 
 		// Registration
 

@@ -23,20 +23,20 @@ builder.Configuration.AddJsonFile($"{secrets_path}appsettings_ext.json", false, 
 
 // Add services to the container.
 builder.Services.AddDbContext<LibriaDbContext>(options =>
-    options.UseNpgsql(builder.Configuration.GetConnectionString("PostgresConnection")));
+	options.UseNpgsql(builder.Configuration.GetConnectionString("PostgresConnection")));
 
 builder.Services.AddIdentity<User, IdentityRole>(options =>
 {
-    options.SignIn.RequireConfirmedAccount = false;
-    options.Password.RequireNonAlphanumeric = false;
-    options.Password.RequireUppercase = false;
-    options.Password.RequireLowercase = false;
-    options.Password.RequireDigit = true;
-    options.Password.RequiredLength = 6;
+	options.SignIn.RequireConfirmedAccount = false;
+	options.Password.RequireNonAlphanumeric = false;
+	options.Password.RequireUppercase = false;
+	options.Password.RequireLowercase = false;
+	options.Password.RequireDigit = true;
+	options.Password.RequiredLength = 6;
 })
-    .AddEntityFrameworkStores<LibriaDbContext>()
-    .AddDefaultTokenProviders()
-    .AddErrorDescriber<UkrainianIdentityErrorDescriber>();
+	.AddEntityFrameworkStores<LibriaDbContext>()
+	.AddDefaultTokenProviders()
+	.AddErrorDescriber<UkrainianIdentityErrorDescriber>();
 
 // Configuring Email
 builder.Services.AddTransient<IEmailService, EmailService>();

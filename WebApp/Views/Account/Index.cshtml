@@ -1,0 +1,60 @@
+﻿@using Libria.Models.Entities;
+
+@model User;
+@{
+	ViewData["Title"] = "Профіль користувача";
+}
+
+<div class="container">
+	<div class="row justify-content-center">
+        <div class="col-lg-10">
+            <div class="row">
+                <h3 class="my-5">Налаштування</h3>
+            </div>
+            <div class="row">
+		        <div class="col-3 me-3" style="min-width:fit-content;">
+                    <div class="d-flex align-items-start">
+                        <div class="nav flex-column nav-pills" role="tablist" aria-orientation="vertical">
+                            <a class="nav-link active" role="tab" asp-controller="Account" asp-action="Index">Інформація</a>
+                            <a class="nav-link link-dark" role="tab" asp-controller="Account" asp-action="ActiveOrders">Активні замовлення</a>
+                            <a class="nav-link link-dark" role="tab"asp-controller="Account" asp-action="Orders">Завершені замовлення</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="content-container">
+                        <div class="info-item-wrapper">
+                            <div class="info-item">
+                                <label for="info-name" class="text-muted small">Ім'я</label>
+                                <div id="info-name" class="info-item-value">@string.Concat(Model.FirstName, " ", Model.LastName)</div>
+                            </div>
+                            <div class="text-muted align-self-end" style="cursor:pointer;font-weight:500">Змінити</div>
+                        </div>
+                        <div class="info-item-wrapper">
+                            <div class="info-item">
+                                <label for="info-email" class="text-muted small">Електронна пошта</label>
+                                <div id="info-email" class="info-item-value">@Model.Email</div>
+                            </div>
+                            <div class="text-muted align-self-end" style="cursor:pointer;font-weight:500">Змінити</div>
+                        </div>
+                        <div class="info-item-wrapper">
+                            <div class="info-item">
+                                <label for="info-phone" class="text-muted small">Номер телефону</label>
+                                <div id="info-phone" class="info-item-value">@Model.PhoneNumber</div>
+                            </div>
+                            <div class="text-muted align-self-end" style="cursor:pointer;font-weight:500">Змінити</div>
+                        </div>
+                        <div class="info-item-wrapper">
+                            <div class="info-item">
+                                <label for="info-phone" class="text-muted small">Пароль</label>
+                                <div id="info-phone" class="info-item-value">******</div>
+                            </div>
+                            <div class="text-muted align-self-end" style="cursor:pointer;font-weight:500">Змінити</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+	</div>	
+</div>
+
