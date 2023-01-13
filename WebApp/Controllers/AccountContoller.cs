@@ -10,7 +10,7 @@ using System.Security.Claims;
 
 namespace Libria.Controllers
 {
-	public class AccountController : Controller
+    public class AccountController : Controller
 	{
 		private readonly UserManager<User> _userManager;
 		private readonly SignInManager<User> _signInManager;
@@ -38,23 +38,40 @@ namespace Libria.Controllers
 
 		[HttpGet]
 		[Authorize]
-		public async Task<IActionResult> ActiveOrders()
+		public async Task<IActionResult> OrderHistory(string show = "finished")
 		{
-			var identifier = User.FindFirstValue(ClaimTypes.NameIdentifier);
+			string? identifier = User.FindFirstValue(ClaimTypes.NameIdentifier);
 			if (identifier == null)
 				return Problem("User identifier not found");
 
-			var orders = await _context.Orders
-				.Where(o => o.UserId == identifier)
+			var query = _context.Orders.AsNoTracking().Where(o => o.UserId == identifier);
+
+			if (show == "active")
+			{
+				query = query.Where(o => o.OrderStatus != OrderStatus.Finished && o.OrderStatus != OrderStatus.Canceled);
+				ViewData["CurPill"] = show;
+			}
+			else
+			{
+				query = query.Where(o => o.OrderStatus == OrderStatus.Finished);
+				ViewData["CurPill"] = "all";
+			}
+
+			var orders = await query
 				.Select(o => new Order
 				{
-					OrderId = o.OrderId, 
-					Books = o.Books.Select(ob => 
-					new OrdersBooks
+					OrderId = o.OrderId,
+					Books = o.Books.Select(ob => new OrdersBooks
 					{
 						Price = ob.Price,
 						Quantity = ob.Quantity,
-						Book = new Book { BookId = ob.Book.BookId, Title = ob.Book.Title, Authors = ob.Book.Authors.Select(a => new Author { Name = a.Name }).ToList() }
+						Book = new Book
+						{
+							BookId = ob.Book.BookId,
+							Title = ob.Book.Title,
+							ImageUrl = ob.Book.ImageUrl,
+							Authors = ob.Book.Authors.Select(a => new Author { Name = a.Name }).ToList()
+						}
 					}).ToList(),
 					OrderDate = o.OrderDate,
 					TotalSpent = o.TotalSpent,
@@ -62,12 +79,31 @@ namespace Libria.Controllers
 					LastName = o.LastName,
 					PhoneNumber = o.PhoneNumber,
 					Email = o.Email,
-					OrderStatus = o.OrderStatus 
+					OrderStatus = o.OrderStatus
 				}).ToListAsync();
-			
+
+			//         var orders = new List<Order>()
+			//         {
+			//             new Order 
+			//             { 
+			//                 OrderId = 12321, 
+			//                 OrderStatus = OrderStatus.Sent, 
+			//                 TotalSpent = 1200, 
+			//                 OrderDate = DateTime.UtcNow,
+			//                 Books = new List<OrdersBooks> { new OrdersBooks { Quantity = 2, Price = 1200, Book = new Book { BookId = 5, ImageUrl = "/img/book_cover/5.jpg", Title = "Some book" } } }
+			//             },
+			//	new Order
+			//	{
+			//		OrderId = 4211,
+			//		OrderStatus = OrderStatus.Pending,
+			//		TotalSpent = 1000,
+			//		OrderDate = DateTime.UtcNow,
+			//		Books = new List<OrdersBooks> { new OrdersBooks { Quantity = 3, Price = 500, Book = new Book { BookId = 4, ImageUrl = "/img/book_cover/4.jpg", Title = "Another book" } } }
+			//	}
+			//};
 
 			return View(orders);
-        }
+		}
 
 		// Registration
 

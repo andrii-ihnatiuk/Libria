@@ -1,12 +1,13 @@
 ﻿using Libria.Data;
 using Libria.Services;
 using Libria.ViewModels;
+using Libria.ViewModels.Search;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 
 namespace Libria.Controllers
 {
-	public class SearchController : Controller
+    public class SearchController : Controller
 	{
 		private readonly LibriaDbContext _context;
 		private readonly IWishListService _wishListService;

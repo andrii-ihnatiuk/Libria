@@ -53,7 +53,7 @@
 						</tr>
 						<tr>
 							<th scope="row">Час замовлення</th>
-							<td>@Model.Order.OrderDate.ToString("dd.MM.yyyy HH:mm:ss")</td>
+							<td>@Model.Order.GetFormattedDate()</td>
 						</tr>
 						<tr>
 							<th scope="row">Сумарно</th>

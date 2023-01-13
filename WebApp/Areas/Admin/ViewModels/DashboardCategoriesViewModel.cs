@@ -1,9 +1,8 @@
 ﻿using Libria.Areas.Admin.Models;
-using Libria.Models.Entities;
 
 namespace Libria.Areas.Admin.ViewModels
 {
-	public class DashboardCategoriesViewModel
+    public class DashboardCategoriesViewModel
 	{
 		public DashboardCategoriesViewModel(List<CategoryCard> categoryCards)
 		{

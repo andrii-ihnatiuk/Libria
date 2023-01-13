@@ -2,7 +2,7 @@
 
 namespace Libria.Areas.Admin.ViewModels
 {
-	public class DashboardAuthorsViewModel
+    public class DashboardAuthorsViewModel
 	{
 		public DashboardAuthorsViewModel(List<AuthorCard> authorCards)
 		{

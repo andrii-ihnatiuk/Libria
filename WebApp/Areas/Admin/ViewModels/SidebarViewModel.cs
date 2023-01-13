@@ -2,7 +2,7 @@
 
 namespace Libria.Areas.Admin.ViewModels
 {
-	public class SidebarViewModel
+    public class SidebarViewModel
 	{
 		public SidebarViewModel() { }
 

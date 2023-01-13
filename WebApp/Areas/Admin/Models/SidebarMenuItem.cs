@@ -1,6 +1,6 @@
 ﻿namespace Libria.Areas.Admin.Models
 {
-	public class SidebarMenuItem
+    public class SidebarMenuItem
 	{
 		public MenuItemType ItemType { get; set; }
 

@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace Libria.Areas.Admin.ViewModels
 {
-	public class DashboardProductsViewModel
+    public class DashboardProductsViewModel
 	{
 		public DashboardProductsViewModel(List<Book> products, PageViewModel pageViewModel) 
 		{

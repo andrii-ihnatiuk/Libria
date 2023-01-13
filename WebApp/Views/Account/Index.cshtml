@@ -9,15 +9,15 @@
 	<div class="row justify-content-center">
         <div class="col-lg-10">
             <div class="row">
-                <h3 class="my-5">Налаштування</h3>
+                <h3 class="my-5">Управління акаунтом</h3>
             </div>
             <div class="row">
 		        <div class="col-3 me-3" style="min-width:fit-content;">
                     <div class="d-flex align-items-start">
                         <div class="nav flex-column nav-pills" role="tablist" aria-orientation="vertical">
                             <a class="nav-link active" role="tab" asp-controller="Account" asp-action="Index">Інформація</a>
-                            <a class="nav-link link-dark" role="tab" asp-controller="Account" asp-action="ActiveOrders">Активні замовлення</a>
-                            <a class="nav-link link-dark" role="tab"asp-controller="Account" asp-action="Orders">Завершені замовлення</a>
+                            <a class="nav-link link-dark" role="tab" asp-controller="Account" asp-action="OrderHistory" asp-route-show="active">Активні замовлення</a>
+                            <a class="nav-link link-dark" role="tab"asp-controller="Account" asp-action="OrderHistory">Завершені замовлення</a>
                         </div>
                     </div>
                 </div>

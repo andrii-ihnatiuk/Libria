@@ -1,0 +1,88 @@
+﻿@using Libria.Models.Entities;
+@using Libria.ViewModels.Cart;
+
+@model List<Order>;
+
+<div class="container">
+	<div class="row justify-content-center">
+		<div class="col-lg-10">
+			<div class="row">
+				<h3 class="my-5">Управління акаунтом</h3>
+			</div>
+			<div class="row">
+				<div class="col-3 me-3" style="min-width:fit-content;">
+					<div class="d-flex align-items-start">
+						<div class="nav flex-column nav-pills" role="tablist" aria-orientation="vertical">
+                            <a class="nav-link link-dark" role="tab" asp-controller="Account" asp-action="Index">Інформація</a>
+                            <a class="nav-link @(ViewData["CurPill"] == "all" ? "link-dark" : "active")" role="tab" asp-controller="Account" asp-action="OrderHistory" asp-route-show="active">Активні замовлення</a>
+							<a class="nav-link @(ViewData["CurPill"] == "all" ? "active" : "link-dark")" role="tab" asp-controller="Account" asp-action="OrderHistory">Завершені замовлення</a>
+						</div>
+					</div>
+				</div>
+				<div class="col">
+					<table class="table">
+						<thead>
+							<tr>
+								<th scope="col" class="w-25">Дата замовлення</th>
+								<th scope="col" class="w-25">Номер замовлення</th>
+								<th scope="col" class="w-25">Сума</th>
+								<th scope="col" class="w-25">Статус</th>
+							</tr>
+						</thead>
+						<tbody>
+							@foreach (var order in Model)
+							{
+								<tr>
+									<td>@order.GetFormattedDate()</td>
+									<td><a class="link-dark text-decoration-underline order-collapse-toggle" style="cursor:pointer" aria-expanded="false">Замовлення №@order.OrderId</a></td>
+									<td>@order.TotalSpent грн</td>
+									<td>@order.OrderStatus</td>
+								</tr>
+								<tr>
+									<td colspan="4" style="padding:0">
+										<div class="collapse">
+											<div class="card card-body">
+												@foreach (var orderBook in order.Books)
+												{
+													<partial 
+														name="_OrderItemPartial" 
+														model=@(new CartItemViewModel 
+														{ 
+															ActiveBookPrice = orderBook.Price, 
+															Quantity = orderBook.Quantity, 
+															TotalItemPrice = orderBook.Price * orderBook.Quantity,
+															Book = orderBook.Book
+														})>
+													</partial>
+												}
+												<div class="row mt-3">
+													<div class="col-3 text-muted">
+														<div>Ім'я одержувача:</div>
+														<div>Електронна адреса:</div>
+														<div>Телефон:</div>
+														<div>Адреса:</div>
+													</div>
+													<div class="col-9">
+														<div>@string.Concat(order.FirstName, " ", order.LastName)</div>
+														<div>@order.Email</div>
+														<div>@order.PhoneNumber</div>
+														<div>@order.Email</div>
+													</div>
+												</div>
+												<div class="mt-2">
+													<span>Сума замовлення: </span>
+													<span class="fw-bold">@order.TotalSpent </span>
+													<span class="fw-bold">грн</span>
+												</div>
+											</div>
+										</div>
+									</td>
+								</tr>
+							}
+						</tbody>
+					</table>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>

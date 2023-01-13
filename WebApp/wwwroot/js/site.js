@@ -21,6 +21,7 @@ $(document).ready(function () {
     $('#goToNextSlide').click(function () {
         slider.goToNextSlide();
     });
+    // Star rating items
     $('.bp-rating').starRating({
         starSize: 25,
         strokeWidth: 0,
@@ -58,9 +59,18 @@ $(document).ready(function () {
             starsQuantity.val(currentRating);
         }
     });
+    // Book page create review input
     $("#reviewText").on("input", function () {
         $("#reviewTextHelpBox span").text(`${1000 - $(this).val().length}`)
     })
+    // Profile page collapse order details
+    $(".order-collapse-toggle").each(function () {
+        $(this).on("click", function () {
+            let collapse = $(this).closest("tr").next().find(".collapse");
+            if (collapse !== 'undefined')
+                bootstrap.Collapse.getOrCreateInstance(collapse).toggle();
+        })
+    });
 
     /* SHOW MORE SHOW LESS */
     $('.bp-description').readall({

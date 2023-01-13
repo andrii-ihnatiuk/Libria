@@ -1,13 +1,14 @@
 ﻿using Libria.Data;
 using Libria.Services;
 using Libria.ViewModels;
+using Libria.ViewModels.Search;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
 
 namespace Libria.Controllers
 {
-	public class CategoryController : Controller
+    public class CategoryController : Controller
 	{
 		private readonly LibriaDbContext _context;
 		private readonly ISearchService _searchService;

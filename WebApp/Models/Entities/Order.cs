@@ -20,5 +20,7 @@
 		public string OrderStatus { get; set; } = Data.OrderStatus.Pending;
 
 		public ICollection<OrdersBooks> Books { get; set; } = null!;
+
+		public string GetFormattedDate() => OrderDate.ToLocalTime().ToString("dd.MM.yyyy HH:mm:ss");
 	}
 }
