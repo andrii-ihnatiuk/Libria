@@ -1,0 +1,147 @@
+﻿@using Libria.Models.Entities;
+@using Libria.ViewModels.Account;
+
+@model SettingsViewModel;
+@{
+	ViewData["Title"] = "Профіль користувача";
+}
+
+<div class="container">
+	<div class="row justify-content-center">
+		<div class="col-lg-10">
+			<div class="row">
+				<h3 class="my-5">Управління акаунтом</h3>
+			</div>
+			<div class="row">
+				<div class="col-3 me-3" style="min-width:fit-content;">
+					<div class="d-flex align-items-start">
+						<div class="nav flex-column nav-pills" role="tablist" aria-orientation="vertical">
+							<a class="nav-link active" role="tab" asp-controller="Account" asp-action="Settings">Інформація</a>
+							<a class="nav-link link-dark" role="tab" asp-controller="Account" asp-action="OrderHistory" asp-route-show="active">Активні замовлення</a>
+							<a class="nav-link link-dark" role="tab" asp-controller="Account" asp-action="OrderHistory">Завершені замовлення</a>
+						</div>
+					</div>
+				</div>
+				<div class="col">
+					<div class="info-container mb-2">
+						<div class="info-item-wrapper">
+							<div class="info-item">
+								<label for="infoName" class="text-muted small">Ім'я</label>
+								<div id="infoName" class="info-item-value">@string.Concat(Model.FirstName, " ", Model.LastName)</div>
+							</div>
+							<div class="info-toggle text-muted align-self-end">Змінити</div>
+						</div>
+						<div class="collapse">
+							<div class="card card-body">
+								<div>Змінити Ім'я</div>
+								<form method="post" asp-controller="Account" asp-action="Settings" role="form" novalidate class="needs-validation">
+									<div class="mt-2 mb-3">
+										<label asp-for="FirstName" class="text-muted small mb-1">Ім'я*</label>
+										<input bs-for="FirstName" class="form-control" />
+										<span asp-validation-for="FirstName" class="invalid-feedback"></span>
+
+										<label asp-for="LastName" class="text-muted small mb-1 mt-2">Прізвище</label>
+										<input bs-for="LastName" class="form-control" />
+										<span asp-validation-for="LastName" class="invalid-feedback"></span>
+									</div>
+									<div class="d-flex">
+										<button type="button" class="btn btn-light border border-1 info-cancel flex-grow-1 me-2">Скасувати</button>
+										<button type="submit" class="btn btn-outline-primary flex-grow-1 ms-2">Зберегти</button>
+									</div>
+									<input type="hidden" name="updateField" value="@UpdateField.Name"/>
+								</form>
+							</div>
+						</div>
+					</div>
+					<div class="info-container mb-2">
+						<div class="info-item-wrapper">
+							<div class="info-item">
+								<label for="infoEmail" class="text-muted small">Електронна пошта</label>
+								<div id="infoEmail" class="info-item-value">@Model.Email</div>
+							</div>
+							<div class="info-toggle text-muted align-self-end">Змінити</div>
+						</div>
+						<div class="collapse">
+							<div class="card card-body">
+								Змінити електронну пошту
+								<form method="post" asp-controller="Account" asp-action="Settings" role="form" novalidate class="needs-validation">
+									<div class="mt-2 mb-3">
+										<label asp-for="Email" class="text-muted small mb-1">Електронна пошта*</label>
+										<input bs-for="Email" class="form-control" />
+										<span asp-validation-for="Email" class="invalid-feedback"></span>
+									</div>
+									<div class="d-flex">
+										<button type="button" class="btn btn-light border border-1 info-cancel flex-grow-1 me-2">Скасувати</button>
+										<button type="submit" class="btn btn-outline-primary flex-grow-1 ms-2">Зберегти</button>
+									</div>
+									<input type="hidden" name="updateField" value="@UpdateField.Email"/>
+								</form>
+							</div>
+						</div>
+					</div>
+					<div class="info-container mb-2">
+						<div class="info-item-wrapper">
+							<div class="info-item">
+								<label for="infoPhone" class="text-muted small">Номер телефону</label>
+								<div id="infoPhone" class="info-item-value">@Model.PhoneNumber</div>
+							</div>
+							<div class="info-toggle text-muted align-self-end">Змінити</div>
+						</div>
+						<div class="collapse">
+							<div class="card card-body">
+								Змінити номер телефону
+								<form method="post" asp-controller="Account" asp-action="Settings" role="form" novalidate class="needs-validation">
+									<div class="mt-2 mb-3">
+										<label asp-for="PhoneNumber" class="text-muted small mb-1">Номер телефону*</label>
+										<input bs-for="PhoneNumber" class="form-control" />
+										<span asp-validation-for="PhoneNumber" class="invalid-feedback"></span>
+									</div>
+									<div class="d-flex">
+										<button type="button" class="btn btn-light border border-1 info-cancel flex-grow-1 me-2">Скасувати</button>
+										<button type="submit" class="btn btn-outline-primary flex-grow-1 ms-2">Зберегти</button>
+									</div>
+									<input type="hidden" name="updateField" value="@UpdateField.PhoneNumber" />
+								</form>
+							</div>
+						</div>
+					</div>
+					<div class="info-container mb-2">
+						<div class="info-item-wrapper">
+							<div class="info-item">
+								<label for="infoPassword" class="text-muted small">Пароль</label>
+								<div id="infoPassword" class="info-item-value">******</div>
+							</div>
+							<div class="info-toggle text-muted align-self-end">Змінити</div>
+						</div>
+						<div class="collapse">
+							<div class="card card-body">
+								Змінити Пароль
+								<form method="post" asp-controller="Account" asp-action="Settings" role="form" novalidate class="needs-validation">
+									<div class="mt-2 mb-3">
+										<label asp-for="OldPassword" class="text-muted small mb-1">Старий пароль*</label>
+										<input bs-for="OldPassword" class="form-control" autocomplete="current-password"/>
+										<span asp-validation-for="OldPassword" class="invalid-feedback"></span>
+
+										<label asp-for="Password" class="text-muted small mb-1">Пароль*</label>
+										<input bs-for="Password" class="form-control" autocomplete="new-password"/>
+										<span asp-validation-for="Password" class="invalid-feedback"></span>
+									</div>
+									<div class="d-flex">
+										<button type="button" class="btn btn-light border border-1 info-cancel flex-grow-1 me-2">Скасувати</button>
+										<button type="submit" class="btn btn-outline-primary flex-grow-1 ms-2">Зберегти</button>
+									</div>
+									<input type="hidden" name="updateField" value="@UpdateField.Password" />
+								</form>
+							</div>
+						</div>
+					</div>
+					<div asp-validation-summary="ModelOnly" class="text-danger"></div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+@section Scripts {
+	<partial name="_ValidationScriptsPartial" />
+}

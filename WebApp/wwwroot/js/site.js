@@ -71,6 +71,31 @@ $(document).ready(function () {
                 bootstrap.Collapse.getOrCreateInstance(collapse).toggle();
         })
     });
+    // Profile page settings tab animations
+    $(".info-toggle").on("click", function () {
+        let container = $(this).closest(".info-container");
+        container?.children(".info-item-wrapper").animate({
+            opacity: 0,
+            height: 0
+        }, 250, function () {
+            $(this).hide();
+            let collapse = container.find(".collapse");
+            if (collapse !== 'undefined')
+                bootstrap.Collapse.getOrCreateInstance(collapse).show();
+        });
+    });
+    $(".info-cancel").on("click", function () {
+        let collapse = $(this).closest(".collapse");
+        collapse.on("hidden.bs.collapse", function () {
+            let wrapper = $(this).closest(".info-container").find(".info-item-wrapper");
+            wrapper.css("display", "flex");
+            wrapper.animate({
+                opacity: 1,
+                height: 48
+            }, 250);
+        });
+        bootstrap.Collapse.getInstance(collapse).hide();
+    });
 
     /* SHOW MORE SHOW LESS */
     $('.bp-description').readall({

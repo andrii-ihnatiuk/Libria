@@ -12,12 +12,12 @@
 		<form method="post" asp-controller="Account" asp-action="Login" asp-route-returnUrl="@ViewData["returnUrl"]" class="needs-validation" role="form" novalidate>
 			<div class="form-group mb-2">
 				<label asp-for="Email" class="mb-1"></label>
-				<input asp-for="Email" class="form-control @(ViewBag.EmailInvalid == true  ? "is-invalid" : "")" placeholder="Введіть email адресу">
+				<input bs-for="Email" class="form-control" placeholder="Введіть email адресу">
 				<span asp-validation-for="Email" class="invalid-feedback"></span>
 			</div>
 			<div class="form-group mb-2">
 				<label asp-for="Password" class="mb-1"></label>
-				<input asp-for="Password" class="form-control @(ViewBag.PasswordInvalid == true ? "is-invalid" : "")" placeholder="Введіть пароль">
+				<input bs-for="Password" class="form-control" placeholder="Введіть пароль" autocomplete="current-password">
 				<span asp-validation-for="Password" class="invalid-feedback"></span>
 			</div>
 			<div class="d-flex justify-content-between">

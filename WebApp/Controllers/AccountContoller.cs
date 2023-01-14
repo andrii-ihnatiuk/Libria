@@ -2,11 +2,15 @@
 using Libria.Models.Entities;
 using Libria.Services;
 using Libria.ViewModels.Account;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Net.Mail;
 using System.Security.Claims;
+using System.Security.Principal;
 
 namespace Libria.Controllers
 {
@@ -29,11 +33,125 @@ namespace Libria.Controllers
 
 		[HttpGet]
 		[Authorize]
-		public async Task<IActionResult> Index()
+		public async Task<IActionResult> Settings()
 		{
 			var user = await _userManager.GetUserAsync(User);
 
-			return View(user);
+			//var user = new User { FirstName = "Andrii", LastName = "Ihnatiuk", Email = "email@example.com", PhoneNumber = "+380953234675" };
+
+			SettingsViewModel viewModel = new() { Email = user.Email, FirstName = user.FirstName, LastName = user.LastName, PhoneNumber = user.PhoneNumber };
+			return View(viewModel);
+		}
+
+		[Authorize]
+		[ValidateAntiForgeryToken]
+		[HttpPost]
+		public async Task<IActionResult> Settings(SettingsViewModel model)
+		{
+			if (model.UpdateField == null)
+				return Problem("No update marker passed");
+
+			RemoveUnusedModelErrors((UpdateField)model.UpdateField);
+
+			var user = await _userManager.GetUserAsync(User);
+			if (ModelState.IsValid)
+			{
+				switch (model.UpdateField)
+				{
+					case UpdateField.Name:
+						user.FirstName = model.FirstName.Trim();
+						user.LastName = model.LastName?.Trim() ?? string.Empty;
+						break;
+					case UpdateField.PhoneNumber:
+						var number = model.PhoneNumber.Trim();
+						if (user.PhoneNumber != number && await _context.Users.AnyAsync(u => u.PhoneNumber == number))
+						{
+							ModelState.AddModelError(string.Empty, "Дані не було збережено");
+							ModelState.AddModelError(nameof(model.PhoneNumber), "Номер телефону вже зайнято");
+							model.PhoneNumber = number;
+							model.FirstName = user.FirstName;
+							model.LastName = user.LastName;
+							model.Email = user.Email;
+							return View(model);
+						}
+						user.PhoneNumber = number;
+						break;
+					case UpdateField.Email:
+						var newEmail = model.Email.Trim();
+						if (user.Email != newEmail)
+						{
+							if (MailAddress.TryCreate(newEmail, out _))
+							{
+								IEnumerable<IdentityError>? errors = null;
+								// set username first, because it is the same as email in my app,
+								// but identity prevents username duplicates by default
+								var emailRes = await _userManager.SetUserNameAsync(user, newEmail);
+								if (emailRes.Succeeded)
+								{
+									var token = await _userManager.GenerateChangeEmailTokenAsync(user, newEmail);
+									emailRes = await _userManager.ChangeEmailAsync(user, newEmail, token);
+									if (emailRes.Succeeded)
+										await _signInManager.RefreshSignInAsync(user); // update identity sign-in cookie claims
+									else
+										errors = emailRes.Errors;
+								}
+								else
+									errors = emailRes.Errors;
+
+								if (errors != null && errors.Any())
+								{
+									ModelState.AddModelError(string.Empty, "Дані не було збережено");
+									foreach (var err in errors)
+										ModelState.AddModelError(nameof(model.Email), err.Description);
+									model.PhoneNumber = user.PhoneNumber;
+									model.FirstName = user.FirstName;
+									model.LastName = user.LastName;
+									return View(model);
+								}
+							}
+							else
+							{
+								ModelState.AddModelError(string.Empty, "Дані не було збережено");
+								ModelState.AddModelError(nameof(model.Email), "Введіть правильну email адресу");
+								model.PhoneNumber = user.PhoneNumber;
+								model.FirstName = user.FirstName;
+								model.LastName = user.LastName;
+								return View(model);
+							}
+						}
+						break;
+					case UpdateField.Password:
+						var newPass = model.Password.Trim();
+						var passRes = await _userManager.ChangePasswordAsync(user, model.OldPassword.Trim(), newPass);
+
+						if (!passRes.Succeeded)
+						{
+							ModelState.AddModelError(string.Empty, "Дані не було збережено");
+							foreach (var err in passRes.Errors)
+							{
+								if (err.Code == nameof(IdentityErrorDescriber.PasswordMismatch))
+									ModelState.AddModelError(nameof(model.OldPassword), err.Description);
+								else
+									ModelState.AddModelError(nameof(model.Password), err.Description);
+							}
+							model.PhoneNumber = user.PhoneNumber;
+							model.FirstName = user.FirstName;
+							model.LastName = user.LastName;
+							model.Email = user.Email;
+							return View(model);
+						}
+						break;
+				}
+				await _context.SaveChangesAsync();
+				return RedirectToAction("Settings");
+			}
+			ModelState.AddModelError(string.Empty, "Дані не було збережено");
+			model.PhoneNumber = user.PhoneNumber;
+			model.FirstName = user.FirstName;
+			model.LastName = user.LastName;
+			model.Email = user.Email;
+
+			return View(model);
 		}
 
 		[HttpGet]
@@ -53,7 +171,7 @@ namespace Libria.Controllers
 			}
 			else
 			{
-				query = query.Where(o => o.OrderStatus == OrderStatus.Finished);
+				query = query.Where(o => o.OrderStatus == OrderStatus.Finished || o.OrderStatus == OrderStatus.Canceled);
 				ViewData["CurPill"] = "all";
 			}
 
@@ -81,26 +199,6 @@ namespace Libria.Controllers
 					Email = o.Email,
 					OrderStatus = o.OrderStatus
 				}).ToListAsync();
-
-			//         var orders = new List<Order>()
-			//         {
-			//             new Order 
-			//             { 
-			//                 OrderId = 12321, 
-			//                 OrderStatus = OrderStatus.Sent, 
-			//                 TotalSpent = 1200, 
-			//                 OrderDate = DateTime.UtcNow,
-			//                 Books = new List<OrdersBooks> { new OrdersBooks { Quantity = 2, Price = 1200, Book = new Book { BookId = 5, ImageUrl = "/img/book_cover/5.jpg", Title = "Some book" } } }
-			//             },
-			//	new Order
-			//	{
-			//		OrderId = 4211,
-			//		OrderStatus = OrderStatus.Pending,
-			//		TotalSpent = 1000,
-			//		OrderDate = DateTime.UtcNow,
-			//		Books = new List<OrdersBooks> { new OrdersBooks { Quantity = 3, Price = 500, Book = new Book { BookId = 4, ImageUrl = "/img/book_cover/4.jpg", Title = "Another book" } } }
-			//	}
-			//};
 
 			return View(orders);
 		}
@@ -187,15 +285,9 @@ namespace Libria.Controllers
 				{
 					var user = await _userManager.FindByEmailAsync(model.Email);
 					if (user == null)
-					{
 						ModelState.AddModelError(nameof(model.Email), ModelValidationMessages.Email);
-						ViewBag.EmailInvalid = true;
-					}
 					else
-					{
 						ModelState.AddModelError(nameof(model.Password), ModelValidationMessages.PasswordIncorrect);
-						ViewBag.PasswordInvalid = true;
-					}
 				}
 			}
 			return View(model);
@@ -271,16 +363,47 @@ namespace Libria.Controllers
 					ModelState.AddModelError(string.Empty, error.Description);
 				}
 			}
-			else if (model.Password != model.ConfirmPassword)
-			{
-				ViewBag.PasswordMismatch = true;
-			}
+
 			return View(model);
 		}
 
 		public IActionResult AccessDenied()
 		{
 			return View();
+		}
+
+		private void RemoveUnusedModelErrors(UpdateField updateField)
+		{
+			List<string> fields = new()
+			{
+				nameof(SettingsViewModel.FirstName),
+				nameof(SettingsViewModel.LastName),
+				nameof(SettingsViewModel.PhoneNumber),
+				nameof(SettingsViewModel.Email),
+				nameof(SettingsViewModel.Password),
+				nameof(SettingsViewModel.OldPassword)
+			};
+
+			switch (updateField)
+			{
+				case UpdateField.Name:
+					fields.Remove(nameof(SettingsViewModel.FirstName));
+					fields.Remove(nameof(SettingsViewModel.LastName));
+					break;
+				case UpdateField.Email:
+					fields.Remove(nameof(SettingsViewModel.Email));
+					break;
+				case UpdateField.Password:
+					fields.Remove(nameof(SettingsViewModel.Password));
+					fields.Remove(nameof(SettingsViewModel.OldPassword));
+					break;
+				case UpdateField.PhoneNumber:
+					fields.Remove(nameof(SettingsViewModel.PhoneNumber));
+					break;
+			}
+
+			foreach (var field in fields)
+				ModelState.Remove(field);
 		}
 	}
 }

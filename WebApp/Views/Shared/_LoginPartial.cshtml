@@ -19,7 +19,7 @@
 						@UserManager.Users.Where(u => u.UserName == User.Identity!.Name).Select(u => string.Concat(u.FirstName, " ", u.LastName)).FirstOrDefault()
 					</h5>
 				</li>
-				<li><a class="dropdown-item" asp-controller="Account" asp-action="Index">Акаунт</a></li>
+				<li><a class="dropdown-item" asp-controller="Account" asp-action="Settings">Акаунт</a></li>
 				<li>
 					<form method="post" asp-controller="Account" asp-action="Logout">
 						<button class="dropdown-item" type="submit">Вийти</button>
@@ -48,4 +48,5 @@
 	<li class="nav-item">
 		<a class="nav-link text-dark" id="login" asp-area="" asp-controller="Account" asp-action="Login">Авторизація</a>
 	</li>
-</ul>*@
+</ul>
+*@

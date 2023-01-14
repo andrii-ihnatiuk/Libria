@@ -164,10 +164,14 @@ body {
     width: 100%;
     display: flex;
     justify-content: space-between;
-    margin-bottom: 20px;
 }
 .info-item {
     min-height: 48px;
+}
+.info-toggle {
+    align-self: end;
+    cursor: pointer;
+    font-weight: 500;
 }
 
 /* BOOK PAGE STYLES */

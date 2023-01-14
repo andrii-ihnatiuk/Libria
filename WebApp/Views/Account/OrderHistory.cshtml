@@ -13,9 +13,9 @@
 				<div class="col-3 me-3" style="min-width:fit-content;">
 					<div class="d-flex align-items-start">
 						<div class="nav flex-column nav-pills" role="tablist" aria-orientation="vertical">
-                            <a class="nav-link link-dark" role="tab" asp-controller="Account" asp-action="Index">Інформація</a>
-                            <a class="nav-link @(ViewData["CurPill"] == "all" ? "link-dark" : "active")" role="tab" asp-controller="Account" asp-action="OrderHistory" asp-route-show="active">Активні замовлення</a>
-							<a class="nav-link @(ViewData["CurPill"] == "all" ? "active" : "link-dark")" role="tab" asp-controller="Account" asp-action="OrderHistory">Завершені замовлення</a>
+                            <a class="nav-link link-dark" role="tab" asp-controller="Account" asp-action="Settings">Інформація</a>
+                            <a class="nav-link @(ViewData["CurPill"] as string == "all" ? "link-dark" : "active")" role="tab" asp-controller="Account" asp-action="OrderHistory" asp-route-show="active">Активні замовлення</a>
+							<a class="nav-link @(ViewData["CurPill"] as string == "all" ? "active" : "link-dark")" role="tab" asp-controller="Account" asp-action="OrderHistory">Завершені замовлення</a>
 						</div>
 					</div>
 				</div>
