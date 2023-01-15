@@ -26,5 +26,17 @@ namespace Libria.ViewModels.Order
 		[EmailAddress(ErrorMessage = ModelValidationMessages.Email)]
 		[Display(Name = ModelDisplayNames.Email)]
 		public string Email { get; set; } = null!;
+
+		[Required(ErrorMessage = ModelValidationMessages.Required)]
+		[Display(Name = ModelDisplayNames.City)]
+		public string City { get; set; } = null!;
+
+		[Required(ErrorMessage = ModelValidationMessages.Required)]
+		[Display(Name = ModelDisplayNames.Address)]
+		public string Address { get; set; } = null!;
+
+		[Display(Name = ModelDisplayNames.Comment)]
+		[MaxLength(500)]
+		public string? Comment { get; set; }
 	}
 }

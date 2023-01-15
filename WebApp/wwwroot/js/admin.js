@@ -25,6 +25,11 @@
         reader.onload = function () {
             $("#imagePreview").attr("src", reader.result)
         }
+        reader.onerror = function () {
+            alert(`Помилка при читанні файлу.\nОпис: ${reader.error}`);
+            $("#formFile").val(""); // reset file input
+            return;
+        }
     })
 
     $("#availableSwitch").on("change", function () {

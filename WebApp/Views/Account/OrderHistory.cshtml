@@ -13,7 +13,7 @@
 				<div class="col-3 me-3" style="min-width:fit-content;">
 					<div class="d-flex align-items-start">
 						<div class="nav flex-column nav-pills" role="tablist" aria-orientation="vertical">
-                            <a class="nav-link link-dark" role="tab" asp-controller="Account" asp-action="Settings">Інформація</a>
+                            <a class="nav-link link-dark" role="tab" asp-controller="Account" asp-action="Settings">Налаштування</a>
                             <a class="nav-link @(ViewData["CurPill"] as string == "all" ? "link-dark" : "active")" role="tab" asp-controller="Account" asp-action="OrderHistory" asp-route-show="active">Активні замовлення</a>
 							<a class="nav-link @(ViewData["CurPill"] as string == "all" ? "active" : "link-dark")" role="tab" asp-controller="Account" asp-action="OrderHistory">Завершені замовлення</a>
 						</div>
@@ -55,25 +55,36 @@
 														})>
 													</partial>
 												}
-												<div class="row mt-3">
-													<div class="col-3 text-muted">
-														<div>Ім'я одержувача:</div>
-														<div>Електронна адреса:</div>
-														<div>Телефон:</div>
-														<div>Адреса:</div>
-													</div>
-													<div class="col-9">
-														<div>@string.Concat(order.FirstName, " ", order.LastName)</div>
-														<div>@order.Email</div>
-														<div>@order.PhoneNumber</div>
-														<div>@order.Email</div>
-													</div>
-												</div>
-												<div class="mt-2">
-													<span>Сума замовлення: </span>
-													<span class="fw-bold">@order.TotalSpent </span>
-													<span class="fw-bold">грн</span>
-												</div>
+												<table class="table table-sm w-100 mb-0 mt-3">
+													<thead>
+														<tr>
+															<th scope="col" class="w-50">Деталі</th>
+															<th scope="col"class="w-50"></th>
+														</tr>
+													</thead>
+													<tbody>
+														<tr>
+															<td class="text-muted">Ім'я одержувача:</td>
+															<td>@string.Concat(order.FirstName, " ", order.LastName)</td>
+														</tr>
+														<tr>
+															<td class="text-muted">Електронна адреса:</td>
+															<td>@order.Email</td>
+														</tr>
+														<tr>
+															<td class="text-muted">Телефон:</td>
+															<td>@order.PhoneNumber</td>
+														</tr>
+														<tr>
+															<td class="text-muted">Адреса:</td>
+															<td>@string.Join(", ", order.City, order.Address)</td>
+														</tr>
+														<tr>
+															<td class="text-muted">Коментар:</td>
+															<td>@order.Comment</td>
+														</tr>
+													</tbody>
+												</table>
 											</div>
 										</div>
 									</td>

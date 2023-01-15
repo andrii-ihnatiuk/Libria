@@ -164,9 +164,9 @@ namespace Libria.Areas.Admin.Controllers
 		}
 
 		[HttpPost]
-		public async Task<IActionResult> Edit(DashboardProductViewModel model)
+		public async Task<IActionResult> Edit(DashboardProductViewModel? model)
 		{
-			if (model.BookId == null)
+			if (model == null || model.BookId == null)
 				return BadRequest();
 
 			if (ModelState.IsValid)
@@ -194,8 +194,8 @@ namespace Libria.Areas.Admin.Controllers
 						break;
 					case FileSaveStatus.EmptyFile:
 					case FileSaveStatus.LargeFile:
+					case FileSaveStatus.UnpermittedExtension:
 						ModelState.AddModelError(nameof(model.FileUpload), fileSaveResult.ErrorMessage);
-						ViewBag.FileUploadError = true;
 						model.AuthorSelectItems = await GetAuthorSelectListItemsAsync(model.SelectedAuthors.Select(id => new Author { AuthorId = id }).ToList());
 						model.CategorySelectItems = await GetCategorySelectListItemsAsync(model.SelectedCategories.Select(id => new Category { CategoryId = id }).ToList());
 						return View(model);
@@ -293,8 +293,11 @@ namespace Libria.Areas.Admin.Controllers
 		}
 
 		[HttpPost]
-		public async Task<IActionResult> Create(DashboardProductViewModel model)
+		public async Task<IActionResult> Create(DashboardProductViewModel? model)
 		{
+			if (model == null)
+				return BadRequest();
+
 			if (ModelState.IsValid)
 			{
 				Book book = new()
@@ -324,6 +327,7 @@ namespace Libria.Areas.Admin.Controllers
 						break;
 					case FileSaveStatus.EmptyFile:
 					case FileSaveStatus.LargeFile:
+					case FileSaveStatus.UnpermittedExtension:
 						ModelState.AddModelError(nameof(model.FileUpload), fileSaveResult.ErrorMessage);
 						ViewBag.FileUploadError = true;
 						model.AuthorSelectItems = await GetAuthorSelectListItemsAsync(model.SelectedAuthors.Select(id => new Author { AuthorId = id }).ToList());
@@ -349,42 +353,53 @@ namespace Libria.Areas.Admin.Controllers
 
 		public async Task<FileSaveResult> SaveProductImage(IFormFile? formFile, string? previousImg)
 		{
+			string[] permittedExtensions = { ".jpg", ".jpeg", ".png" };
 			var result = new FileSaveResult();
 
 			if (formFile != null)
-			{
-				if (formFile.Length > 0)
+			{	
+				string ext = Path.GetExtension(formFile.FileName).ToLowerInvariant();
+				if (!string.IsNullOrEmpty(ext) && permittedExtensions.Contains(ext))
 				{
-					if (formFile.Length < 1000_000)
+					if (formFile.Length > 0)
 					{
-						try
+						if (formFile.Length < 5_000_000) // Approx 5 MB
 						{
-							string fileName = Path.GetFileName(formFile.FileName);
-							string uploadFilePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "img", "book_cover", fileName);
-
-							using (var stream = new FileStream(uploadFilePath, FileMode.Create))
+							try
 							{
-								await formFile.CopyToAsync(stream);
+								string fileName = DateTime.Now.ToString("yyyyMMddHHmm") + "_" + Path.GetRandomFileName() + ext;
+								string uploadFilePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "img", "book_cover", fileName);
+
+								using (var stream = new FileStream(uploadFilePath, FileMode.Create))
+								{
+									await formFile.CopyToAsync(stream);
+								}
+								result.Status = FileSaveStatus.Saved;
+								result.FileUrl = $"/img/book_cover/{fileName}";
 							}
-							result.Status = FileSaveStatus.Saved;
-							result.FileUrl = $"/img/book_cover/{fileName}";
+							catch
+							{
+								result.Status = FileSaveStatus.Error;
+								result.ErrorMessage = "Під час збереження файла сталася помилка.";
+							}
 						}
-						catch
+						else
 						{
-							result.Status = FileSaveStatus.Error;
-							result.ErrorMessage = "Під час збереження файла сталася помилка.";
+							result.Status = FileSaveStatus.LargeFile;
+							result.ErrorMessage = "Файл завеликий.";
 						}
 					}
 					else
 					{
-						result.Status = FileSaveStatus.LargeFile;
-						result.ErrorMessage = "Файл завеликий.";
+						result.Status = FileSaveStatus.EmptyFile;
+						result.ErrorMessage = "Файл пустий.";
 					}
+
 				}
 				else
 				{
-					result.Status = FileSaveStatus.EmptyFile;
-					result.ErrorMessage = "Файл пустий.";
+					result.Status = FileSaveStatus.UnpermittedExtension;
+					result.ErrorMessage = $"Лише файли *{string.Join("  *", permittedExtensions)}";
 				}
 			}
 			else

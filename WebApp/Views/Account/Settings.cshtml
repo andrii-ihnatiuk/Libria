@@ -16,7 +16,7 @@
 				<div class="col-3 me-3" style="min-width:fit-content;">
 					<div class="d-flex align-items-start">
 						<div class="nav flex-column nav-pills" role="tablist" aria-orientation="vertical">
-							<a class="nav-link active" role="tab" asp-controller="Account" asp-action="Settings">Інформація</a>
+							<a class="nav-link active" role="tab" asp-controller="Account" asp-action="Settings">Налаштування</a>
 							<a class="nav-link link-dark" role="tab" asp-controller="Account" asp-action="OrderHistory" asp-route-show="active">Активні замовлення</a>
 							<a class="nav-link link-dark" role="tab" asp-controller="Account" asp-action="OrderHistory">Завершені замовлення</a>
 						</div>
@@ -33,7 +33,7 @@
 						</div>
 						<div class="collapse">
 							<div class="card card-body">
-								<div>Змінити Ім'я</div>
+								<h6>Змінити Ім'я</h6>
 								<form method="post" asp-controller="Account" asp-action="Settings" role="form" novalidate class="needs-validation">
 									<div class="mt-2 mb-3">
 										<label asp-for="FirstName" class="text-muted small mb-1">Ім'я*</label>
@@ -63,7 +63,7 @@
 						</div>
 						<div class="collapse">
 							<div class="card card-body">
-								Змінити електронну пошту
+								<h6>Змінити електронну пошту</h6>
 								<form method="post" asp-controller="Account" asp-action="Settings" role="form" novalidate class="needs-validation">
 									<div class="mt-2 mb-3">
 										<label asp-for="Email" class="text-muted small mb-1">Електронна пошта*</label>
@@ -89,7 +89,7 @@
 						</div>
 						<div class="collapse">
 							<div class="card card-body">
-								Змінити номер телефону
+								<h6>Змінити номер телефону</h6>
 								<form method="post" asp-controller="Account" asp-action="Settings" role="form" novalidate class="needs-validation">
 									<div class="mt-2 mb-3">
 										<label asp-for="PhoneNumber" class="text-muted small mb-1">Номер телефону*</label>
@@ -115,7 +115,7 @@
 						</div>
 						<div class="collapse">
 							<div class="card card-body">
-								Змінити Пароль
+								<h6>Змінити Пароль</h6>
 								<form method="post" asp-controller="Account" asp-action="Settings" role="form" novalidate class="needs-validation">
 									<div class="mt-2 mb-3">
 										<label asp-for="OldPassword" class="text-muted small mb-1">Старий пароль*</label>

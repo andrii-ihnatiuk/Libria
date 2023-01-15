@@ -15,7 +15,7 @@
 	<form method="post" enctype="multipart/form-data" asp-controller="@Model.ControllerName" asp-action="@Model.ActionName" class="needs-validation" role="form" novalidate>
 		<div class="d-flex flex-wrap flex-md-nowrap mt-5">
 			<div class="flex-grow-1 me-0 me-md-4" style="flex-basis:85%;">
-				<input asp-for="Title" class="form-control form-control-lg" type="text" placeholder="Назва продукту" />
+				<input bs-for="Title" class="form-control form-control-lg" type="text" placeholder="Назва продукту" />
 				<span asp-validation-for="Title" class="invalid-feedback"></span>
 			</div>
 			<div class="flex-grow-1 mt-2 mt-md-0" style="min-width:150px; flex-basis:15%">
@@ -31,7 +31,7 @@
 							<label for="price" class="col-sm-2 col-form-label">Наявність</label>
 							<div class="col-sm-10">
 								<div class="form-check form-switch">
-									<input class="form-check-input" asp-for="Available" type="checkbox" role="switch" id="availableSwitch">
+									<input class="form-check-input" bs-for="Available" type="checkbox" role="switch" id="availableSwitch">
 									<label class="form-check-label" for="availableSwitch">@(Model.Available ? "В наявності" : "Немає в наявності")</label>
 								</div>
 							</div>
@@ -39,45 +39,45 @@
 						<div class="mb-3 row">
 							<label for="price" class="col-sm-2 col-form-label">Ціна (₴)*</label>
 							<div class="col-sm-10">
-								<input asp-for="Price" type="number" min="0" placeholder="0.0" class="form-control" id="price">
+								<input bs-for="Price" type="number" min="0" placeholder="0.0" class="form-control" id="price">
 								<span asp-validation-for="Price" class="invalid-feedback"></span>
 							</div>
 						</div>
 						<div class="mb-3 row">
 							<label for="salePrice" class="col-sm-2 col-form-label">Акційна ціна (₴)</label>
 							<div class="col-sm-10">
-								<input asp-for="SalePrice" type="number" min="0" placeholder="0.0" class="form-control" id="salePrice">
+								<input bs-for="SalePrice" type="number" min="0" placeholder="0.0" class="form-control" id="salePrice">
 							</div>
 						</div>
 						<div class="mb-3 row">
 							<label for="language" class="col-sm-2 col-form-label">Мова</label>
 							<div class="col-sm-10">
-								<input asp-for="Language" type="text" class="form-control" id="language" placeholder="Не вказано">
+								<input bs-for="Language" type="text" class="form-control" id="language" placeholder="Не вказано">
 							</div>
 						</div>
 						<div class="mb-3 row">
 							<label for="pages" class="col-sm-2 col-form-label">Кількість сторінок</label>
 							<div class="col-sm-10">
-								<input asp-for="Pages" type="number" min="0" step="1" placeholder="Не вказано" class="form-control" id="pages">
+								<input bs-for="Pages" type="number" min="0" step="1" placeholder="Не вказано" class="form-control" id="pages">
 							</div>
 						</div>
 						<div class="mb-3 row">
 							<label for="pages" class="col-sm-2 col-form-label">Рік видання</label>
 							<div class="col-sm-10">
-								<input asp-for="PublicationYear" type="text" min="1900" step="1" placeholder="Не вказано" class="form-control" id="pages">
+								<input bs-for="PublicationYear" type="text" min="1900" step="1" placeholder="Не вказано" class="form-control" id="pages">
 							</div>
 						</div>
 						<div class="mb-3 row">
 							<label for="pages" class="col-sm-2 col-form-label">ISBN</label>
 							<div class="col-sm-10">
-								<input asp-for="Isbn" type="text" placeholder="Не вказано" class="form-control" id="pages">
+								<input bs-for="Isbn" type="text" placeholder="Не вказано" class="form-control" id="pages">
 								<span asp-validation-for="Isbn" class="invalid-feedback"></span>
 							</div>
 						</div>
 						<div class="mb-3 row">
 							<label for="pages" class="col-sm-2 col-form-label">Кількість</label>
 							<div class="col-sm-10">
-								<input asp-for="Quantity" type="number" min="0" step="1" placeholder="Не вказано" class="form-control" id="pages">
+								<input bs-for="Quantity" type="number" min="0" step="1" placeholder="Не вказано" class="form-control" id="pages">
 							</div>
 						</div>
 					</div>
@@ -100,7 +100,7 @@
 					<div class="col">
 						<div class="mb-3">
 							<label for="description" class="h5">Опис товару</label>
-							<textarea asp-for="Description" class="form-control" id="description" rows="8" placeholder="Опишіть товар"></textarea>
+							<textarea bs-for="Description" class="form-control" id="description" rows="8" placeholder="Опишіть товар"></textarea>
 						</div>
 					</div>
 				</div>
@@ -108,7 +108,7 @@
 			<div class="col-lg-3 col-12">
 				<h3 class="mb-4">Зображення</h3>
 				<input type="hidden" name="bookId" value="@Model.BookId" />
-				<input asp-for="FileUpload" class="form-control @(ViewBag.FileUploadError == true ? "is-invalid" : "")" title="product image" type="file" accept=".jpg, .jpeg, .png" id="formFile" />
+				<input bs-for="FileUpload" class="form-control" title="product image" type="file" accept=".jpg, .jpeg, .png" id="formFile" />
 				<span asp-validation-for="FileUpload" class="invalid-feedback"></span>
 				<img id="imagePreview" src="@Model.ImageUrl" style="width:50%;object-fit:contain" class="rounded rounded-3 border border-1 my-3" alt="product image" />
 			</div>

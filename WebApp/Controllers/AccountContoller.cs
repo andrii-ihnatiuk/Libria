@@ -37,8 +37,6 @@ namespace Libria.Controllers
 		{
 			var user = await _userManager.GetUserAsync(User);
 
-			//var user = new User { FirstName = "Andrii", LastName = "Ihnatiuk", Email = "email@example.com", PhoneNumber = "+380953234675" };
-
 			SettingsViewModel viewModel = new() { Email = user.Email, FirstName = user.FirstName, LastName = user.LastName, PhoneNumber = user.PhoneNumber };
 			return View(viewModel);
 		}
@@ -197,8 +195,11 @@ namespace Libria.Controllers
 					LastName = o.LastName,
 					PhoneNumber = o.PhoneNumber,
 					Email = o.Email,
-					OrderStatus = o.OrderStatus
-				}).ToListAsync();
+					OrderStatus = o.OrderStatus,
+					City = o.City,
+					Address = o.Address,
+					Comment = o.Comment
+				}).OrderByDescending(o => o.OrderDate).ToListAsync();
 
 			return View(orders);
 		}

@@ -1,6 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc;
-
-namespace Libria.Areas.Admin.Models
+﻿namespace Libria.Areas.Admin.Models
 {
 	public class FileSaveResult
 	{
@@ -16,6 +14,7 @@ namespace Libria.Areas.Admin.Models
 		Saved,
 		Error,
 		LargeFile,
-		EmptyFile
+		EmptyFile,
+		UnpermittedExtension
 	}
 }

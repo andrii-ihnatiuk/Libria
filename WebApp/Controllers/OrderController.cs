@@ -58,6 +58,8 @@ namespace Libria.Controllers
 					model.FirstName = user.FirstName;
 					model.LastName = user.LastName;
 					model.Email = user.Email;
+					model.City = user.City ?? string.Empty;
+					model.Address = user.Address ?? string.Empty;
 				}
 			}
 
@@ -82,6 +84,9 @@ namespace Libria.Controllers
 					LastName = orderDetails.LastName,
 					PhoneNumber = orderDetails.PhoneNumber,
 					OrderStatus = OrderStatus.Pending,
+					City = orderDetails.City,
+					Address = orderDetails.Address,
+					Comment = orderDetails.Comment,
 					Books = orderItems.Select(i => new OrdersBooks() { BookId = i.Book.BookId, Price = i.ActiveBookPrice, Quantity = i.Quantity }).ToList()
 				};
 				_context.Orders.Add(order);

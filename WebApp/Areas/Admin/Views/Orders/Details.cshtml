@@ -30,8 +30,8 @@
 				<table class="table">
 					<thead>
 						<tr>
-							<th scope="col">Деталі замовлення</th>
-							<th scope="col"></th>
+							<th scope="col" class="w-50 h5">Деталі замовлення</th>
+							<th scope="col" class="w-50"></th>
 						</tr>
 					</thead>
 					<tbody>
@@ -61,6 +61,28 @@
 						</tr>
 					</tbody>
 				</table>
+				<table class="table mt-4">
+					<thead>
+						<tr>
+							<th scope="col" class="w-50 h5">Доставка</th>
+							<th scope="col" class="w-50"></th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr>
+							<th scope="row">Місто</th>
+							<td>@Model.Order.City</td>
+						</tr>
+						<tr>
+							<th scope="row">Адресу</th>
+							<td>@Model.Order.Address</td>
+						</tr>
+					</tbody>
+				</table>
+				<div class="my-4">
+					<label for="userOrderComment" class="form-label">Коментар замовника</label>
+					<textarea id="userOrderComment" class="form-control bg-white" readonly rows="4">@Model.Order.Comment</textarea>
+				</div>
 			</div>
 			<div class="col">
 				<h5 class="mb-0" style="padding:.5rem 0">Зміст замовлення:</h5>

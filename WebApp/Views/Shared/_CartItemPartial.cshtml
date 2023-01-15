@@ -5,7 +5,7 @@
 	var authors = string.Join(", ", Model.Book.Authors.Select(a => a.Name));
 }
 
-<div class="cart-item d-flex shadow mt-4">
+<div class="cart-item d-flex shadow shadow-sm bg-white mt-4">
 	<div class="d-flex flex-grow-1" style="flex-basis: 50%; overflow: hidden;">
 		<a class="cart-img-cont" asp-controller="Book" asp-action="Index" asp-route-bookId="@Model.Book.BookId" title="@Model.Book.Title">
 			<img src=@Model.Book.ImageUrl alt="product img">

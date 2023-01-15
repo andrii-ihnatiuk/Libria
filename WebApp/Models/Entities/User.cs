@@ -12,8 +12,8 @@ public class User : IdentityUser
     public string FirstName { get; set; } = null!;
     public string LastName { get; set; } = null!;
 
-    public string? Country { get; set; }
     public string? City { get; set; }
+    public string? Address { get; set; }
 
 	/* RELATIONS */
 
