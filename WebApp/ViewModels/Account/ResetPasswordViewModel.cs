@@ -9,13 +9,15 @@ namespace Libria.ViewModels.Account
         [Required(ErrorMessage = ModelValidationMessages.Required)]
         [DataType(DataType.Password)]
         [DisplayName(ModelDisplayNames.Password)]
-        public string Password { get; set; } = null!;
+		[MinLength(6, ErrorMessage = ModelValidationMessages.Password)]
+		public string Password { get; set; } = null!;
 
         [Required(ErrorMessage = ModelValidationMessages.Required)]
         [DataType(DataType.Password)]
         [DisplayName(ModelDisplayNames.ConfirmPassword)]
         [Compare("Password", ErrorMessage = ModelValidationMessages.PasswordMismatch)]
-        public string ConfirmPassword { get; set; } = null!;
+		[MinLength(6, ErrorMessage = ModelValidationMessages.Password)]
+		public string ConfirmPassword { get; set; } = null!;
 
         public string? Uid { get; set; }
 

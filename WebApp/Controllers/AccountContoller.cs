@@ -58,7 +58,7 @@ namespace Libria.Controllers
 				{
 					case UpdateField.Name:
 						user.FirstName = model.FirstName.Trim();
-						user.LastName = model.LastName?.Trim() ?? string.Empty;
+						user.LastName = model.LastName?.Trim();
 						break;
 					case UpdateField.PhoneNumber:
 						var number = model.PhoneNumber.Trim();
@@ -221,7 +221,7 @@ namespace Libria.Controllers
 				{
 					UserName = model.Email,
 					FirstName = model.FirstName,
-					LastName = model.LastName ?? "",
+					LastName = model.LastName,
 					Email = model.Email,
 					PhoneNumber = model.PhoneNumber
 				};
@@ -252,10 +252,72 @@ namespace Libria.Controllers
 			if (returnUrl == null && string.IsNullOrEmpty(Request.Headers["Referer"]) == false)
 			{
 				var path = new Uri(Request.Headers["Referer"].ToString());
-				ViewData["returnUrl"] = path.PathAndQuery.ToString();
+				var url = path.PathAndQuery.ToString();
+				ViewData["returnUrl"] = (url == "/Account/Login" ? string.Empty : url);
 			}
 			else { ViewData["returnUrl"] = returnUrl; }
+
 			return View();
+		}
+
+		[HttpPost]
+		public IActionResult GoogleLogin(string? returnUrl)
+		{
+			var redirectUrl = Url.Action("ExternalLoginCallback", "Account", new { returnUrl });
+			var properties = _signInManager.ConfigureExternalAuthenticationProperties("Google", redirectUrl);
+			return new ChallengeResult("Google", properties);
+		}
+
+		public async Task<IActionResult> ExternalLoginCallback(string? returnUrl, string? remoteError)
+		{
+			returnUrl ??= "";
+
+			if (remoteError != null)
+			{
+				ModelState.AddModelError(string.Empty, $"Вибачте, сталася помилка при спробі авторизації Google.\nПомилка: {remoteError}");
+				return View("Login");
+			}
+
+			var info = await _signInManager.GetExternalLoginInfoAsync();
+			if (info == null)
+			{
+				ModelState.AddModelError(string.Empty, "Помилка, не вдалося отримати дані вашого облікового запису.");
+				return View("Login");
+			}
+
+			var signInResult = await _signInManager.ExternalLoginSignInAsync(info.LoginProvider, info.ProviderKey, false, true);
+			if (signInResult.Succeeded)
+			{
+				return Url.IsLocalUrl(returnUrl) ? LocalRedirect(returnUrl) : RedirectToAction("Index", "Home");
+			}
+			else
+			{
+				var email = info.Principal.FindFirstValue(ClaimTypes.Email);
+				var name = info.Principal.FindFirstValue(ClaimTypes.Name);
+
+				if (string.IsNullOrEmpty(email) == false)
+				{
+					User? user = await _userManager.FindByNameAsync(email);
+
+					if (user == null)
+					{
+						user = new User { UserName = email, Email = email, FirstName = name ?? email };
+						var res = await _userManager.CreateAsync(user);
+						if (res.Succeeded == false)
+							return Problem("Cannot save user info.");
+					}
+					var identityRes = await _userManager.AddLoginAsync(user, info);
+					if (identityRes.Succeeded == false)
+						return Problem("Cannot add external login to user account.");
+					await _signInManager.SignInAsync(user, isPersistent: false);
+
+					return Url.IsLocalUrl(returnUrl) ? LocalRedirect(returnUrl) : RedirectToAction("Index", "Home");
+
+				}
+
+				return RedirectToAction("Error", "Home");
+			}
+				
 		}
 
 		[HttpPost]

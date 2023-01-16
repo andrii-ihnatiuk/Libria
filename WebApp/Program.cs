@@ -38,7 +38,15 @@ builder.Services.AddIdentity<User, IdentityRole>(options =>
 	.AddDefaultTokenProviders()
 	.AddErrorDescriber<UkrainianIdentityErrorDescriber>();
 
-// Configuring Email
+// Configure external authentication providers
+builder.Services.AddAuthentication().AddGoogle(googleOptions =>
+{
+	googleOptions.ClientId = builder.Configuration["Authentication:Google:ClientId"];
+	googleOptions.ClientSecret = builder.Configuration["Authentication:Google:ClientSecret"];
+	googleOptions.CorrelationCookie.SameSite = SameSiteMode.Unspecified;
+});
+
+// Configure Email
 builder.Services.AddTransient<IEmailService, EmailService>();
 builder.Services.Configure<EmailSettings>(builder.Configuration.GetSection(nameof(EmailSettings)));
 

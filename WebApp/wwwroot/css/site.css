@@ -39,11 +39,14 @@ body {
     box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
 }
 
+.btn-google:hover path {
+    transition: fill .2s ease;
+    fill: white;
+}
 
-    /* CAROUSEL STYLES */
 
-
-    .carousel-item, .carousel-item img {
+/* CAROUSEL STYLES */
+.carousel-item, .carousel-item img {
     margin: auto;
     position: absolute;
     top: 0;
