@@ -2,11 +2,8 @@
 using Libria.Models;
 using Libria.Models.Entities;
 using Libria.Services;
-using Libria.ViewModels.Cart;
 using Libria.ViewModels.Order;
 using Microsoft.AspNetCore.Mvc;
-using System.ComponentModel;
-using System.Linq;
 using System.Security.Claims;
 using System.Text.Json;
 
@@ -56,7 +53,7 @@ namespace Libria.Controllers
 				{
 					model.PhoneNumber = user.PhoneNumber;
 					model.FirstName = user.FirstName;
-					model.LastName = user.LastName;
+					model.LastName = user.LastName ?? string.Empty;
 					model.Email = user.Email;
 					model.City = user.City ?? string.Empty;
 					model.Address = user.Address ?? string.Empty;

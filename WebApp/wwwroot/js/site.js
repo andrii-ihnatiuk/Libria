@@ -5,20 +5,25 @@
 
 $(document).ready(function () {
     /* PRODUCTS SLIDER */
-    var slider = $('#autoWidth').lightSlider({
-        autoWidth: true,
-        loop: false,
-        controls: false,
-        slideMargin: 10,
-        pager: false,
-        onSliderLoad: function () {
-            $('#autoWidth').removeClass('hidden');
-        }
+    $('.slider').each(function () {
+        let inst = $(this).lightSlider({
+            autoWidth: true,
+            loop: false,
+            controls: false,
+            slideMargin: 10,
+            pager: false,
+            onSliderLoad: function (el) {
+                el.removeClass('hidden');
+            }
+        });
+        $(this).closest(".slider-container").find(".slider-controls").data("controlInstance", inst);
     });
-    $('#goToPrevSlide').click(function () {
+    $(".goToPrevSlide").click(function () {
+        let slider = $(this).parent().data("controlInstance")
         slider.goToPrevSlide();
     });
-    $('#goToNextSlide').click(function () {
+    $('.goToNextSlide').click(function () {
+        let slider = $(this).parent().data("controlInstance")
         slider.goToNextSlide();
     });
     // Star rating items
@@ -194,29 +199,32 @@ $(document).ready(function () {
     /* BOOK CARD ADD TO WISH LIST */
     $('main').on('click', '.cardWishListAction', function (e) {
         var clickedEl = $(e.target);
-        clickedEl.attr('disabled', true);
+        if (clickedEl.data("disabled") === true)
+            return;
+
+        clickedEl.data("disabled", true);
 
         if (clickedEl.hasClass('cardWishAdd')) {
             var reqURL = '/WishList/Add';
-            var newText = 'Видалити'
+            var newColor = 'red'
             var newClass = 'cardWishRm';
             var oldClass = 'cardWishAdd';
         }
         else if (clickedEl.hasClass('cardWishRm')) {
             var reqURL = '/WishList/Remove';
-            var newText = 'Бажаю'
+            var newColor = 'transparent'
             var newClass = 'cardWishAdd';
             var oldClass = 'cardWishRm';
         }
         else {
-            clickedEl.removeAttr('disabled');
+            clickedEl.data("disabled", false);
             return;
         }
 
         var bookId = clickedEl.attr('data-bookId');
         if (typeof bookId === 'undefined' || bookId === '') {
             alert("Не знайдено ідентифікатор товару");
-            clickedEl.removeAttr('disabled');
+            clickedEl.data("disabled", false);
             return;
         }
         $.ajax({
@@ -226,9 +234,9 @@ $(document).ready(function () {
             data: { 'bookId': bookId },
             success: function (response) {
                 if (response.success === true) {
-                    $('.cardWishListAction').find(`input[data-bookId=${bookId}]`).each(function () {
-                        $(this).attr('value', newText);
+                    $('.cardWishListAction').find(`div[data-bookId=${bookId}]`).each(function () {
                         $(this).addClass(newClass).removeClass(oldClass);
+                        $(this).find("svg g path:first-child").css("fill", newColor);
                     })
                 }
                 else alert("Вибачте, сталася помилка");
@@ -242,7 +250,7 @@ $(document).ready(function () {
                 }
             }
         }).always(function () {
-            clickedEl.removeAttr('disabled');
+            clickedEl.data("disabled", false);
         });
     });
 

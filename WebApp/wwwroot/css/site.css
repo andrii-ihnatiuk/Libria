@@ -72,18 +72,28 @@ body {
 
 
 .s-item-box {
+    display: flex;
+    flex-direction: column;
     width: 200px;
+    min-height: 350px;
     border: 2px solid transparent;
+    transition: margin-top .1s linear;
     cursor: default;
 }
 
     .s-item-box:hover .s-item-btns {
-        opacity: 1;
+        visibility: visible;
     }
 
     .s-item-box:hover {
         border-image: linear-gradient(to top, rgb(241, 241, 241), rgb(255, 255, 255)) 1;
+        margin-top: -2px;
     }
+
+.s-item-btns {
+    visibility: hidden;
+    margin-top: auto;
+}
 
 .s-item-img {
     display: block;
@@ -115,6 +125,13 @@ body {
         font-size: 14px;
     }
 
+    .s-item-details .s-item-author, .s-item-title {
+        display: block;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        overflow: hidden
+    }
+
 .sale-price {
     color: dimgrey;
     font-weight: 600;
@@ -129,8 +146,11 @@ body {
     margin-left: 5px;
 }
 
-.s-item-btns {
-    opacity: 0;
+.cardWishListAction path {
+    transition: fill .2s ease;
+}
+.cardWishRm, .cardWishAdd {
+    cursor: pointer;
 }
 
 @keyframes fade {
@@ -143,8 +163,16 @@ body {
     }
 }
 
-.slider {
+.slider-container {
     width: 100%;
+}
+
+.slider-controls path {
+    fill: #6c757d;
+}
+
+.slider-controls button:hover path {
+    fill: black;
 }
 
 .hidden {
@@ -167,9 +195,11 @@ body {
     display: flex;
     justify-content: space-between;
 }
+
 .info-item {
     min-height: 48px;
 }
+
 .info-toggle {
     align-self: end;
     cursor: pointer;

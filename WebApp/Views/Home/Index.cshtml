@@ -2,7 +2,7 @@
     ViewData["Title"] = "Home Page";
 }
 
-<div id="carouselExampleIndicators" class="carousel slide" data-mdb-ride="carousel">
+<div id="carouselExampleIndicators" class="carousel slide mb-4" data-mdb-ride="carousel">
     <div class="carousel-indicators">
         <button type="button"
                 data-bs-target="#carouselExampleIndicators"
@@ -40,11 +40,11 @@
     </button>
 </div>
 
-<div class="my-4">
+<div class="mt-2">
     @await Component.InvokeAsync("NewBooks")
 </div>
 
-<div class="my-4">
-    <h4>Хіти продажів</h4>
+<div class="mt-2">
+    @await Component.InvokeAsync("PopularBooks")
 </div>
 

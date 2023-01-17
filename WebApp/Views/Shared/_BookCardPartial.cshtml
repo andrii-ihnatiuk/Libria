@@ -3,6 +3,7 @@
 @model BookCardViewModel
 @{
 	var book = Model.Book;
+	var authors = string.Join(", ", Model.Book.Authors.Select(a => a.Name));
 }
 
 <div class="s-item">
@@ -12,10 +13,10 @@
 		</a>
 		<div class="s-item-details">
 			<a class="s-item-title" asp-controller="Book" asp-action="Index" asp-route-bookId="@book.BookId" title="@book.Title">
-				<span style="display:block;white-space:nowrap;text-overflow:ellipsis;overflow:hidden">@book.Title</span>
+				<span>@book.Title</span>
 			</a>
-			<div class="s-item-author">
-				<span>@(book.Authors.FirstOrDefault()?.Name ?? "Без автора")</span>
+			<div class="s-item-author" title="@authors">
+				<span>@authors</span>
 			</div>
 			<div>
 				@if (book.SalePrice < book.Price)
@@ -44,22 +45,36 @@
 			<div class="flex-grow-1">
 				@if (book.Available)
 				{
-					<input data-bookId="@book.BookId" class="w-100 cardCartAction" type="submit" value="Купити" />
+					<button data-bookId="@book.BookId" class="btn btn-sm rounded-pill btn-outline-primary w-100 cardCartAction" type="submit">Купити</button>
 				}
 				else
 				{
-					<input data-bookId="@book.BookId" class="w-100 cardCartAction" type="submit" value="Купити" disabled />
+					<button data-bookId="@book.BookId" class="btn btn-sm rounded-pill btn-outline-primary w-100 cardCartAction" type="button" disabled>Купити</button>
 				}
 			</div>
 
 			<div class="flex-grow-0 ms-2 cardWishListAction">
 				@if (Model.Wished)
 				{
-					<input data-bookId="@book.BookId" class="cardWishRm w-100" type="button" value="Видалити" />
+					<div data-bookId="@book.BookId" class="cardWishRm w-100">
+						<svg width="32" height="32" xmlns="http://www.w3.org/2000/svg" style="pointer-events:none">
+							<g transform="translate(16,16) scale(0.7) translate(-16,-16)">
+								<path fill="red" stroke="null" d="m11.688,25.55699c-7.68328,-5.80037 -10.43035,-9.46957 -10.45262,-13.96135c-0.0203,-4.0948 3.37082,-8.04689 6.88512,-8.0241c1.75489,0.0114 5.51923,1.51852 6.8522,2.74342c0.67163,0.61718 0.98974,0.55632 2.48505,-0.47543c4.06959,-2.80796 8.04359,-2.8669 10.61733,-0.15745c4.11338,4.33027 3.36449,9.5014 -2.15279,14.86526c-2.9333,2.85174 -9.339,7.91088 -10.01645,7.91088c-0.20614,0 -2.10416,-1.30556 -4.21784,-2.90124l0,0z" />
+								<path fill="red" stroke="null" d="m31.6348,9.36834a9.74686,9.40611 0 0 0 -5.49852,-6.26981c-4.63902,-2.0541 -8.68188,1.22603 -10.15201,2.65315c-1.46579,-1.4313 -5.51733,-4.71143 -10.15201,-2.65315a9.74686,9.40611 0 0 0 -5.49852,6.26981a8.41853,8.12422 0 0 0 1.44698,6.95404c2.47144,3.09301 13.24855,12.41534 13.70579,12.81052a0.74375,0.71775 0 0 0 0.99552,0c0.45725,-0.39518 11.23435,-9.71751 13.70579,-12.81052a8.41419,8.12003 0 0 0 1.44698,-6.95404zm-2.62337,6.07571c-2.09523,2.62243 -10.83498,10.28026 -13.02282,12.18494c-2.18783,-1.90468 -10.92759,-9.56251 -13.02282,-12.18494a6.9455,6.70269 0 0 1 -1.17495,-5.72522a8.2637,7.97481 0 0 1 4.66796,-5.3063c3.22532,-1.4341 6.84566,0.43428 8.95102,2.86261a0.74664,0.72054 0 0 0 0.57879,0.26252a0.74664,0.72054 0 0 0 0.57879,-0.26252c0.04196,-0.04887 4.28017,-4.93765 8.95391,-2.86959a8.26804,7.979 0 0 1 4.66796,5.3063a6.9455,6.70269 0 0 1 -1.17784,5.7322z" />
+							</g>
+						</svg>
+					</div>
 				}
 				else
 				{
-					<input data-bookId="@book.BookId" class="cardWishAdd w-100" type="button" value="Бажаю" />
+					<div data-bookId="@book.BookId" class="cardWishAdd w-100">
+						<svg width="32" height="32" xmlns="http://www.w3.org/2000/svg" style="pointer-events:none">
+							<g transform="translate(16,16) scale(0.7) translate(-16,-16)">
+								<path fill="#ffffff" stroke="null" d="m11.688,25.55699c-7.68328,-5.80037 -10.43035,-9.46957 -10.45262,-13.96135c-0.0203,-4.0948 3.37082,-8.04689 6.88512,-8.0241c1.75489,0.0114 5.51923,1.51852 6.8522,2.74342c0.67163,0.61718 0.98974,0.55632 2.48505,-0.47543c4.06959,-2.80796 8.04359,-2.8669 10.61733,-0.15745c4.11338,4.33027 3.36449,9.5014 -2.15279,14.86526c-2.9333,2.85174 -9.339,7.91088 -10.01645,7.91088c-0.20614,0 -2.10416,-1.30556 -4.21784,-2.90124l0,0z" />
+								<path fill="red" stroke="null" d="m31.6348,9.36834a9.74686,9.40611 0 0 0 -5.49852,-6.26981c-4.63902,-2.0541 -8.68188,1.22603 -10.15201,2.65315c-1.46579,-1.4313 -5.51733,-4.71143 -10.15201,-2.65315a9.74686,9.40611 0 0 0 -5.49852,6.26981a8.41853,8.12422 0 0 0 1.44698,6.95404c2.47144,3.09301 13.24855,12.41534 13.70579,12.81052a0.74375,0.71775 0 0 0 0.99552,0c0.45725,-0.39518 11.23435,-9.71751 13.70579,-12.81052a8.41419,8.12003 0 0 0 1.44698,-6.95404zm-2.62337,6.07571c-2.09523,2.62243 -10.83498,10.28026 -13.02282,12.18494c-2.18783,-1.90468 -10.92759,-9.56251 -13.02282,-12.18494a6.9455,6.70269 0 0 1 -1.17495,-5.72522a8.2637,7.97481 0 0 1 4.66796,-5.3063c3.22532,-1.4341 6.84566,0.43428 8.95102,2.86261a0.74664,0.72054 0 0 0 0.57879,0.26252a0.74664,0.72054 0 0 0 0.57879,-0.26252c0.04196,-0.04887 4.28017,-4.93765 8.95391,-2.86959a8.26804,7.979 0 0 1 4.66796,5.3063a6.9455,6.70269 0 0 1 -1.17784,5.7322z" />
+							</g>
+						</svg>
+					</div>
 				}
 			</div>
 		</div>

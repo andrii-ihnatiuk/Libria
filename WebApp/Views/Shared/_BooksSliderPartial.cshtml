@@ -7,17 +7,16 @@
 		wishIds = ViewData["wishIds"] as List<int>;
 	bool wished = false;
 }
-<section class="slider">
-	<div id="autoWidth" class="hidden">
-		@for (var i = 0; i < 10; i++)
-			@foreach (var book in Model)
-			{
-				wished = wishIds != null && wishIds.Contains(book.BookId) ? true : false;
-				<partial name="_BookCardPartial" model=@(new BookCardViewModel { Book = book, Wished = wished })></partial>
-			}
+<section class="slider-container">
+	<div class="slider hidden">
+		@foreach (var book in Model)
+		{
+			wished = wishIds != null && wishIds.Contains(book.BookId) ? true : false;
+			<partial name="_BookCardPartial" model=@(new BookCardViewModel { Book = book, Wished = wished })></partial>
+		}
 	</div>
-	<div class="d-flex justify-content-end mt-1">
-		<button id="goToPrevSlide" class="btn me-2" style="width:70px"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"><path d="M15.293 3.293 6.586 12l8.707 8.707 1.414-1.414L9.414 12l7.293-7.293-1.414-1.414z" /></svg></button>
-		<button id="goToNextSlide" class="btn ms-2" style="width:70px"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"><path d="M7.293 4.707 14.586 12l-7.293 7.293 1.414 1.414L17.414 12 8.707 3.293 7.293 4.707z" /></svg></button>
+	<div class="d-flex slider-controls justify-content-end mt-2">
+		<button class="btn btn-sm p-0 me-2 goToPrevSlide" style="width:70px"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"><path d="M15.293 3.293 6.586 12l8.707 8.707 1.414-1.414L9.414 12l7.293-7.293-1.414-1.414z" /></svg></button>
+		<button class="btn btn-sm p-0 ms-2 goToNextSlide" style="width:70px"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"><path d="M7.293 4.707 14.586 12l-7.293 7.293 1.414 1.414L17.414 12 8.707 3.293 7.293 4.707z" /></svg></button>
 	</div>
 </section>
