@@ -24,6 +24,12 @@ services:
     image: ihnatiuk/libria-flask
     ports:
       - "7007:7007"
+    environment:
+      - FLASK_ENV=development
+    volumes:
+      - type: bind
+        source: ~/libria/config
+        target: /app/config
 volumes:
   data-protection:
     

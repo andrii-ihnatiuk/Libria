@@ -20,16 +20,17 @@ namespace Libria.Components
 
 		public async Task<IViewComponentResult> InvokeAsync()
 		{
-			var books = await _context.Books.Select(b => new Book
-			{
-				BookId = b.BookId,
-				Title = b.Title,
-				Available = b.Available,
-				Price = b.Price,
-				SalePrice = b.SalePrice,
-				ImageUrl = b.ImageUrl,
-				Authors = b.Authors.Select(a => new Author { Name = a.Name }).ToList()
-			}).OrderByDescending(b => b.BookId).Take(10).ToListAsync();
+			var books = await _context.Books.AsNoTracking()
+				.Select(b => new Book
+				{
+					BookId = b.BookId,
+					Title = b.Title,
+					Available = b.Available,
+					Price = b.Price,
+					SalePrice = b.SalePrice,
+					ImageUrl = b.ImageUrl,
+					Authors = b.Authors.Select(a => new Author { Name = a.Name }).ToList()
+				}).OrderByDescending(b => b.BookId).Take(10).ToListAsync();
 
 			var userId = UserClaimsPrincipal.FindFirstValue(ClaimTypes.NameIdentifier);
 

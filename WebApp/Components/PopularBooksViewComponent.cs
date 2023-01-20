@@ -18,14 +18,27 @@ namespace Libria.Components
 			_wishListService = wishListService;
 		}
 
-		public async Task<IViewComponentResult> InvokeAsync()
+		public async Task<IViewComponentResult> InvokeAsync(bool popularThisWeek = false)
 		{
-			var popularIds = await _context.OrdersBooks
+			var query = _context.OrdersBooks.AsNoTracking();
+
+			if (popularThisWeek)
+			{
+				ViewData["SectionTitle"] = "Популярне за тиждень";
+				var now = DateTime.UtcNow.Date;
+				var startDate = now.AddDays(-7).Date;
+
+				query = query.Where(ob => ob.Order.OrderDate >= startDate && ob.Order.OrderDate <= now);
+			}
+			else
+                ViewData["SectionTitle"] = "Хіти продажів";
+
+            var popularIds = await query
 				.GroupBy(ob => ob.BookId)
 				.Select(x => new { BookId = x.Key, Count = x.Count() })
 				.OrderByDescending(x => x.Count)
 				.Select(x => x.BookId)
-				.Take(2)
+				.Take(10)
 				.ToListAsync();
 
 			var books = await _context.Books
@@ -49,7 +62,7 @@ namespace Libria.Components
 
 			ViewData["wishIds"] = wishIds;
 
-			return View(books);
+            return View(books);
 		}
 	}
 }
