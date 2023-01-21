@@ -8,7 +8,7 @@ using System.Security.Claims;
 
 namespace Libria.Controllers
 {
-    public class BookController : Controller
+	public class BookController : Controller
 	{
 		private readonly LibriaDbContext _context;
 		private readonly INotificationService _notificationService;
@@ -59,7 +59,7 @@ namespace Libria.Controllers
 		}
 
 		[HttpGet]
-		public IActionResult UnsubscribeNotification(int? subscriptionId, string? userEmail, int? bookId) 
+		public IActionResult UnsubscribeNotification(int? subscriptionId, string? userEmail, int? bookId)
 		{
 			if (subscriptionId == null || userEmail == null || bookId == null)
 				return BadRequest();
@@ -98,25 +98,26 @@ namespace Libria.Controllers
 
 		private async Task<Book?> SelectBook(int bookId)
 		{
-			return await _context.Books.Select(b => new Book
-			{
-				BookId = b.BookId,
-				Available = b.Available,
-				Description = b.Description,
-				Isbn = b.Isbn,
-				ImageUrl = b.ImageUrl,
-				Pages = b.Pages,
-				Price = b.Price,
-				SalePrice = b.SalePrice,
-				PublicationYear = b.PublicationYear,
-				Quantity = b.Quantity,
-				Title = b.Title,
-				Publisher = b.Publisher,
-				Language = b.Language,
-				Authors = b.Authors.Select(a => new Author { AuthorId = a.AuthorId, Name = a.Name }).OrderBy(a => a.Name).ToList(),
-				Categories = b.Categories.Select(c => new Category { CategoryId = c.CategoryId, Name = c.Name }).OrderBy(c => c.Name).ToList(),
-				Reviews = b.Reviews.Select(r => new Review { Id = r.Id, ReviewDate = r.ReviewDate, StarsQuantity = r.StarsQuantity, Text = r.Text, Username = r.Username }).OrderByDescending(r => r.ReviewDate).ToList()
-			}).FirstOrDefaultAsync(b => b.BookId == bookId);
+			return await _context.Books.AsNoTracking()
+				.Select(b => new Book
+				{
+					BookId = b.BookId,
+					Available = b.Available,
+					Description = b.Description,
+					Isbn = b.Isbn,
+					ImageUrl = b.ImageUrl,
+					Pages = b.Pages,
+					Price = b.Price,
+					SalePrice = b.SalePrice,
+					PublicationYear = b.PublicationYear,
+					Quantity = b.Quantity,
+					Title = b.Title,
+					Publisher = b.Publisher,
+					Language = b.Language,
+					Authors = b.Authors.Select(a => new Author { AuthorId = a.AuthorId, Name = a.Name }).OrderBy(a => a.Name).ToList(),
+					Categories = b.Categories.Select(c => new Category { CategoryId = c.CategoryId, Name = c.Name }).OrderBy(c => c.Name).ToList(),
+					Reviews = b.Reviews.Select(r => new Review { Id = r.Id, ReviewDate = r.ReviewDate, StarsQuantity = r.StarsQuantity, Text = r.Text, Username = r.Username }).OrderByDescending(r => r.ReviewDate).ToList()
+				}).FirstOrDefaultAsync(b => b.BookId == bookId);
 		}
 	}
 }

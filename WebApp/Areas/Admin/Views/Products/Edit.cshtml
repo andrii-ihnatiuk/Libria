@@ -1,8 +1,9 @@
 ﻿@using Libria.Areas.Admin.Models;
 @using Libria.Areas.Admin.ViewModels;
 @using Libria.Models.Entities;
+@using Libria.Areas.Admin.ViewModels.Products;
 
-@model DashboardProductViewModel;
+@model EditProductViewModel;
 
 <partial name="_SideBarPartial" model="@new SidebarViewModel(MenuItemType.Products)"></partial>
 
@@ -83,16 +84,22 @@
 					</div>
 				</div>
 				<div class="row">
-					<div class="col-6">
+					<div class="col-md-4 col-12">
 						<div class="mb-3">
-							<label for="authorSelect" class="h5">Автори</label>
-							<select asp-items="@Model.AuthorSelectItems" id="authorSelect" multiple name="selectedAuthors[]" class="chosen-select" hidden data-placeholder="Оберіть авторів"></select>
+							<label asp-for="SelectedPublisherId" class="h5">Видавництво</label>
+							<select asp-items="@Model.PublisherSelectItems" id="publisherSelect" asp-for="SelectedPublisherId" class="chosen-select" hidden data-placeholder="Оберіть видавництво"></select>
 						</div>
 					</div>
-					<div class="col-6">
+					<div class="col-md-4 col-12">
+						<div class="mb-3">
+							<label for="authorSelect" class="h5">Автори</label>
+							<select asp-items="@Model.AuthorSelectItems" id="authorSelect" multiple name="selectedAuthors[]" class="chosen-select-multi" hidden data-placeholder="Оберіть авторів"></select>
+						</div>
+					</div>
+					<div class="col-md-4 col-12">
 						<div class="mb-3">
 							<label for="categorySelect" class="h5">Категорії</label>
-							<select asp-items="@Model.CategorySelectItems" id="categorySelect" multiple name="selectedCategories[]" class="chosen-select" hidden data-placeholder="Оберіть категорії"></select>
+							<select asp-items="@Model.CategorySelectItems" id="categorySelect" multiple name="selectedCategories[]" class="chosen-select-multi" hidden data-placeholder="Оберіть категорії"></select>
 						</div>
 					</div>
 				</div>
@@ -113,9 +120,7 @@
 				<img id="imagePreview" src="@Model.ImageUrl" style="width:50%;object-fit:contain" class="rounded rounded-3 border border-1 my-3" alt="product image" />
 			</div>
 		</div>
-
 	</form>
-
 </div>
 
 @section Scripts {

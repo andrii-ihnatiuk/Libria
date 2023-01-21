@@ -10,8 +10,37 @@
         $("#modal-remove-id").attr("value", removeId);
     });
 
-    $(".chosen-select").chosen({
+    $("#publisherEditModal").on("show.bs.modal", function (event) {
+        var clicked = $(event.relatedTarget);
+
+        var title = clicked.attr("data-modal-title");
+        var id = clicked.attr("data-publisher-id");
+
+        if (id === 'undefined') {
+            alert("Не знайдено ідентифікатор видавництва");
+            return;
+        }
+
+        var modal = $("#publisherEditModal");
+        modal.find(".modal-title").text(title);
+        modal.find("#publisherId").val(id);
+
+        if (clicked.hasClass("add-publisher")) {
+            modal.find("form").attr("action", "/Admin/Publishers/Create");
+        }
+        else if (clicked.hasClass("edit-publisher")) {
+            modal.find("form").attr("action", "/Admin/Publishers/Edit");
+        }
+    })
+
+    $(".chosen-select-multi").chosen({
         disable_search_threshold: 10,
+        no_results_text: "Упс, нічого не знайдено: ",
+        width: "100%"
+    });
+
+    $(".chosen-select").chosen({
+/*        disable_search_threshold: 10,*/
         no_results_text: "Упс, нічого не знайдено: ",
         width: "100%"
     });

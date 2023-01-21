@@ -10,6 +10,7 @@ public class LibriaDbContext : IdentityDbContext<User>
     public DbSet<Book> Books { get; set; } = null!;
     public DbSet<Author> Authors { get; set; } = null!;
     public DbSet<Category> Categories { get; set; } = null!;
+    public DbSet<Publisher> Publishers { get; set; } = null!;
     public DbSet<WishList> WishList { get; set; } = null!;
     public DbSet<CartUsersBooks> CartUsersBooks { get; set; } = null!;
     public DbSet<Order> Orders { get; set; } = null!;
@@ -81,8 +82,7 @@ public class LibriaDbContext : IdentityDbContext<User>
 		// Configuring relations
 
 		// Books - Authors
-		builder
-            .Entity<Book>()
+		builder.Entity<Book>()
             .HasMany(b => b.Authors)
             .WithMany(a => a.Books)
             .UsingEntity(b => b
@@ -94,11 +94,15 @@ public class LibriaDbContext : IdentityDbContext<User>
 
 
         // Books - Categories
-        builder
-            .Entity<Category>()
+        builder.Entity<Category>()
             .HasMany(c => c.Books)
             .WithMany(b => b.Categories);
 
+        // Books - Publisher
+        builder.Entity<Book>()
+            .HasOne(b => b.Publisher)
+            .WithMany(p => p.Books)
+            .HasForeignKey(b => b.PublisherId);
 
 		// Users - Books (WishList)
         builder.Entity<WishList>()

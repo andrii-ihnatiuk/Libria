@@ -1,0 +1,100 @@
+﻿@using Libria.Areas.Admin.ViewModels;
+@using Libria.Areas.Admin.ViewModels.Publishers;
+
+@model DashboardPublishersViewModel;
+
+<partial name="_SideBarPartial" model="@Model.SidebarViewModel"></partial>
+
+<div class="container-fluid p-4 overflow-auto">
+	<div class="d-flex flex-wrap justify-content-between align-items-start">
+		<h2>Видавництва</h2>
+		<a asp-area="" asp-controller="Home" asp-action="Index">В магазин</a>
+	</div>
+
+	<form method="get" asp-controller="Publishers" asp-action="Index">
+		<div class="d-flex mt-5">
+			<div class="me-3">
+				<input type="search" class="form-control" name="q" value="@Model.CurrentSearchString" placeholder="Пошук видавництв" />
+			</div>
+			<button type="submit" class="btn btn-outline-primary">Шукати</button>
+		</div>
+	</form>
+
+	<button type="button" class="d-inline-flex justify-content-center align-items-center text-dark bg-transparent border-0 px-0 py-2 mt-3 add-publisher" data-modal-title="Нове видавництво" data-bs-toggle="modal" data-bs-target="#publisherEditModal">
+		<svg width="24" height="24" fill="none" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd" d="M12 5a1 1 0 0 1 1 1v12a1 1 0 1 1-2 0V6a1 1 0 0 1 1-1z" fill="#212529" /><path fill-rule="evenodd" clip-rule="evenodd" d="M5 12a1 1 0 0 1 1-1h12a1 1 0 1 1 0 2H6a1 1 0 0 1-1-1z" fill="#212529" /></svg>
+		<span class="ms-2">Додати видавництво</span>
+	</button>
+
+
+	<div class="row mt-5">
+		@foreach (var publisherCard in Model.PublisherCards)
+		{
+			<div class="col-3 mb-3" style="min-height:250px;min-width:250px">
+				<div class="card shadow-sm text-dark bg-light h-100">
+					<div class="card-body d-flex flex-column justify-content-center align-items-center">
+						<h2 class="card-title m-0 text-center mt-auto w-100">@publisherCard.Publisher.Name</h2>
+						<span class="py-2 text-primary mt-auto">@publisherCard.ItemsCount книг всього</span>
+					</div>
+					<div class="card-header p-0 d-flex shadow-sm text-center w-100">
+						<button style="border:0" type="button" class="d-block w-50 p-2 border-1 border-end border-top" data-remove-id="@publisherCard.Publisher.PublisherId" data-modal-title="@publisherCard.Publisher.Name" data-bs-toggle="modal" data-bs-target="#confirmDeleteModal">
+							Видалити
+						</button>
+						<button style="border:0" type="button" class="d-block w-50 p-2 border-1 border-start border-top edit-publisher" data-publisher-id="@publisherCard.Publisher.PublisherId" data-modal-title="Редагування" data-bs-toggle="modal" data-bs-target="#publisherEditModal">
+							Редагувати
+						</button>
+					</div>
+				</div>
+			</div>
+		}
+	</div>
+
+</div>
+
+<!-- Delete publisher modal -->
+<div class="modal fade" id="confirmDeleteModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h5 class="modal-title" id="exampleModalLabel"></h5>
+				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+			</div>
+			<div class="modal-body">
+				<p>Ви впевнені що хочете видалити це видавництво?</p>
+				<span>Результат дії не можна відмінити.</span>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Відміна</button>
+				<form method="post" asp-controller="Publishers" asp-action="Remove">
+					<input id="modal-remove-id" type="hidden" name="publisherId" />
+					<button type="submit" class="btn btn-danger">Видалити</button>
+				</form>
+			</div>
+		</div>
+	</div>
+</div>
+
+<!-- Edit/Create publisher modal -->
+<div class="modal fade" id="publisherEditModal" tabindex="-1" aria-labelledby="publisherModalLabel" aria-hidden="true">
+	<div class="modal-dialog modal-dialog-centered">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h5 class="modal-title" id="publisherModalLabel"></h5>
+				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+			</div>
+			<form method="post" role="form" class="needs-validation" novalidate>
+				<div class="modal-body">
+					<input name="name" class="form-control" id="publisherName" placeholder="Введіть назву видавництва" data-val="true" data-val-required="Це поле не може бути пустим"/>
+					<span class="invalid-feedback field-validation-valid" data-valmsg-for="name" data-valmsg-replace="true"></span>
+					<input id="publisherId" type="hidden" name="publisherId" value="" />
+				</div>
+				<div class="modal-footer">
+					<button id="btnEditPublisher" type="submit" class="btn btn-primary w-100">Зберегти</button>
+				</div>
+			</form>
+		</div>
+	</div>
+</div>
+
+@section Scripts {
+	<partial name="_ValidationScriptsPartial" />
+}

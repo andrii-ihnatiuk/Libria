@@ -9,6 +9,8 @@
 		authors.Add(new Author() { AuthorId = -1, Name = "Без автора" });
 	}
 	var last = authors.Last();
+
+	var avgRating = Model.Reviews.Count > 0 ? Model.Reviews.Average(r => r.StarsQuantity).ToString("F1") : "0";
 }
 
 <div class="row pt-3">
@@ -39,8 +41,10 @@
 		</div>
 
 		<div class="d-flex align-items-center">
-			<div class="bp-rating d-flex align-items-center me-1" data-rating="4.5"></div>
-			<span>4.5/5</span>
+			<div class="bp-rating d-flex align-items-center me-1" data-rating="@avgRating"></div>
+			<span>@avgRating/5</span>
+			<span>&nbsp;</span>
+			<small class="text-nowrap">(оцінок: @Model.Reviews.Count)</small>
 		</div>
 
 
@@ -69,7 +73,7 @@
 			<hr class="my-2" />
 			<div class="d-flex justify-content-between flex-wrap">
 				<div class="feature-name">Видавництво</div>
-				<div class="feature-value">@Model.Publisher</div>
+				<div class="feature-value">@(Model.Publisher?.Name ?? "Не зазначено")</div>
 			</div>
 			<hr class="my-2" />
 			<div class="d-flex justify-content-between flex-wrap">

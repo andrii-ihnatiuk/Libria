@@ -1,5 +1,5 @@
 ﻿using Libria.Areas.Admin.Models;
-using Libria.Areas.Admin.ViewModels;
+using Libria.Areas.Admin.ViewModels.Categories;
 using Libria.Data;
 using Libria.Models.Entities;
 using Microsoft.AspNetCore.Authorization;
@@ -9,7 +9,7 @@ using System.Data;
 
 namespace Libria.Areas.Admin.Controllers
 {
-	[Area("Admin")]
+    [Area("Admin")]
 	[Authorize(Roles = "admin")]
 	public class CategoriesController : Controller
 	{
@@ -30,7 +30,7 @@ namespace Libria.Areas.Admin.Controllers
 				.OrderByDescending(c => c.CategoryId)
 				.Select(c => new CategoryCard { Category = c, ItemsCount = c.Books.Count })
 				.ToListAsync();
-			var viewModel = new DashboardCategoriesViewModel(categoryCards)
+			var viewModel = new AllCategoriesViewModel(categoryCards)
 			{
 				CurrentSearchString = q
 			};
@@ -66,7 +66,7 @@ namespace Libria.Areas.Admin.Controllers
 			if (category == null)
 				return NotFound();
 
-			var viewModel = new DashboardCategoryViewModel 
+			var viewModel = new EditCategoryViewModel 
 			{ 
 				Id = category.CategoryId,  
 				Name = category.Name, 
@@ -77,7 +77,7 @@ namespace Libria.Areas.Admin.Controllers
 		}
 
 		[HttpPost]
-		public async Task<IActionResult> Edit(DashboardCategoryViewModel model)
+		public async Task<IActionResult> Edit(EditCategoryViewModel model)
 		{
 			if (ModelState.IsValid)
 			{
@@ -99,11 +99,11 @@ namespace Libria.Areas.Admin.Controllers
 		[HttpGet]
 		public IActionResult Create()
 		{
-			return View("Edit", new DashboardCategoryViewModel { ActionName = "Create", PageTitle = "Створення категорії" });
+			return View("Edit", new EditCategoryViewModel { ActionName = "Create", PageTitle = "Створення категорії" });
 		}
 
 		[HttpPost]
-		public async Task<IActionResult> Create(DashboardCategoryViewModel model)
+		public async Task<IActionResult> Create(EditCategoryViewModel model)
 		{
 			if (ModelState.IsValid)
 			{

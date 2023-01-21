@@ -42,6 +42,13 @@ namespace Libria.Areas.Admin.ViewModels
 			},
 			new SidebarMenuItem
 			{
+				ItemType = MenuItemType.Publishers,
+				ControllerName = "Publishers",
+				ActionName = "Index",
+				Name = "Видавництва"
+			},
+			new SidebarMenuItem
+			{
 				ItemType = MenuItemType.Products,
 				ControllerName = "Products",
 				ActionName = "Index",

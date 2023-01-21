@@ -1,5 +1,5 @@
 ﻿using Libria.Areas.Admin.Models;
-using Libria.Areas.Admin.ViewModels;
+using Libria.Areas.Admin.ViewModels.Authors;
 using Libria.Data;
 using Libria.Models.Entities;
 using Microsoft.AspNetCore.Authorization;
@@ -9,7 +9,7 @@ using System.Data;
 
 namespace Libria.Areas.Admin.Controllers
 {
-	[Area("Admin")]
+    [Area("Admin")]
 	[Authorize(Roles = "admin")]
 	public class AuthorsController : Controller
 	{
@@ -30,7 +30,7 @@ namespace Libria.Areas.Admin.Controllers
 				.OrderByDescending(a => a.AuthorId)
 				.Select(a => new AuthorCard { Author = a, ItemsCount = a.Books.Count })
 				.ToListAsync();
-			var viewModel = new DashboardAuthorsViewModel(authorCards)
+			var viewModel = new AllAuthorsViewModel(authorCards)
 			{
 				CurrentSearchString = q
 			};
@@ -66,7 +66,7 @@ namespace Libria.Areas.Admin.Controllers
 			if (author == null)
 				return NotFound();
 
-			var viewModel = new DashboardAuthorViewModel
+			var viewModel = new EditAuthorViewModel
 			{
 				Id = author.AuthorId,
 				Name = author.Name,
@@ -77,7 +77,7 @@ namespace Libria.Areas.Admin.Controllers
 		}
 
 		[HttpPost]
-		public async Task<IActionResult> Edit(DashboardAuthorViewModel model)
+		public async Task<IActionResult> Edit(EditAuthorViewModel model)
 		{
 			if (ModelState.IsValid)
 			{
@@ -99,11 +99,11 @@ namespace Libria.Areas.Admin.Controllers
 		[HttpGet]
 		public IActionResult Create()
 		{
-			return View("Edit", new DashboardAuthorViewModel { ActionName = "Create", PageTitle = "Новий автор" });
+			return View("Edit", new EditAuthorViewModel { ActionName = "Create", PageTitle = "Новий автор" });
 		}
 
 		[HttpPost]
-		public async Task<IActionResult> Create(DashboardAuthorViewModel model)
+		public async Task<IActionResult> Create(EditAuthorViewModel model)
 		{
 			if (ModelState.IsValid)
 			{

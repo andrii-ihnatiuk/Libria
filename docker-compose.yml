@@ -26,6 +26,7 @@ services:
       - "7007:7007"
     environment:
       - FLASK_ENV=development
+      - SECRETS=/app/config
     volumes:
       - type: bind
         source: ~/libria/config

@@ -1,5 +1,5 @@
 ﻿using Libria.Areas.Admin.Models;
-using Libria.Areas.Admin.ViewModels;
+using Libria.Areas.Admin.ViewModels.Products;
 using Libria.Data;
 using Libria.Models.Entities;
 using Libria.Services;
@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Libria.Areas.Admin.Controllers
 {
-	[Area("Admin")]
+    [Area("Admin")]
 	[Authorize(Roles = "admin")]
 	public class ProductsController : Controller
 	{
@@ -76,7 +76,7 @@ namespace Libria.Areas.Admin.Controllers
 				.OrderBy(c => c.Text)
 				.ToListAsync());
 
-			var viewModel = new DashboardProductsViewModel(products, pageViewModel)
+			var viewModel = new AllProductsViewModel(products, pageViewModel)
 			{
 				CategorySelectItems = categorySelectList,
 				CurrentCategoryId = category,
@@ -126,9 +126,10 @@ namespace Libria.Areas.Admin.Controllers
 					Pages = b.Pages,
 					Price = b.Price,
 					SalePrice = b.SalePrice,
-					Publisher = b.Publisher,
+					PublisherId = b.PublisherId,
 					Quantity = b.Quantity,
 					PublicationYear = b.PublicationYear,
+					Publisher = b.Publisher,
 					Authors = b.Authors.Select(a => new Author { AuthorId = a.AuthorId }).ToList(),
 					Categories = b.Categories.Select(c => new Category { CategoryId = c.CategoryId }).ToList()
 				})
@@ -140,8 +141,9 @@ namespace Libria.Areas.Admin.Controllers
 			// Select book's active relations
 			var authorSelectItems = await GetAuthorSelectListItemsAsync(book.Authors);
 			var categorySelectItems = await GetCategorySelectListItemsAsync(book.Categories);
+			var publisherSelectItems = await GetPublisherSelectListItemsAsync(book.PublisherId);
 
-			var viewModel = new DashboardProductViewModel()
+			var viewModel = new EditProductViewModel()
 			{
 				BookId = book.BookId,
 				Title = book.Title,
@@ -153,18 +155,18 @@ namespace Libria.Areas.Admin.Controllers
 				Pages = book.Pages,
 				Price = book.Price,
 				SalePrice = book.SalePrice,
-				Publisher = book.Publisher,
 				Quantity = book.Quantity,
 				PublicationYear = book.PublicationYear,
 				AuthorSelectItems = authorSelectItems,
-				CategorySelectItems = categorySelectItems
+				CategorySelectItems = categorySelectItems,
+				PublisherSelectItems = publisherSelectItems,
 			};
 
 			return View(viewModel);
 		}
 
 		[HttpPost]
-		public async Task<IActionResult> Edit(DashboardProductViewModel? model)
+		public async Task<IActionResult> Edit(EditProductViewModel? model)
 		{
 			if (model == null || model.BookId == null)
 				return BadRequest();
@@ -198,7 +200,8 @@ namespace Libria.Areas.Admin.Controllers
 						ModelState.AddModelError(nameof(model.FileUpload), fileSaveResult.ErrorMessage);
 						model.AuthorSelectItems = await GetAuthorSelectListItemsAsync(model.SelectedAuthors.Select(id => new Author { AuthorId = id }).ToList());
 						model.CategorySelectItems = await GetCategorySelectListItemsAsync(model.SelectedCategories.Select(id => new Category { CategoryId = id }).ToList());
-						return View(model);
+                        model.PublisherSelectItems = await GetPublisherSelectListItemsAsync(model.SelectedPublisherId);
+                        return View(model);
 					case FileSaveStatus.Error:
 						return Problem(fileSaveResult.ErrorMessage);
 					default:
@@ -225,7 +228,7 @@ namespace Libria.Areas.Admin.Controllers
 
 				book.Authors = newAuthors;
 				book.Categories = newCategories;
-
+				book.PublisherId = model.SelectedPublisherId;
 
 				// Update properties
 				book.Title = model.Title.Trim();
@@ -236,7 +239,6 @@ namespace Libria.Areas.Admin.Controllers
 				book.Quantity = model.Quantity;
 				book.Available = model.Available;
 				book.Isbn = model.Isbn?.Trim();
-				book.Publisher = model.Publisher?.Trim();
 				book.PublicationYear = model.PublicationYear?.Trim();
 				book.Language = model.Language?.Trim();
 
@@ -265,8 +267,9 @@ namespace Libria.Areas.Admin.Controllers
 
 			model.AuthorSelectItems = await GetAuthorSelectListItemsAsync(model.SelectedAuthors.Select(id => new Author { AuthorId = id }).ToList());
 			model.CategorySelectItems = await GetCategorySelectListItemsAsync(model.SelectedCategories.Select(id => new Category { CategoryId = id }).ToList());
+            model.PublisherSelectItems = await GetPublisherSelectListItemsAsync(model.SelectedPublisherId);
 
-			return View(model);
+            return View(model);
 		}
 
 		[HttpGet]
@@ -278,22 +281,26 @@ namespace Libria.Areas.Admin.Controllers
 			var categorySelectItems = await _context.Categories
 				.Select(c => new SelectListItem { Text = c.Name, Value = c.CategoryId.ToString() })
 				.ToListAsync();
+			var publisherSelectItems = await _context.Publishers
+				.Select(p => new SelectListItem { Text = p.Name, Value = p.PublisherId.ToString() })
+				.ToListAsync();
 
-			var viewModel = new DashboardProductViewModel
+			var viewModel = new EditProductViewModel
 			{
 
 				PageTitle = "Новий товар",
 				ControllerName = "Products",
 				ActionName = "Create",
 				AuthorSelectItems = authorSelectItems,
-				CategorySelectItems = categorySelectItems
+				CategorySelectItems = categorySelectItems,
+				PublisherSelectItems = publisherSelectItems
 			};
 
 			return View("Edit", viewModel);
 		}
 
 		[HttpPost]
-		public async Task<IActionResult> Create(DashboardProductViewModel? model)
+		public async Task<IActionResult> Create(EditProductViewModel? model)
 		{
 			if (model == null)
 				return BadRequest();
@@ -310,7 +317,7 @@ namespace Libria.Areas.Admin.Controllers
 					Pages = model.Pages,
 					Available = model.Available,
 					Isbn = model.Isbn?.Trim(),
-					Publisher = model.Publisher?.Trim(),
+					PublisherId = model.SelectedPublisherId,
 					PublicationYear = model.PublicationYear?.Trim(),
 					Language = model.Language?.Trim(),
 					Authors = model.SelectedAuthors.Select(id => new Author { AuthorId = id }).ToList(),
@@ -332,7 +339,8 @@ namespace Libria.Areas.Admin.Controllers
 						ViewBag.FileUploadError = true;
 						model.AuthorSelectItems = await GetAuthorSelectListItemsAsync(model.SelectedAuthors.Select(id => new Author { AuthorId = id }).ToList());
 						model.CategorySelectItems = await GetCategorySelectListItemsAsync(model.SelectedCategories.Select(id => new Category { CategoryId = id }).ToList());
-						return View("Edit", model);
+                        model.PublisherSelectItems = await GetPublisherSelectListItemsAsync(model.SelectedPublisherId);
+                        return View("Edit", model);
 					case FileSaveStatus.Error:
 						return Problem(fileSaveResult.ErrorMessage);
 					default:
@@ -347,6 +355,7 @@ namespace Libria.Areas.Admin.Controllers
 
 			model.AuthorSelectItems = await GetAuthorSelectListItemsAsync(model.SelectedAuthors.Select(id => new Author { AuthorId = id }).ToList());
 			model.CategorySelectItems = await GetCategorySelectListItemsAsync(model.SelectedCategories.Select(id => new Category { CategoryId = id }).ToList());
+			model.PublisherSelectItems = await GetPublisherSelectListItemsAsync(model.SelectedPublisherId);
 
 			return View("Edit", model);
 		}
@@ -445,6 +454,13 @@ namespace Libria.Areas.Admin.Controllers
 					i.Selected = true;
 			});
 			return listItems;
+		}
+
+		private async Task<List<SelectListItem>> GetPublisherSelectListItemsAsync(int? selectedPublisherId)
+		{
+			return await _context.Publishers
+				.Select(p => new SelectListItem { Text = p.Name, Value = p.PublisherId.ToString(), Selected = p.PublisherId == selectedPublisherId })
+				.ToListAsync();
 		}
 
 		private async Task FireAndForgetNotificationSend(IServiceProvider serviceProvider, NotificationType notificationType, Book book)

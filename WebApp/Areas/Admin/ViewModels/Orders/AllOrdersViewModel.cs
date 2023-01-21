@@ -4,15 +4,15 @@ using Libria.Models.Entities;
 using Libria.ViewModels;
 using Microsoft.AspNetCore.Mvc.Rendering;
 
-namespace Libria.Areas.Admin.ViewModels
+namespace Libria.Areas.Admin.ViewModels.Orders
 {
-    public class DashboardOrdersViewModel
+    public class AllOrdersViewModel
     {
-        public DashboardOrdersViewModel(List<Order> orders, PageViewModel pageViewModel)
+        public AllOrdersViewModel(List<Order> orders, PageViewModel pageViewModel)
         {
             Orders = orders;
             PageViewModel = pageViewModel;
-		}
+        }
 
         public SidebarViewModel SidebarViewModel { get; set; } = new SidebarViewModel(MenuItemType.Orders);
 
@@ -27,16 +27,16 @@ namespace Libria.Areas.Admin.ViewModels
         };
 
         private string _currentOrderStatusFilter = OrderFilterOptions.All;
-        public string CurrentOrderStatusFilter 
+        public string CurrentOrderStatusFilter
         {
             get => _currentOrderStatusFilter;
             set
             {
-				var item = OrderStatusSelectItems.Find(i => i.Value == value);
-				if (item != null)
-					item.Selected = true;
-				_currentOrderStatusFilter = value;
-			}
+                var item = OrderStatusSelectItems.Find(i => i.Value == value);
+                if (item != null)
+                    item.Selected = true;
+                _currentOrderStatusFilter = value;
+            }
         }
 
         public List<Order> Orders { get; set; }

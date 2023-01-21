@@ -6,6 +6,7 @@
         Orders,
         Categories,
         Authors,
+        Publishers,
         Products,
     }
 }

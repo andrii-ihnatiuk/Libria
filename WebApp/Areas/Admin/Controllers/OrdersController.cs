@@ -1,5 +1,5 @@
 ﻿using Libria.Areas.Admin.Models;
-using Libria.Areas.Admin.ViewModels;
+using Libria.Areas.Admin.ViewModels.Orders;
 using Libria.Data;
 using Libria.Models.Entities;
 using Libria.ViewModels;
@@ -76,7 +76,7 @@ namespace Libria.Areas.Admin.Controllers
 				orders = new();
 			}
 
-			var viewModel = new DashboardOrdersViewModel(orders, pageViewModel)
+			var viewModel = new AllOrdersViewModel(orders, pageViewModel)
 			{
 				CurrentDateFilter = date?.ToString("yyy-MM-dd"),
 				CurrentOrderStatusFilter = show,

@@ -36,7 +36,7 @@ namespace Libria.Models.Entities
 
         public string? Language { get; set; }
 
-        public string? Publisher { get; set; }
+        public int? PublisherId { get; set; }
 
         public decimal SalePrice { get; set; }
        
@@ -46,6 +46,7 @@ namespace Libria.Models.Entities
 
         /* RELATIONS */
 
+        public Publisher? Publisher { get; set; }
         public ICollection<Author> Authors { get; set; }
         public ICollection<Category> Categories { get; set; }
         public ICollection<WishList> UsersWish { get; set; }
