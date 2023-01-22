@@ -11,24 +11,26 @@
     });
 
     $("#publisherEditModal").on("show.bs.modal", function (event) {
-        var clicked = $(event.relatedTarget);
+        let clicked = $(event.relatedTarget);
 
-        var title = clicked.attr("data-modal-title");
-        var id = clicked.attr("data-publisher-id");
+        let title = clicked.attr("data-modal-title");
 
-        if (id === 'undefined') {
-            alert("Не знайдено ідентифікатор видавництва");
-            return;
-        }
-
-        var modal = $("#publisherEditModal");
+        let modal = $("#publisherEditModal");
         modal.find(".modal-title").text(title);
-        modal.find("#publisherId").val(id);
 
         if (clicked.hasClass("add-publisher")) {
+            modal.find("#publisherName").val("");
             modal.find("form").attr("action", "/Admin/Publishers/Create");
         }
         else if (clicked.hasClass("edit-publisher")) {
+            let id = clicked.attr("data-edit-id");
+            if (id === undefined) {
+                alert("Не знайдено ідентифікатор видавництва");
+                return;
+            }
+            modal.find("#publisherId").val(id);
+            let name = clicked.attr("data-edit-name");
+            modal.find("#publisherName").val(name);
             modal.find("form").attr("action", "/Admin/Publishers/Edit");
         }
     })

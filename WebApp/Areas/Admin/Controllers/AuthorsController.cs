@@ -107,6 +107,13 @@ namespace Libria.Areas.Admin.Controllers
 		{
 			if (ModelState.IsValid)
 			{
+				if (await _context.Authors.AnyAsync(a => EF.Functions.ILike(a.Name, $"{model.Name}")))
+				{
+					ModelState.AddModelError(nameof(model.Name), "Дубльоване ім'я");
+					model.ActionName = nameof(Create);
+					model.PageTitle = "Новий автор";
+					return View("Edit", model);
+				}
 				var author = new Author { Name = model.Name.Trim(), Description = model.Description?.Trim() };
 
 				_context.Authors.Add(author);

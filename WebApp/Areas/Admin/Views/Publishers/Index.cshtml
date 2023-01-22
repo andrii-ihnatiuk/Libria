@@ -1,7 +1,7 @@
 ﻿@using Libria.Areas.Admin.ViewModels;
 @using Libria.Areas.Admin.ViewModels.Publishers;
 
-@model DashboardPublishersViewModel;
+@model AllPublishersViewModel;
 
 <partial name="_SideBarPartial" model="@Model.SidebarViewModel"></partial>
 
@@ -25,7 +25,6 @@
 		<span class="ms-2">Додати видавництво</span>
 	</button>
 
-
 	<div class="row mt-5">
 		@foreach (var publisherCard in Model.PublisherCards)
 		{
@@ -39,7 +38,7 @@
 						<button style="border:0" type="button" class="d-block w-50 p-2 border-1 border-end border-top" data-remove-id="@publisherCard.Publisher.PublisherId" data-modal-title="@publisherCard.Publisher.Name" data-bs-toggle="modal" data-bs-target="#confirmDeleteModal">
 							Видалити
 						</button>
-						<button style="border:0" type="button" class="d-block w-50 p-2 border-1 border-start border-top edit-publisher" data-publisher-id="@publisherCard.Publisher.PublisherId" data-modal-title="Редагування" data-bs-toggle="modal" data-bs-target="#publisherEditModal">
+						<button style="border:0" type="button" class="d-block w-50 p-2 border-1 border-start border-top edit-publisher" data-edit-id="@publisherCard.Publisher.PublisherId" data-edit-name="@publisherCard.Publisher.Name" data-modal-title="Редагування" data-bs-toggle="modal" data-bs-target="#publisherEditModal">
 							Редагувати
 						</button>
 					</div>
@@ -83,7 +82,8 @@
 			</div>
 			<form method="post" role="form" class="needs-validation" novalidate>
 				<div class="modal-body">
-					<input name="name" class="form-control" id="publisherName" placeholder="Введіть назву видавництва" data-val="true" data-val-required="Це поле не може бути пустим"/>
+					<div class="form-text">Не більше 40 символів</div>
+					<input name="name" class="form-control" id="publisherName" placeholder="Введіть назву видавництва" data-val="true" data-val-required="Це поле не може бути пустим" data-val-length="Максимум 40 символів" data-val-length-min="1" data-val-length-max="40" />
 					<span class="invalid-feedback field-validation-valid" data-valmsg-for="name" data-valmsg-replace="true"></span>
 					<input id="publisherId" type="hidden" name="publisherId" value="" />
 				</div>

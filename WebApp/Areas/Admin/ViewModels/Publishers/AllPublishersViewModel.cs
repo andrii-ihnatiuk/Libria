@@ -2,9 +2,9 @@
 
 namespace Libria.Areas.Admin.ViewModels.Publishers
 {
-    public class DashboardPublishersViewModel
+    public class AllPublishersViewModel
     {
-        public DashboardPublishersViewModel(List<PublisherCard> publisherCards)
+        public AllPublishersViewModel(List<PublisherCard> publisherCards)
         {
             PublisherCards = publisherCards;
         }

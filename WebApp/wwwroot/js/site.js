@@ -57,7 +57,7 @@ $(document).ready(function () {
         disableAfterRate: false,
         callback: function (currentRating, $el) {
             let starsQuantity = $("#starsQuantity");
-            if (starsQuantity === "undefined") {
+            if (starsQuantity === undefined) {
                 alert("Щось пішло не так");
                 return;
             }
@@ -72,7 +72,7 @@ $(document).ready(function () {
     $(".order-collapse-toggle").each(function () {
         $(this).on("click", function () {
             let collapse = $(this).closest("tr").next().find(".collapse");
-            if (collapse !== 'undefined')
+            if (collapse !== undefined)
                 bootstrap.Collapse.getOrCreateInstance(collapse).toggle();
         })
     });
@@ -85,7 +85,7 @@ $(document).ready(function () {
         }, 250, function () {
             $(this).hide();
             let collapse = container.find(".collapse");
-            if (collapse !== 'undefined')
+            if (collapse !== undefined)
                 bootstrap.Collapse.getOrCreateInstance(collapse).show();
         });
     });
@@ -327,7 +327,7 @@ $(document).ready(function () {
                         // if full remove - delete element from DOM after request
                         clickedEl.closest('.cart-item').remove();
                     }
-                    else if (response.newQuantity !== 0 && response.totalItemPrice !== 'undefined' && response.totalCartPrice !== 'undefined') {
+                    else if (response.newQuantity !== 0 && response.totalItemPrice !== undefined && response.totalCartPrice !== undefined) {
                         if (response.newQuantity === 1) {
                             // disable minus button if only 1 copy of item in cart
                             clickedEl.attr('disabled', true);
