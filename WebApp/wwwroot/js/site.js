@@ -3,8 +3,7 @@
 
 // Write your JavaScript code.
 
-$(document).ready(function () {
-    /* PRODUCTS SLIDER */
+function loadSliders() {
     $('.slider').each(function () {
         let inst = $(this).lightSlider({
             autoWidth: true,
@@ -26,6 +25,12 @@ $(document).ready(function () {
         let slider = $(this).parent().data("controlInstance")
         slider.goToNextSlide();
     });
+}
+
+$(document).ready(function () {
+    /* PRODUCTS SLIDER */
+    loadSliders()
+
     // Star rating items
     $('.bp-rating').starRating({
         starSize: 25,

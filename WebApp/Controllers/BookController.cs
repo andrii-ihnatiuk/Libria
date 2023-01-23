@@ -3,8 +3,11 @@ using Libria.Models.Entities;
 using Libria.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Net.Http.Headers;
 using System.Net.Mail;
 using System.Security.Claims;
+using System.Text.Json;
+using static System.Reflection.Metadata.BlobBuilder;
 
 namespace Libria.Controllers
 {
@@ -13,12 +16,14 @@ namespace Libria.Controllers
 		private readonly LibriaDbContext _context;
 		private readonly INotificationService _notificationService;
 		private readonly ILogger<BookController> _logger;
+		private readonly IHttpClientFactory _httpClientFactory;
 
-		public BookController(LibriaDbContext context, ILogger<BookController> logger, INotificationService notificationService)
+		public BookController(LibriaDbContext context, ILogger<BookController> logger, INotificationService notificationService, IHttpClientFactory httpClientFactory)
 		{
 			_context = context;
 			_notificationService = notificationService;
 			_logger = logger;
+			_httpClientFactory = httpClientFactory;
 		}
 
 		[HttpGet]
@@ -94,6 +99,60 @@ namespace Libria.Controllers
 			await _context.SaveChangesAsync();
 
 			return RedirectToAction("Index", new { bookId });
+		}
+
+		[HttpPost]
+		public async Task<IActionResult> SimilarBooks(int? bookId)
+		{
+			if (bookId == null)
+				return Problem("Не передано ідентифікатор");
+			if (await _context.Books.AnyAsync(b => b.BookId == bookId) == false)
+				return Problem("Передано невірний ідентифіктор");
+
+			var httpClient = _httpClientFactory.CreateClient();
+			var contentType = new MediaTypeWithQualityHeaderValue("application/json");
+			httpClient.DefaultRequestHeaders.Accept.Add(contentType);
+
+			string url = $"http://localhost:7007/content_based/{bookId}?amount=10";
+
+			var httpResponse = httpClient.GetAsync(url).Result;
+			if (httpResponse.IsSuccessStatusCode)
+			{
+				if (httpResponse.Content is not null && httpResponse.Content.Headers?.ContentType?.MediaType == "application/json") 
+				{
+					var stream = await httpResponse.Content.ReadAsStreamAsync();
+
+					try
+					{
+						var result = await JsonSerializer.DeserializeAsync<FlaskResponse>(stream, new JsonSerializerOptions { PropertyNameCaseInsensitive = true } );
+						if (result != null)
+						{
+							if (result.Success)
+							{
+								var books = await _context.Books.Where(b => result.Data.Contains(b.BookId)).Include(b => b.Authors).ToListAsync();
+								// preserve original order of books (api returns the most similar books first but sql select is unpredictable)
+								books = books.OrderBy(b => result.Data.IndexOf(b.BookId)).ToList();
+
+								return PartialView("_BooksSliderPartial", books);
+							}
+							return NotFound();
+						}
+						return Problem("Помилка сервера");
+					}
+					catch (JsonException)
+					{
+						return Problem("Помилка сервера");
+					}
+				}
+				else
+				{
+					return Problem("Отримано неприйнятний відгук");
+				}
+			}
+			else
+			{
+				return Problem("Неможливо виконати запит");
+			}
 		}
 
 		private async Task<Book?> SelectBook(int bookId)

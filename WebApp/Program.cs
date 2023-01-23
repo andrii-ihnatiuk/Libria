@@ -55,6 +55,7 @@ builder.Services.AddTransient<IWishListService, WishListService>();
 builder.Services.AddTransient<ISearchService, SearchService>();
 builder.Services.AddTransient<INotificationService, NotificationService>();
 
+builder.Services.AddHttpClient();
 builder.Services.AddControllersWithViews();
 
 builder.Services.AddDistributedMemoryCache();

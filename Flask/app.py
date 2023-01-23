@@ -6,6 +6,7 @@ from flask import Flask, jsonify, request
 from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 from spacy.lang.uk.stop_words import STOP_WORDS as uk_stop
+from spacy.lang.en.stop_words import STOP_WORDS as en_stop
 
 app = Flask(__name__)
 
@@ -50,7 +51,7 @@ def get_content_based(book_id: int, amount: int = 10):
     df["Soup"] = df.apply(create_soup, axis=1)
     df.drop(columns=["Title", "Description", "Authors", "Categories"])
 
-    cv = CountVectorizer(stop_words=list(uk_stop), token_pattern=r"\b\w[\w’']+\b")
+    cv = CountVectorizer(stop_words=list(uk_stop)+list(en_stop), token_pattern=r"\b\w[\w’‘']+\b")
     count_matrix = cv.fit_transform(df["Soup"])
 
     cosine_sim = cosine_similarity(count_matrix, count_matrix)
@@ -64,8 +65,12 @@ def get_content_based(book_id: int, amount: int = 10):
     # одержуємо частину масиву з 10 найбільш схожими книгами
     # пропускаємо першу книгу, так як найбільш схожа - це вона сама
     sim_scores = sim_scores[1:amount + 1] 
+
+    threshold = 0.05 # will be adjusted in future
     # одержуємо індекси найбільш схожих книг
-    recommend_ids = [i[0] for i in sim_scores]
+    recommend_ids = [i[0] for i in filter(lambda i: i[1] > threshold, sim_scores)]
+
+    # app.logger.info(list(zip(list(df["BookId"].iloc[recommend_ids]), [item[-1] for item in sim_scores])))
 
     # повертаємо результат функції
     return list(df["BookId"].iloc[recommend_ids])

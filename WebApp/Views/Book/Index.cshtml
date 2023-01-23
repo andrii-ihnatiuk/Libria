@@ -161,6 +161,10 @@
 	</div>
 </div>
 
+<div class="mt-2" id="similarBooks">
+
+</div>
+
 
 <!-- Notification subscribe Modal -->
 <div class="modal fade" id="subscribeNotificationModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
@@ -252,4 +256,17 @@ else
 
 @section Scripts {
 	<partial name="_ValidationScriptsPartial" />
+
+	<script type="text/javascript">
+		$(function () {
+
+			let url = "@Url.Action("SimilarBooks")";
+			let data = { bookId : @Model.BookId };
+			
+			$(similarBooks).load(url, data, function (responseText, textStatus, jqXHR) {
+				$(this).prepend("<h4 class='mb-4'>Схожі книги</h4>");
+				loadSliders();
+			});
+		})
+	</script>
 }
