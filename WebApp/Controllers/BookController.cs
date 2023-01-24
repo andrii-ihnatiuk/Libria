@@ -7,7 +7,6 @@ using System.Net.Http.Headers;
 using System.Net.Mail;
 using System.Security.Claims;
 using System.Text.Json;
-using static System.Reflection.Metadata.BlobBuilder;
 
 namespace Libria.Controllers
 {
@@ -17,13 +16,20 @@ namespace Libria.Controllers
 		private readonly INotificationService _notificationService;
 		private readonly ILogger<BookController> _logger;
 		private readonly IHttpClientFactory _httpClientFactory;
+		private readonly IHostEnvironment _hostEnvironment;
 
-		public BookController(LibriaDbContext context, ILogger<BookController> logger, INotificationService notificationService, IHttpClientFactory httpClientFactory)
+		public BookController(
+			LibriaDbContext context, 
+			ILogger<BookController> logger, 
+			INotificationService notificationService, 
+			IHttpClientFactory httpClientFactory, 
+			IHostEnvironment hostEnvironment)
 		{
 			_context = context;
 			_notificationService = notificationService;
 			_logger = logger;
 			_httpClientFactory = httpClientFactory;
+			_hostEnvironment = hostEnvironment;
 		}
 
 		[HttpGet]
@@ -113,18 +119,19 @@ namespace Libria.Controllers
 			var contentType = new MediaTypeWithQualityHeaderValue("application/json");
 			httpClient.DefaultRequestHeaders.Accept.Add(contentType);
 
-			string url = $"http://localhost:7007/content_based/{bookId}?amount=10";
+			string baseUrl = _hostEnvironment.IsProduction() ? "flask" : "localhost";
+			string url = $"http://{baseUrl}:7007/content_based/{bookId}?amount=10";
 
 			var httpResponse = httpClient.GetAsync(url).Result;
 			if (httpResponse.IsSuccessStatusCode)
 			{
-				if (httpResponse.Content is not null && httpResponse.Content.Headers?.ContentType?.MediaType == "application/json") 
+				if (httpResponse.Content is not null && httpResponse.Content.Headers?.ContentType?.MediaType == "application/json")
 				{
 					var stream = await httpResponse.Content.ReadAsStreamAsync();
 
 					try
 					{
-						var result = await JsonSerializer.DeserializeAsync<FlaskResponse>(stream, new JsonSerializerOptions { PropertyNameCaseInsensitive = true } );
+						var result = await JsonSerializer.DeserializeAsync<FlaskResponse>(stream, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
 						if (result != null)
 						{
 							if (result.Success)
