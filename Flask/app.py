@@ -1,12 +1,19 @@
 import os
 import json
+import re
+import enum
 import psycopg2
 import pandas as pd
 from flask import Flask, jsonify, request
 from sklearn.feature_extraction.text import CountVectorizer
+from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 from spacy.lang.uk.stop_words import STOP_WORDS as uk_stop
 from spacy.lang.en.stop_words import STOP_WORDS as en_stop
+
+class VectorizerType(enum.Enum):
+    TFIDF = 0,
+    COUNT = 1
 
 app = Flask(__name__)
 
@@ -41,40 +48,57 @@ def get_content_based(book_id: int, amount: int = 10):
     # видалення пробілів, наприклад щоб Іван (Франко) != Іван (Багряний).
     # алгоритм порахує що Іван з'явився 2 рази (окремо від прізвищ), хоча це для нас 
     # ніякої цінності не має. А от якщо з'явиться іванфранко, тоді ми можемо це використати
-    df["Authors"] = df["Authors"].apply(lambda x: x.replace(" ", ""))
-    df["Categories"] = df["Categories"].apply(lambda x: x.replace(" ", ""))
+    df["Authors"] = df["Authors"].apply(lambda x: re.sub(r"[.\- ]", "", x))
+    df["Categories"] = df["Categories"].apply(lambda x: re.sub(r"[.\- ]", "", x))
 
-    # Створюємо "bag of words" / "soup"
-    def create_soup(data):
-        return data["Authors"] + ' ' + data["Categories"] + ' ' + data["Description"] + ' ' + data["Title"]
+    title_cosine_sim = score_similarity(df["Title"], VectorizerType.COUNT)
+    categ_cosine_sim = score_similarity(df["Categories"], VectorizerType.COUNT)
+    auth_cosine_sim = score_similarity(df["Authors"], VectorizerType.COUNT)
+    desc_cosine_sim = score_similarity(df["Description"], VectorizerType.TFIDF)
 
-    df["Soup"] = df.apply(create_soup, axis=1)
-    df.drop(columns=["Title", "Description", "Authors", "Categories"])
-
-    cv = CountVectorizer(stop_words=list(uk_stop)+list(en_stop), token_pattern=r"\b\w[\w’‘']+\b")
-    count_matrix = cv.fit_transform(df["Soup"])
-
-    cosine_sim = cosine_similarity(count_matrix, count_matrix)
+    # ваги для атрибутів
+    desc_w = 4 # description weight
+    title_w = 1 # title weigth
+    categ_w = 1 # category weight
+    auth_w = 1 # author weight
+    cosine_sim = title_cosine_sim*title_w + categ_cosine_sim*categ_w + auth_cosine_sim * auth_w + desc_cosine_sim * desc_w
 
     # одержуємо індекс книги у датафреймі з ідентифікатора книги
     idx = df[df['BookId']==book_id].index.values[0]
     # одержуємо попарні значення схожості усіх книг з даною книгою
     sim_scores = list(enumerate(cosine_sim[idx]))
+    
+    # фільтруємо за пороговим значенням схожості
+    threshold = 1.1 # will be adjusted in future
+    sim_scores = filter(lambda i: i[1] >= threshold, sim_scores)
+    
     # сортуємо книги за їх схожістю з даною книгою
     sim_scores = sorted(sim_scores, key=lambda x: x[1], reverse=True)
     # одержуємо частину масиву з 10 найбільш схожими книгами
     # пропускаємо першу книгу, так як найбільш схожа - це вона сама
     sim_scores = sim_scores[1:amount + 1] 
 
-    threshold = 0.05 # will be adjusted in future
     # одержуємо індекси найбільш схожих книг
-    recommend_ids = [i[0] for i in filter(lambda i: i[1] > threshold, sim_scores)]
+    recommend_ids = [i[0] for i in sim_scores]
 
     # app.logger.info(list(zip(list(df["BookId"].iloc[recommend_ids]), [item[-1] for item in sim_scores])))
 
     # повертаємо результат функції
     return list(df["BookId"].iloc[recommend_ids])
 
+
+def score_similarity(df_column, vectorizer_type: VectorizerType, token_pattern=r"\b\w[\w’‘']+\b"):
+    stop = list(uk_stop)+list(en_stop)
+
+    if vectorizer_type == VectorizerType.COUNT:
+        vectorizer = CountVectorizer(stop_words=stop, token_pattern=token_pattern) 
+    else:
+        vectorizer = TfidfVectorizer(stop_words=stop, token_pattern=token_pattern) 
+
+    count_matrix = vectorizer.fit_transform(df_column)
+    cosine_sim = cosine_similarity(count_matrix, count_matrix)
+
+    return cosine_sim
 
 
 def fetch_books() -> list[tuple]:

@@ -26,7 +26,7 @@ namespace Libria.Areas.Admin.Controllers
 
 		public async Task<IActionResult> Index(int category = -1, string? q = null, int page = 1)
 		{
-			int pageSize = 3;
+			int pageSize = 6;
 
 			var query = _context.Books.AsNoTracking();
 

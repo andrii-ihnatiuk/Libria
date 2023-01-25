@@ -29,11 +29,12 @@ namespace Libria.Controllers
 			if (author == null)
 				return NotFound();
 
-			var searchResult = await _searchService.SearchAsync(authorId: authorId, sortBy: sortBy, page: page);
+			int pageSize = 6;
+			var searchResult = await _searchService.SearchAsync(authorId: authorId, sortBy: sortBy, page: page, pageSize: pageSize);
 			if (searchResult == null)
 				return NotFound();
 
-			var pageViewModel = new PageViewModel(searchResult.ResultsCount, page);
+			var pageViewModel = new PageViewModel(searchResult.ResultsCount, page, pageSize);
 			var pageItems = searchResult.Data;
 
 			IndexViewModel viewModel = new()

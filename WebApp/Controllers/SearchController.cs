@@ -22,11 +22,12 @@ namespace Libria.Controllers
 
 		public async Task<IActionResult> Index(string q, string sortBy = SortState.Default, int page = 1)
 		{
-			var searchResult = await _searchService.SearchAsync(q: q, page: page, sortBy: sortBy);
+			int pageSize = 6;
+			var searchResult = await _searchService.SearchAsync(q: q, page: page, sortBy: sortBy, pageSize: pageSize);
 			if (searchResult == null)
 				return NotFound();
 
-			var pageViewModel = new PageViewModel(searchResult.ResultsCount, page);
+			var pageViewModel = new PageViewModel(searchResult.ResultsCount, page, pageSize);
 			var pageItems = searchResult.Data;
 
 			IndexViewModel viewModel = new()

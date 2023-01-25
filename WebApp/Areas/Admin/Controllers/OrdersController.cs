@@ -25,7 +25,7 @@ namespace Libria.Areas.Admin.Controllers
 		public async Task<IActionResult> Index(DateTime? date, string show = OrderFilterOptions.All, int page = 1)
 		{
 			var query = _context.Orders.AsNoTracking();
-			var pageSize = 2; // just for testing
+			var pageSize = 6;
 
 			switch (show)
 			{
@@ -99,6 +99,7 @@ namespace Libria.Areas.Admin.Controllers
 				return NotFound();
 
 			var orderBooks = await _context.Books
+				.AsNoTracking()
 				.Join(_context.OrdersBooks.Where(o => o.OrderId == order.OrderId),
 				b => b.BookId,
 				o => o.BookId,
@@ -138,8 +139,8 @@ namespace Libria.Areas.Admin.Controllers
 
 			var order = await _context.Orders
 				.Where(o => o.OrderId == id)
-
 				.FirstOrDefaultAsync();
+
 			if (order == null)
 				return NotFound();
 

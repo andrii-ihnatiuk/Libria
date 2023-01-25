@@ -30,14 +30,15 @@ namespace Libria.Controllers
 			if (category == null)
 				return NotFound();
 
-			var searchResult = await _searchService.SearchAsync(categoryId: categoryId, sortBy: sortBy,  page: page);
+			int pageSize = 6;
+			var searchResult = await _searchService.SearchAsync(categoryId: categoryId, sortBy: sortBy,  page: page, pageSize: pageSize);
 			if (searchResult == null)
 				return NotFound();
 
 			ViewData["categoryName"] = category.Name;
 			ViewData["categoryDescription"] = category.Description;
 
-			var pageViewModel = new PageViewModel(searchResult.ResultsCount, page);
+			var pageViewModel = new PageViewModel(searchResult.ResultsCount, page, pageSize);
 
 			IndexViewModel viewModel = new()
 			{
