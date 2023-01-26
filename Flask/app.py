@@ -57,7 +57,7 @@ def get_content_based(book_id: int, amount: int = 10):
     desc_cosine_sim = score_similarity(df["Description"], VectorizerType.TFIDF)
 
     # ваги для атрибутів
-    desc_w = 4 # description weight
+    desc_w = 5 # description weight
     title_w = 1 # title weigth
     categ_w = 1 # category weight
     auth_w = 1 # author weight

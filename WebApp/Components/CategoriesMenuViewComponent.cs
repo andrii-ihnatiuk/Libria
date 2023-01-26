@@ -16,15 +16,9 @@ namespace Libria.Components
 
 		public async Task<IViewComponentResult> InvokeAsync()
 		{
-			var categories = await _context.Categories.Select(c => new Category { CategoryId = c.CategoryId, Name = c.Name }).ToListAsync();
-
-			//var categories = new List<Category>()
-			//{
-			//	new Category { CategoryId = 1,  Name = "First category" },
-			//	new Category { CategoryId = 2,  Name = "Second category" },
-			//	new Category { CategoryId = 3,  Name = "Category with number 3" },
-			//	new Category { CategoryId = 4,  Name = "Fourth test category" },
-			//};
+			var categories = await _context.Categories.AsNoTracking()
+				.Select(c => new Category { CategoryId = c.CategoryId, Name = c.Name })
+				.ToListAsync();
 
 			return View(categories);
 		}

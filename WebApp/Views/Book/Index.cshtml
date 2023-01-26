@@ -149,6 +149,12 @@
 <div class="row my-4">
 	<div style="font-size: 22px;color: black;font-weight: 500;">Відгуки</div>
 	<div class="mt-2">
+		@if (Model.Reviews.Count == 0)
+		{
+			<div class="my-2 text-muted">
+				Поки немає жодного відгуку. Станьте першим!
+			</div>
+		}
 		@foreach (var review in Model.Reviews)
 		{
 			<div class="my-2">
@@ -161,10 +167,15 @@
 	</div>
 </div>
 
-<div class="mt-2" id="similarBooks">
-
+<div class="mt-2">
+	@if ((ViewData["OftenBoughtTogether"] as List<Book>)?.Count > 0)
+	{
+		<h4 class='mb-4'>Часто купують разом</h4>
+		<partial name="_BooksSliderPartial" model=@ViewData["OftenBoughtTogether"]></partial>
+	}
 </div>
 
+<div class="mt-2 mb-4" id="similarBooks"></div>
 
 <!-- Notification subscribe Modal -->
 <div class="modal fade" id="subscribeNotificationModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
@@ -263,9 +274,11 @@ else
 			let url = "@Url.Action("SimilarBooks")";
 			let data = { bookId : @Model.BookId };
 			
-			$(similarBooks).load(url, data, function (responseText, textStatus, jqXHR) {
-				$(this).prepend("<h4 class='mb-4'>Схожі книги</h4>");
-				loadSliders();
+			$(similarBooks).load(url, data, function (response, status, xhr) {
+				if (xhr.status == 200) {
+					$(this).prepend("<h4 class='mb-4'>Схожі книги</h4>");
+					loadSliders();
+				}
 			});
 		})
 	</script>

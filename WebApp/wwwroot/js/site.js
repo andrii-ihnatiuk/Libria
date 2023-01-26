@@ -21,7 +21,7 @@ function loadSliders() {
         let slider = $(this).parent().data("controlInstance")
         slider.goToPrevSlide();
     });
-    $('.goToNextSlide').click(function () {
+    $(".goToNextSlide").click(function () {
         let slider = $(this).parent().data("controlInstance")
         slider.goToNextSlide();
     });

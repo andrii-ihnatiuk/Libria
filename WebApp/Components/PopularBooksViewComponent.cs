@@ -28,7 +28,7 @@ namespace Libria.Components
 				var now = DateTime.UtcNow.Date;
 				var startDate = now.AddDays(-7).Date;
 
-				query = query.Where(ob => ob.Order.OrderDate >= startDate && ob.Order.OrderDate <= now);
+				query = query.Where(ob => ob.Order.OrderDate.Date >= startDate && ob.Order.OrderDate.Date <= now);
 			}
 			else
                 ViewData["SectionTitle"] = "Хіти продажів";
@@ -52,7 +52,7 @@ namespace Libria.Components
 					SalePrice = b.SalePrice,
 					ImageUrl = b.ImageUrl,
 					Authors = b.Authors.Select(a => new Author { Name = a.Name }).ToList()
-				}).ToListAsync();
+				}).OrderBy(b => popularIds.IndexOf(b.BookId)).ToListAsync();
 
 			var userId = UserClaimsPrincipal.FindFirstValue(ClaimTypes.NameIdentifier);
 

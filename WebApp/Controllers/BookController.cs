@@ -49,9 +49,40 @@ namespace Libria.Controllers
 						ViewBag.IsInWishList = true;
 					}
 				}
-
 			}
 			var book = await SelectBook((int)bookId);
+
+			// get orders which contain current book and at least one more other
+			var ordIds = await _context.OrdersBooks
+				.Where(ob => ob.BookId == bookId && _context.OrdersBooks.Any(i => i.OrderId == ob.OrderId && i.BookId != bookId))
+				.Select(ob => ob.OrderId)
+				.ToListAsync();
+			// sort those books by times they show up in other orders along with the current book and get top 10 ids
+			var booksIds = await _context.OrdersBooks
+				.Where(ob => ordIds.Contains(ob.OrderId) && ob.BookId != bookId)
+				.GroupBy(ob => ob.BookId)
+				.Select(x => new { BookId = x.Key, Count = x.Count() })
+				.OrderByDescending(a => a.Count)
+				.Select(x => x.BookId)
+				.Take(10)
+				.ToListAsync();
+			// finally select those top 10 co-selling books
+			ViewData["OftenBoughtTogether"] = await _context.Books
+				.AsNoTracking()
+				.Where(b => booksIds.Contains(b.BookId))
+				.Select(b => new Book
+				{
+					BookId = b.BookId,
+					Available = b.Available,
+					ImageUrl = b.ImageUrl,
+					Price = b.Price,
+					SalePrice = b.SalePrice,
+					Quantity = b.Quantity,
+					Title = b.Title,
+					Authors = b.Authors.Select(a => new Author { Name = a.Name }).OrderBy(a => a.Name).ToList(),
+				})
+				.OrderBy(b => booksIds.IndexOf(b.BookId))
+				.ToListAsync();
 
 			return book == null ? NotFound() : View(book);
 		}
@@ -122,7 +153,16 @@ namespace Libria.Controllers
 			string baseUrl = _hostEnvironment.IsProduction() ? "flask" : "localhost";
 			string url = $"http://{baseUrl}:7007/content_based/{bookId}?amount=10";
 
-			var httpResponse = httpClient.GetAsync(url).Result;
+			HttpResponseMessage httpResponse;
+			try
+			{
+				httpResponse = httpClient.GetAsync(url).Result;
+			}
+			catch (Exception ex)
+			{
+				_logger.LogError(ex.Message);
+				return Problem("Неможливо виконати запит");
+			}
 			if (httpResponse.IsSuccessStatusCode)
 			{
 				if (httpResponse.Content is not null && httpResponse.Content.Headers?.ContentType?.MediaType == "application/json")
@@ -181,7 +221,7 @@ namespace Libria.Controllers
 					Publisher = b.Publisher,
 					Language = b.Language,
 					Authors = b.Authors.Select(a => new Author { AuthorId = a.AuthorId, Name = a.Name }).OrderBy(a => a.Name).ToList(),
-					Categories = b.Categories.Select(c => new Category { CategoryId = c.CategoryId, Name = c.Name }).OrderBy(c => c.Name).ToList(),
+					Categories = b.Categories.Select(c => new Category { CategoryId = c.CategoryId, Name = c.Name }).OrderBy(c => c.CategoryId).ToList(),
 					Reviews = b.Reviews.Select(r => new Review { Id = r.Id, ReviewDate = r.ReviewDate, StarsQuantity = r.StarsQuantity, Text = r.Text, Username = r.Username }).OrderByDescending(r => r.ReviewDate).ToList()
 				}).FirstOrDefaultAsync(b => b.BookId == bookId);
 		}
