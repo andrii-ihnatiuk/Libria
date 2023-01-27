@@ -139,19 +139,18 @@ def recalculate_similarities():
     authr_cosine_sim = score_similarity(df["Authors"], VectorizerType.COUNT)
     descr_cosine_sim = score_similarity(df["Description"], VectorizerType.TFIDF)
 
-    if (os.path.exists(SCORES_DIR) == False):
-        os.mkdir(SCORES_DIR)
-
-    # save calculated similarity scores for all properties
-    for name in ["title_cosine_sim", "categ_cosine_sim", "authr_cosine_sim", "descr_cosine_sim"]:
-        file_path = SCORES_DIR + "/" + name
-        with open(file_path, "wb+") as f:
-            np.save(f, globals()[name])
-
     # save dataframe
     if (os.path.exists(DATA_DIR) == False):
         os.mkdir(DATA_DIR)
     df.to_csv(DF_PATH)
+
+    # save calculated similarity scores for all properties
+    if (os.path.exists(SCORES_DIR) == False):
+        os.mkdir(SCORES_DIR)
+    for name in ["title_cosine_sim", "categ_cosine_sim", "authr_cosine_sim", "descr_cosine_sim"]:
+        file_path = SCORES_DIR + "/" + name
+        with open(file_path, "wb+") as f:
+            np.save(f, globals()[name])
 
 
 def fetch_books() -> list[tuple] | None:
