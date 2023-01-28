@@ -40,8 +40,16 @@ def recommend(book_id: int):
     return jsonify(response)
 
 
+def get_content_based(book_id: int, amount: int = 10) -> list[int] | None:
+    """
+    Find top N recommendations for given book
 
-def get_content_based(book_id: int, amount: int = 10):
+    Args:
+        book_id (int): id of book to recommend to
+        amount (int): number of recommendations returned
+    Returns:
+        list[int] of book ids if success or None if failed
+    """
     if (df is None or title_cosine_sim is None or categ_cosine_sim is None or authr_cosine_sim is None or descr_cosine_sim is None):
         return None
 
@@ -61,7 +69,7 @@ def get_content_based(book_id: int, amount: int = 10):
     sim_scores = list(enumerate(cosine_sim[idx]))
     
     # фільтруємо за пороговим значенням схожості
-    threshold = 1.1 # will be adjusted in future
+    threshold = 1.1
     sim_scores = filter(lambda i: i[1] >= threshold, sim_scores)
     
     # сортуємо книги за їх схожістю з даною книгою
@@ -80,20 +88,33 @@ def get_content_based(book_id: int, amount: int = 10):
 
 
 def score_similarity(df_column, vectorizer_type: VectorizerType, token_pattern=r"\b\w[\w’‘']+\b") -> np.ndarray:
+    """
+    Calculate cosine similarity between all books
+
+    Args:
+        df_column (pandas Series): dataframe column to use
+        vectorizer_type (VectorizerType): a method used to vectorize text data
+        token_pattern (regex): regular expression used to tokenize text into words
+    Returns:
+        similarity score matrix with dimensions N * N (N - number of books)
+    """
     stop = list(uk_stop)+list(en_stop)
 
     if vectorizer_type == VectorizerType.COUNT:
         vectorizer = CountVectorizer(stop_words=stop, token_pattern=token_pattern) 
     else:
         vectorizer = TfidfVectorizer(stop_words=stop, token_pattern=token_pattern) 
-
-    count_matrix = vectorizer.fit_transform(df_column)
-    cosine_sim = cosine_similarity(count_matrix, count_matrix)
+    
+    count_matrix = vectorizer.fit_transform(df_column) # matrix with shape (Number of books, Number of unique words) 
+    cosine_sim = cosine_similarity(count_matrix, count_matrix) # matrix with shape (Number of books, Number of books)
 
     return cosine_sim
 
 
 def load_memory_data():
+    """
+    Load saved dataframe and similarity matrices for each property from system memory
+    """
     global df
 
     if (os.path.isfile(DF_PATH)):
@@ -113,6 +134,10 @@ def load_memory_data():
 
 
 def recalculate_similarities():
+    """
+    Load data from Database, clean, calculate similarities and save data to memory
+    """
+    app.logger.info("Recalculating similarities")
     global df, title_cosine_sim, categ_cosine_sim, authr_cosine_sim, descr_cosine_sim
     data = fetch_books()
     if (data is None):
@@ -152,8 +177,13 @@ def recalculate_similarities():
         with open(file_path, "wb+") as f:
             np.save(f, globals()[name])
 
+    app.logger.info("Successfully processed data")
+
 
 def fetch_books() -> list[tuple] | None:
+    """
+    Request all books from Database
+    """
     options = app.config["POSTGRES_CONNECTION"]
     query = \
     """
@@ -226,7 +256,7 @@ if __name__ == "__main__":
     # if no data is stored or if file is empty load all data on app startup
     if (os.path.isfile(DF_PATH) == False or os.path.getsize(DF_PATH) == 0):
         recalculate_similarities()
-    else:
+    else: # if dataframe file found, try to load all data from memory
         load_memory_data()
 
     app.run(host="0.0.0.0", port=7007, debug=True, use_reloader=False)
