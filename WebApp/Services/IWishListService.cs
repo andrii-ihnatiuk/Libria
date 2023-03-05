@@ -10,7 +10,7 @@ namespace Libria.Services
 
 		public Task<List<int>?> GetUserWishListBooksIdsOnlyAsync(string? userId);
 
-		public Task CheckIfBooksInUserWishListAsync(string? userId, List<BookCardViewModel> books);
+		public Task SetWishStatusForBookCardsAsync(string? userId, List<BookCardViewModel> books);
 
 		public Task<JsonResult> AddToUserWishListAsync(string userId, int bookId);
 

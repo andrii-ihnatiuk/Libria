@@ -7,6 +7,7 @@ public class User : IdentityUser
     {
         BooksWished = new List<WishList>();
         BooksInCart = new List<CartUsersBooks>();
+        Orders = new List<Order>();
     }
 
     public string FirstName { get; set; } = null!;
@@ -19,4 +20,5 @@ public class User : IdentityUser
 
 	public ICollection<WishList> BooksWished { get; set; }
     public ICollection<CartUsersBooks> BooksInCart { get; set; }
+    public ICollection<Order> Orders { get; set; }
 }

@@ -10,10 +10,7 @@ namespace Libria.Models.Entities
         }
 
         public int AuthorId { get; set; }
-
-        [Required]
         public string Name { get; set; } = null!;
-
         public string? Description { get; set; }
 
         /* RELATIONS */

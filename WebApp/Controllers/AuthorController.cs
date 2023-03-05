@@ -48,7 +48,7 @@ namespace Libria.Controllers
 			};
 
 			var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-			await _wishListService.CheckIfBooksInUserWishListAsync(userId, searchResult.Data);
+			await _wishListService.SetWishStatusForBookCardsAsync(userId, searchResult.Data);
 
 			ViewData["AuthorName"] = author.Name;
 			ViewData["AuthorDescription"] = author.Description;

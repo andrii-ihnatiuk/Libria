@@ -7,12 +7,14 @@ import psycopg2
 import numpy as np
 import pandas as pd
 from flask import Flask, jsonify, request
+from sklearn.preprocessing import MinMaxScaler
 from sklearn.metrics.pairwise import cosine_similarity
 from spacy.lang.uk.stop_words import STOP_WORDS as uk_stop
 from spacy.lang.en.stop_words import STOP_WORDS as en_stop
 from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.feature_extraction.text import TfidfVectorizer
 from apscheduler.schedulers.background import BackgroundScheduler
+
 
 class VectorizerType(enum.Enum):
     TFIDF = 0,
@@ -61,15 +63,26 @@ def get_content_based(book_id: int, amount: int = 10) -> list[int] | None:
     title_w = 1 # title weigth
     categ_w = 1 # category weight
     authr_w = 1 # author weight
+    # зважена сума подібностей за усіма властивостями (wighted sum)
     cosine_sim = title_cosine_sim * title_w + categ_cosine_sim * categ_w + authr_cosine_sim * authr_w + descr_cosine_sim * descr_w
 
     # одержуємо індекс книги у датафреймі з ідентифікатора книги
     idx = df[df['BookId']==book_id].index.values[0]
+
     # одержуємо попарні значення схожості усіх книг з даною книгою
-    sim_scores = list(enumerate(cosine_sim[idx]))
+    sim_scores = cosine_sim[idx].reshape(-1, 1)
+
+    # створюємо об'єкт нормалізатора та вказуємо максимальне та мінімальне значення для нормалізації
+    scaler = MinMaxScaler(copy=False)
+    scaler.fit([[descr_w + title_w + categ_w + authr_w], [0]])
+    # нормалізуємо оцінки подібності у діапазон [0, 1]
+    scaler.transform(sim_scores)
+
+    # переходимо назад до 1-D масиву і зберігаємо оригінальні індекси
+    sim_scores = list(enumerate(sim_scores.reshape(-1)))
     
     # фільтруємо за пороговим значенням схожості
-    threshold = 1.1
+    threshold = 0.135 # можна підняти коли книг буде значно більше, мале в демонстраційних цілях
     sim_scores = filter(lambda i: i[1] >= threshold, sim_scores)
     
     # сортуємо книги за їх схожістю з даною книгою

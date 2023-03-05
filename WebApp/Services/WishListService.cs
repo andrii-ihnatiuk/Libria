@@ -62,7 +62,7 @@ namespace Libria.Services
 			return res == 0 ? new JsonResult(new { success = false }) : new JsonResult(new { success = true });
 		}
 
-		public async Task CheckIfBooksInUserWishListAsync(string? userId, List<BookCardViewModel> bookCards)
+		public async Task SetWishStatusForBookCardsAsync(string? userId, List<BookCardViewModel> bookCards)
 		{
 			var wishIds = await GetUserWishListBooksIdsOnlyAsync(userId);
 			foreach(var bookCard in bookCards)

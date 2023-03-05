@@ -52,7 +52,7 @@ namespace Libria.Services
 					.Where(b => b.Categories.Any(c => c.CategoryId == categoryId))
 					.Select(b => new Book { BookId = b.BookId, Title = b.Title, SalePrice = b.SalePrice });
 
-				searchResult = searchResult == null ? booksByCategory : booksByCategory.Union(searchResult);
+				searchResult = searchResult == null ? booksByCategory : booksByCategory.Intersect(searchResult);
 			}
 			/* FILTER BY AUTHOR */
 			if (authorId != null)
@@ -62,7 +62,7 @@ namespace Libria.Services
 					.Where(a => a.AuthorId == authorId)
 					.SelectMany(a => a.Books.Select(b => new Book { BookId = b.BookId, Title = b.Title, SalePrice = b.SalePrice }));
 
-				searchResult = searchResult == null ? booksByAuthor : booksByAuthor.Union(searchResult);
+				searchResult = searchResult == null ? booksByAuthor : booksByAuthor.Intersect(searchResult);
 			}
 
 			if (searchResult == null)

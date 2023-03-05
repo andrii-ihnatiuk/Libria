@@ -98,7 +98,7 @@ public class LibriaDbContext : IdentityDbContext<User>
             .HasMany(c => c.Books)
             .WithMany(b => b.Categories);
 
-        // Books - Publisher
+        // Books - Publishers
         builder.Entity<Book>()
             .HasOne(b => b.Publisher)
             .WithMany(p => p.Books)
@@ -132,8 +132,14 @@ public class LibriaDbContext : IdentityDbContext<User>
             .WithMany(u => u.BooksInCart)
             .HasForeignKey(c => c.UserId);
 
-        // Orders - Books
-        builder.Entity<OrdersBooks>()
+        // Users - Orders
+        builder.Entity<User>()
+            .HasMany(u => u.Orders)
+            .WithOne()
+            .HasForeignKey(o => o.UserId);
+
+		// Orders - Books
+		builder.Entity<OrdersBooks>()
             .HasKey(ob => new { ob.OrderId, ob.BookId });
 
         builder.Entity<OrdersBooks>()

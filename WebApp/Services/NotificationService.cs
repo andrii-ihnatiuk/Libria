@@ -51,7 +51,7 @@ namespace Libria.Services
 				.Select(n => new Notification { UserEmail =  n.UserEmail, Id = n.Id }).ToListAsync();
 
 			if (notifications.Count == 0)
-				return 0;
+				return 1;
 
 			List<string> emailGroup = notifications.Select(n => n.UserEmail).ToList();
 			List<string> messages = new();
@@ -91,7 +91,7 @@ namespace Libria.Services
 				.Select(n => new Notification { UserEmail = n.UserEmail, Id = n.Id }).ToListAsync();
 
 			if (notifications.Count == 0)
-				return 0;
+				return 1;
 
 			List<string> emailGroup = notifications.Select(n => n.UserEmail).ToList();
 			List<string> messages = new();

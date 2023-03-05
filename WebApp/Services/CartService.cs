@@ -36,7 +36,7 @@ namespace Libria.Services
 				else
 				{
 					var itemsIds = sessionCartItems.Select(s => s.BookId).ToList();
-					
+
 					var query = _context.Books.AsNoTracking().Where(b => itemsIds.Contains(b.BookId));
 					if (includeAuthors)
 					{
@@ -65,7 +65,7 @@ namespace Libria.Services
 								ImageUrl = b.ImageUrl,
 							});
 					}
-						
+
 					cartItems = (await query.ToListAsync())
 						.Join(sessionCartItems, b => b.BookId, s => s.BookId, (b, s) => new CartItemViewModel { Book = b, Quantity = s.Quantity })
 						.ToList();
@@ -114,20 +114,18 @@ namespace Libria.Services
 				}
 			}
 
-			if (cartItems.Count > 0)
+			// Calculate the total price for each item, set the active price depending on whether there is a discount
+			foreach (var cartItem in cartItems)
 			{
-				foreach (var cartItem in cartItems)
+				if (cartItem.Book.SalePrice < cartItem.Book.Price)
 				{
-					if (cartItem.Book.SalePrice < cartItem.Book.Price)
-					{
-						cartItem.TotalItemPrice = (decimal)cartItem.Book.SalePrice * cartItem.Quantity;
-						cartItem.ActiveBookPrice = (decimal)cartItem.Book.SalePrice;
-					}
-					else
-					{
-						cartItem.TotalItemPrice = cartItem.Book.Price * cartItem.Quantity;
-						cartItem.ActiveBookPrice = cartItem.Book.Price;
-					}
+					cartItem.TotalItemPrice = cartItem.Book.SalePrice * cartItem.Quantity;
+					cartItem.ActiveBookPrice = cartItem.Book.SalePrice;
+				}
+				else
+				{
+					cartItem.TotalItemPrice = cartItem.Book.Price * cartItem.Quantity;
+					cartItem.ActiveBookPrice = cartItem.Book.Price;
 				}
 			}
 
@@ -185,7 +183,7 @@ namespace Libria.Services
 				}
 				// Set updated cart to session
 				_http.Session.Set(SES_CART_KEY, sessionCartItems);
-				cartItems = sessionCartItems; // Calculate total sum from this list
+				cartItems = sessionCartItems; // Use session list to calculate total cart sum later
 				actionResult.Success = true;
 			}
 			// Logged in user
@@ -311,6 +309,27 @@ namespace Libria.Services
 			return actionResult;
 		}
 
+		public CartActionResult ClearUserCart(HttpContext _http)
+		{
+			var userId = _http.User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+			// Anonymous user
+			if (userId == null)
+			{
+				_http.Session.Remove(SES_CART_KEY);
+			}
+			// Logged in user
+			else
+			{
+				_context.Database.ExecuteSqlInterpolated
+				(
+					$@"DELETE FROM ""CartUsersBooks"" WHERE ""UserId"" = {userId};"
+				);
+			}
+
+			return new CartActionResult { Success = true, TotalCartPrice = 0 };
+		}
+
 
 		/* UTIL FUNCTIONS */
 
@@ -319,7 +338,7 @@ namespace Libria.Services
 		{
 			decimal totalPrice;
 			if (book.SalePrice < book.Price)
-				totalPrice = (decimal)book.SalePrice * quantity;
+				totalPrice = book.SalePrice * quantity;
 			else
 				totalPrice = book.Price * quantity;
 			return totalPrice;
@@ -346,28 +365,6 @@ namespace Libria.Services
 				}
 			}
 			return totalCartPrice;
-		}
-
-
-		public CartActionResult ClearUserCart(HttpContext _http)
-		{
-			var userId = _http.User.FindFirstValue(ClaimTypes.NameIdentifier);
-
-			// Anonymous user
-			if (userId == null)
-			{
-				_http.Session.Remove(SES_CART_KEY);
-			}
-			// Logged in user
-			else
-			{
-				_context.Database.ExecuteSqlInterpolated
-				(
-					$@"DELETE FROM ""CartUsersBooks"" WHERE ""UserId"" = {userId};"
-				);
-			}
-
-			return new CartActionResult { Success = true, TotalCartPrice = 0 };
 		}
 	}
 }

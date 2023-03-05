@@ -1,6 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
-
-namespace Libria.Models.Entities
+﻿namespace Libria.Models.Entities
 {
     public class Category
     {
@@ -10,10 +8,7 @@ namespace Libria.Models.Entities
         }
 
         public int CategoryId { get; set; }
-
-        [Required]
         public string Name { get; set; } = null!;
-
         public string? Description { get; set; }
 
         /* RELATIONS */
