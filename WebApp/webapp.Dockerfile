@@ -4,9 +4,9 @@ WORKDIR /app
 # Copy everything
 COPY . ./
 # Restore as distinct layers
-RUN dotnet restore
+RUN dotnet restore Libria.csproj
 # Build and publish a release
-RUN dotnet publish -c Release -o out
+RUN dotnet publish Libria.csproj -c Release -o out
 
 # Build runtime image
 FROM mcr.microsoft.com/dotnet/aspnet:6.0
