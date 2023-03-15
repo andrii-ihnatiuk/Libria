@@ -20,7 +20,7 @@ public class LibriaDbContext : IdentityDbContext<User>
 
     public LibriaDbContext(DbContextOptions<LibriaDbContext> options) : base(options)
     {
-        Database.EnsureCreated();
+
     }
 
     protected override void OnModelCreating(ModelBuilder builder)
@@ -57,18 +57,20 @@ public class LibriaDbContext : IdentityDbContext<User>
 		var hasher = new PasswordHasher<User>();
 
 		//Seeding the User to AspNetUsers table
+#pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
 		builder.Entity<User>().HasData(
 			new User
 			{
 				Id = "8e445865-a24d-4543-a6c6-9443d048cdb9", // primary key
 				UserName = "admin@example.com",
-                Email = "admin@example.com",
+				Email = "admin@example.com",
 				FirstName = "Admin",
-                LastName = "User",
+				LastName = "User",
 				NormalizedUserName = "admin@example.com".ToUpper(),
 				PasswordHash = hasher.HashPassword(null, "admin")
 			}
 		);
+#pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference type.
 
 		//Seeding the relation between our user and role to AspNetUserRoles table
 		builder.Entity<IdentityUserRole<string>>().HasData(

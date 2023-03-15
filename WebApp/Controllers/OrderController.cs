@@ -20,11 +20,6 @@ namespace Libria.Controllers
 			_cartService = cartService;
 		}
 
-		//public OrderController(IUserCartService cartService)
-		//{
-		//	_cartService = cartService;
-		//}
-
 		[HttpPost]
 		public async Task<IActionResult> Index()
 		{

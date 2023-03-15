@@ -9,12 +9,10 @@ namespace Libria.Services
 	public class SearchService : ISearchService
 	{
 		private readonly LibriaDbContext _context;
-		private readonly ILogger<SearchService> _logger;
 
-		public SearchService(LibriaDbContext context, ILogger<SearchService> logger)
+		public SearchService(LibriaDbContext context)
 		{
 			_context = context;
-			_logger = logger;
 		}
 
 		public async Task<SearchResult?> SearchAsync(

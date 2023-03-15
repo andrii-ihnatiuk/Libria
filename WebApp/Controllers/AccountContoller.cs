@@ -2,15 +2,12 @@
 using Libria.Models.Entities;
 using Libria.Services;
 using Libria.ViewModels.Account;
-using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Net.Mail;
 using System.Security.Claims;
-using System.Security.Principal;
 
 namespace Libria.Controllers
 {
@@ -261,6 +258,50 @@ namespace Libria.Controllers
 		}
 
 		[HttpPost]
+		[ValidateAntiForgeryToken]
+		public async Task<IActionResult> Login(LoginViewModel model, string? returnUrl)
+		{
+			if (ModelState.IsValid)
+			{
+				var result = await _signInManager.PasswordSignInAsync(model.Email, model.Password, model.RememberMe, lockoutOnFailure: false);
+
+				if (result.Succeeded)
+				{
+					var user = await _userManager.FindByEmailAsync(model.Email);
+					if (await _userManager.IsInRoleAsync(user, "admin"))
+					{
+						return RedirectToAction("Index", "Dashboard", new { area = "Admin" });
+					}
+					if (!string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl))
+					{
+						return LocalRedirect(returnUrl);
+					}
+					else
+					{
+						return RedirectToAction("Index", "Home");
+					}
+				}
+				else
+				{
+					var user = await _userManager.FindByEmailAsync(model.Email);
+					if (user == null)
+						ModelState.AddModelError(nameof(model.Email), ModelValidationMessages.Email);
+					else
+						ModelState.AddModelError(nameof(model.Password), ModelValidationMessages.PasswordIncorrect);
+				}
+			}
+			return View(model);
+		}
+
+		[HttpPost]
+		[ValidateAntiForgeryToken]
+		public async Task<IActionResult> Logout()
+		{
+			await _signInManager.SignOutAsync();
+			return RedirectToAction("Index", "Home");
+		}
+
+		[HttpPost]
 		public IActionResult GoogleLogin(string? returnUrl)
 		{
 			var redirectUrl = Url.Action("ExternalLoginCallback", "Account", new { returnUrl });
@@ -317,51 +358,6 @@ namespace Libria.Controllers
 
 				return RedirectToAction("Error", "Home");
 			}
-				
-		}
-
-		[HttpPost]
-		[ValidateAntiForgeryToken]
-		public async Task<IActionResult> Login(LoginViewModel model, string? returnUrl)
-		{
-			if (ModelState.IsValid)
-			{
-				var result = await _signInManager.PasswordSignInAsync(model.Email, model.Password, model.RememberMe, lockoutOnFailure: false);
-
-				if (result.Succeeded)
-				{
-					var user = await _userManager.FindByEmailAsync(model.Email);
-					if (await _userManager.IsInRoleAsync(user, "admin"))
-					{
-						return RedirectToAction("Index", "Dashboard", new { area = "Admin" });
-					}
-					if (!string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl))
-					{
-						return LocalRedirect(returnUrl);
-					}
-					else
-					{
-						return RedirectToAction("Index", "Home");
-					}
-				}
-				else
-				{
-					var user = await _userManager.FindByEmailAsync(model.Email);
-					if (user == null)
-						ModelState.AddModelError(nameof(model.Email), ModelValidationMessages.Email);
-					else
-						ModelState.AddModelError(nameof(model.Password), ModelValidationMessages.PasswordIncorrect);
-				}
-			}
-			return View(model);
-		}
-
-		[HttpPost]
-		[ValidateAntiForgeryToken]
-		public async Task<IActionResult> Logout()
-		{
-			await _signInManager.SignOutAsync();
-			return RedirectToAction("Index", "Home");
 		}
 
 		// Renew Access

@@ -5,8 +5,6 @@ using System.Security.Claims;
 using Libria.Extensions;
 using Libria.Data;
 using Libria.Models.Entities;
-using System.Diagnostics;
-using static System.Reflection.Metadata.BlobBuilder;
 
 namespace Libria.Services
 {

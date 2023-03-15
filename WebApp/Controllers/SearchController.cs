@@ -9,13 +9,11 @@ namespace Libria.Controllers
 {
     public class SearchController : Controller
 	{
-		private readonly LibriaDbContext _context;
 		private readonly IWishListService _wishListService;
 		private readonly ISearchService _searchService;
 
-		public SearchController(LibriaDbContext context, IWishListService wishListService, ISearchService searchService)
+		public SearchController(IWishListService wishListService, ISearchService searchService)
 		{
-			_context = context;
 			_wishListService = wishListService;
 			_searchService = searchService;
 		}

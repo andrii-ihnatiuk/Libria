@@ -7,12 +7,10 @@ namespace Libria.Controllers
 {
 	public class CartController : Controller
 	{
-		private readonly ILogger<CartController> _logger;
 		private readonly ICartService _cartService;
 
-		public CartController(ILogger<CartController> logger, ICartService cartService)
+		public CartController(ICartService cartService)
 		{
-			_logger = logger;
 			_cartService = cartService;
 		}
 

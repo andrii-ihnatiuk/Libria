@@ -14,20 +14,17 @@ namespace Libria.Controllers
 	{
 		private readonly LibriaDbContext _context;
 		private readonly INotificationService _notificationService;
-		private readonly ILogger<BookController> _logger;
 		private readonly IHttpClientFactory _httpClientFactory;
 		private readonly IHostEnvironment _hostEnvironment;
 
 		public BookController(
 			LibriaDbContext context, 
-			ILogger<BookController> logger, 
 			INotificationService notificationService, 
 			IHttpClientFactory httpClientFactory, 
 			IHostEnvironment hostEnvironment)
 		{
 			_context = context;
 			_notificationService = notificationService;
-			_logger = logger;
 			_httpClientFactory = httpClientFactory;
 			_hostEnvironment = hostEnvironment;
 		}
@@ -158,9 +155,8 @@ namespace Libria.Controllers
 			{
 				httpResponse = httpClient.GetAsync(url).Result;
 			}
-			catch (Exception ex)
+			catch (Exception)
 			{
-				_logger.LogError(ex.Message);
 				return Problem("Неможливо виконати запит");
 			}
 			if (httpResponse.IsSuccessStatusCode)
