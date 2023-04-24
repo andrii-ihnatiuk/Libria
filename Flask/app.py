@@ -2,13 +2,14 @@ import os
 import re
 import json
 import enum
+import spacy
 import atexit
 import psycopg2
 import numpy as np
 import pandas as pd
 from flask import Flask, jsonify, request
-from sklearn.preprocessing import MinMaxScaler
 from sklearn.metrics.pairwise import cosine_similarity
+from sklearn.preprocessing import MinMaxScaler, MultiLabelBinarizer
 from spacy.lang.uk.stop_words import STOP_WORDS as uk_stop
 from spacy.lang.en.stop_words import STOP_WORDS as en_stop
 from sklearn.feature_extraction.text import CountVectorizer
@@ -100,14 +101,14 @@ def get_content_based(book_id: int, amount: int = 10) -> list[int] | None:
     return list(df["BookId"].iloc[recommend_ids])
 
 
-def score_similarity(df_column, vectorizer_type: VectorizerType, token_pattern=r"\b\w[\w’‘']+\b") -> np.ndarray:
+def score_text_similarity(df_column, vectorizer_type: VectorizerType, token_pattern=r"\b\w[\w’‘']+\b") -> np.ndarray:
     """
-    Calculate cosine similarity between all books
+    Calculate cosine similarity between all books based on textual features
 
     Args:
         df_column (pandas Series): dataframe column to use
         vectorizer_type (VectorizerType): a method used to vectorize text data
-        token_pattern (regex): regular expression used to tokenize text into words
+        token_pattern (regex): regular expression used to tokenize text
     Returns:
         similarity score matrix with dimensions N * N (N - number of books)
     """
@@ -120,6 +121,7 @@ def score_similarity(df_column, vectorizer_type: VectorizerType, token_pattern=r
     
     count_matrix = vectorizer.fit_transform(df_column) # matrix with shape (Number of books, Number of unique words) 
     cosine_sim = cosine_similarity(count_matrix, count_matrix) # matrix with shape (Number of books, Number of books)
+    app.logger.info("Shape of a matrix: ", np.shape(count_matrix))
 
     return cosine_sim
 
@@ -162,20 +164,32 @@ def recalculate_similarities():
 
     df.fillna("", inplace=True)
     # перетворення тексту у нижній регістр
-    for feature in ["Title", "Description", "Authors", "Categories"]:
+    for feature in ["Title", "Description"]:
         df[feature] = df[feature].apply(lambda x: x.lower())
 
-    # видалення пробілів, наприклад щоб Іван (Франко) != Іван (Багряний).
-    # алгоритм порахує що Іван з'явився 2 рази (окремо від прізвищ), хоча це для нас 
-    # ніякої цінності не має. А от якщо з'явиться іванфранко, тоді ми можемо це використати
-    df["Authors"] = df["Authors"].apply(lambda x: re.sub(r"[.\- ]", "", x))
-    df["Categories"] = df["Categories"].apply(lambda x: re.sub(r"[.\- ]", "", x))
+    # стандартизація апострофів
+    df["Description"] = df["Description"].apply(lambda x: re.sub(r"[‘’′´`]", "'", x))
+
+    # розбиття строк на масив міток "Label 1, Label 2" => ["Label 1", "Label 2"]
+    df["Authors"] = df['Authors'].str.split(", ") # розбиваємо рядок з id авторів на масив міток
+    df["Categories"] = df['Categories'].str.split(", ") # розбиваємо рядок з id категорій на масив міток
+    
+    mlb = MultiLabelBinarizer() # бінаризатор ознак з довільною кількістю міток
+    # кодування ознак з довільною кількістю міток (книга може мати від 1 до N авторів та категорій)
+    authors_binarized = mlb.fit_transform(df["Authors"])
+    categories_binarized = mlb.fit_transform(df["Categories"])
+
+    # завантаження навченої мовної моделі Spacy (українська мова)
+    nlp = spacy.load("uk_core_news_sm")
+    # лематизація слів - приведення до початкової форми за допомогою нейромережі
+    df["Description"] = df["Description"].apply(lambda x: " ".join([token.lemma_ for token in nlp(x)]))
+    df["Title"] = df["Title"].apply(lambda x: " ".join([token.lemma_ for token in nlp(x)]))
 
     # розраховуємо взаємну схожість кожної книги за кожним критерієм 
-    title_cosine_sim = score_similarity(df["Title"], VectorizerType.COUNT)
-    categ_cosine_sim = score_similarity(df["Categories"], VectorizerType.COUNT)
-    authr_cosine_sim = score_similarity(df["Authors"], VectorizerType.COUNT)
-    descr_cosine_sim = score_similarity(df["Description"], VectorizerType.TFIDF)
+    title_cosine_sim = score_text_similarity(df["Title"], VectorizerType.COUNT)
+    categ_cosine_sim = cosine_similarity(categories_binarized)
+    authr_cosine_sim = cosine_similarity(authors_binarized)
+    descr_cosine_sim = score_text_similarity(df["Description"], VectorizerType.TFIDF)
 
     # save dataframe
     if (os.path.exists(DATA_DIR) == False):
@@ -204,22 +218,18 @@ def fetch_books() -> list[tuple] | None:
         b."BookId", 
         b."Title", 
         b."Description", 
-        string_agg(distinct a."Name", ', '),
-        string_agg(distinct c."Name", ', ')
+        string_agg(distinct ab."AuthorsAuthorId"::character varying, ', '),
+        string_agg(distinct bc."CategoriesCategoryId"::character varying, ', ')
     FROM 
         "Books" AS b 
 
     -- AUTHORS
     LEFT JOIN "AuthorBook" AS ab ON 
         ab."BooksBookId" = b."BookId" 
-    LEFT JOIN "Authors" AS a ON 
-        a."AuthorId" = ab."AuthorsAuthorId" 
 
     -- CATEGORIES
     LEFT JOIN "BookCategory" AS bc ON 
         bc."BooksBookId" = b."BookId"
-    LEFT JOIN "Categories" AS c ON
-        c."CategoryId" = bc."CategoriesCategoryId"
 
     GROUP BY b."BookId"
     """
