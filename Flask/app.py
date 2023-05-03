@@ -121,7 +121,7 @@ def score_text_similarity(df_column, vectorizer_type: VectorizerType, token_patt
     
     count_matrix = vectorizer.fit_transform(df_column) # matrix with shape (Number of books, Number of unique words) 
     cosine_sim = cosine_similarity(count_matrix, count_matrix) # matrix with shape (Number of books, Number of books)
-    app.logger.info("Shape of a matrix: ", np.shape(count_matrix))
+    app.logger.info("Shape of a matrix: {}".format(np.shape(count_matrix)))
 
     return cosine_sim
 
@@ -190,6 +190,9 @@ def recalculate_similarities():
     categ_cosine_sim = cosine_similarity(categories_binarized)
     authr_cosine_sim = cosine_similarity(authors_binarized)
     descr_cosine_sim = score_text_similarity(df["Description"], VectorizerType.TFIDF)
+
+    # видаляємо непотрібні стовпці, лише BookId потрібне для видачі рекомендацій пізніше
+    df.drop(["Title", "Description", "Authors", "Categories"], axis=1, inplace=True)
 
     # save dataframe
     if (os.path.exists(DATA_DIR) == False):
