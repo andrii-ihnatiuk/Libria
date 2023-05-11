@@ -115,9 +115,9 @@ def score_text_similarity(df_column, vectorizer_type: VectorizerType, token_patt
     stop = list(uk_stop)+list(en_stop)
 
     if vectorizer_type == VectorizerType.COUNT:
-        vectorizer = CountVectorizer(stop_words=stop, token_pattern=token_pattern) 
+        vectorizer = CountVectorizer(stop_words=stop, token_pattern=token_pattern, min_df=2) 
     else:
-        vectorizer = TfidfVectorizer(stop_words=stop, token_pattern=token_pattern) 
+        vectorizer = TfidfVectorizer(stop_words=stop, token_pattern=token_pattern, min_df=2) 
     
     count_matrix = vectorizer.fit_transform(df_column) # matrix with shape (Number of books, Number of unique words) 
     cosine_sim = cosine_similarity(count_matrix, count_matrix) # matrix with shape (Number of books, Number of books)
@@ -181,9 +181,12 @@ def recalculate_similarities():
 
     # завантаження навченої мовної моделі Spacy (українська мова)
     nlp = spacy.load("uk_core_news_sm")
+    # додаємо до стандартного списку стоп-слів моделі англійські стоп-слова
+    nlp.Defaults.stop_words |= en_stop
     # лематизація слів - приведення до початкової форми за допомогою нейромережі
-    df["Description"] = df["Description"].apply(lambda x: " ".join([token.lemma_ for token in nlp(x)]))
-    df["Title"] = df["Title"].apply(lambda x: " ".join([token.lemma_ for token in nlp(x)]))
+    # перед викликом lemma_ перевіряємо токен на стоп-слово щоб дарма не витрачати час
+    df["Description"] = df["Description"].apply(lambda x: " ".join([token.lemma_ for token in nlp(x) if not token.is_stop]))
+    df["Title"] = df["Title"].apply(lambda x: " ".join([token.lemma_ for token in nlp(x) if not token.is_stop]))
 
     # розраховуємо взаємну схожість кожної книги за кожним критерієм 
     title_cosine_sim = score_text_similarity(df["Title"], VectorizerType.COUNT)
