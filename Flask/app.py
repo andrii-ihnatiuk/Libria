@@ -25,7 +25,7 @@ DATA_DIR = "./data"
 DF_PATH = DATA_DIR + "/df.csv"
 SCORES_DIR = DATA_DIR + "/scores"
 
-df = title_cosine_sim = categ_cosine_sim = authr_cosine_sim = descr_cosine_sim = None
+df = categ_cosine_sim = authr_cosine_sim = descr_cosine_sim = None
 
 app = Flask(__name__)
 
@@ -53,7 +53,7 @@ def get_content_based(book_id: int, amount: int = 10) -> list[int] | None:
     Returns:
         list[int] of book ids if success or None if failed
     """
-    if (df is None or title_cosine_sim is None or categ_cosine_sim is None or authr_cosine_sim is None or descr_cosine_sim is None):
+    if (df is None or categ_cosine_sim is None or authr_cosine_sim is None or descr_cosine_sim is None):
         return None
 
     if (book_id not in df["BookId"].values):
@@ -61,11 +61,10 @@ def get_content_based(book_id: int, amount: int = 10) -> list[int] | None:
 
     # ваги для атрибутів
     descr_w = 5 # description weight
-    title_w = 1 # title weigth
     categ_w = 1 # category weight
     authr_w = 1 # author weight
     # зважена сума подібностей за усіма властивостями (wighted sum)
-    cosine_sim = title_cosine_sim * title_w + categ_cosine_sim * categ_w + authr_cosine_sim * authr_w + descr_cosine_sim * descr_w
+    cosine_sim = categ_cosine_sim * categ_w + authr_cosine_sim * authr_w + descr_cosine_sim * descr_w
 
     # одержуємо індекс книги у датафреймі з ідентифікатора книги
     idx = df[df['BookId']==book_id].index.values[0]
@@ -75,7 +74,7 @@ def get_content_based(book_id: int, amount: int = 10) -> list[int] | None:
 
     # створюємо об'єкт нормалізатора та вказуємо максимальне та мінімальне значення для нормалізації
     scaler = MinMaxScaler(copy=False)
-    scaler.fit([[descr_w + title_w + categ_w + authr_w], [0]])
+    scaler.fit([[descr_w + categ_w + authr_w], [0]])
     # нормалізуємо оцінки подібності у діапазон [0, 1]
     scaler.transform(sim_scores)
 
@@ -138,7 +137,7 @@ def load_memory_data():
         recalculate_similarities() # if failed to load dataframe from memory fetch data from db
         return
 
-    for name in ["title_cosine_sim", "categ_cosine_sim", "authr_cosine_sim", "descr_cosine_sim"]:
+    for name in ["categ_cosine_sim", "authr_cosine_sim", "descr_cosine_sim"]:
         file_path = SCORES_DIR + "/" + name
         try:
             globals()[name] = np.load(file_path)
@@ -153,7 +152,7 @@ def recalculate_similarities():
     Load data from Database, clean, calculate similarities and save data to memory
     """
     app.logger.info("Recalculating similarities")
-    global df, title_cosine_sim, categ_cosine_sim, authr_cosine_sim, descr_cosine_sim
+    global df, categ_cosine_sim, authr_cosine_sim, descr_cosine_sim
     data = fetch_books()
     if (data is None):
         app.logger.warning("No data received to recalculate similarity scores. The function will be aborted.")
@@ -163,12 +162,10 @@ def recalculate_similarities():
     # --- Clean data and perform heavy calculations
 
     df.fillna("", inplace=True)
-    # перетворення тексту у нижній регістр
-    for feature in ["Title", "Description"]:
-        df[feature] = df[feature].apply(lambda x: x.lower())
+    df['Description'] = df['Description'].str.cat(df['Title'], sep=' ') # поєднуємо заголовки з описом
 
-    # стандартизація апострофів
-    df["Description"] = df["Description"].apply(lambda x: re.sub(r"[‘’′´`]", "'", x))
+    # перетворення тексту у нижній регістр та стандартизація апострофів
+    df["Description"] = df["Description"].apply(lambda x: re.sub(r"[‘’′´`]", "'", x).lower())
 
     # розбиття строк на масив міток "Label 1, Label 2" => ["Label 1", "Label 2"]
     df["Authors"] = df['Authors'].str.split(", ") # розбиваємо рядок з id авторів на масив міток
@@ -186,10 +183,8 @@ def recalculate_similarities():
     # лематизація слів - приведення до початкової форми за допомогою нейромережі
     # перед викликом lemma_ перевіряємо токен на стоп-слово щоб дарма не витрачати час
     df["Description"] = df["Description"].apply(lambda x: " ".join([token.lemma_ for token in nlp(x) if not token.is_stop]))
-    df["Title"] = df["Title"].apply(lambda x: " ".join([token.lemma_ for token in nlp(x) if not token.is_stop]))
 
     # розраховуємо взаємну схожість кожної книги за кожним критерієм 
-    title_cosine_sim = score_text_similarity(df["Title"], VectorizerType.COUNT)
     categ_cosine_sim = cosine_similarity(categories_binarized)
     authr_cosine_sim = cosine_similarity(authors_binarized)
     descr_cosine_sim = score_text_similarity(df["Description"], VectorizerType.TFIDF)
@@ -205,7 +200,7 @@ def recalculate_similarities():
     # save calculated similarity scores for all properties
     if (os.path.exists(SCORES_DIR) == False):
         os.mkdir(SCORES_DIR)
-    for name in ["title_cosine_sim", "categ_cosine_sim", "authr_cosine_sim", "descr_cosine_sim"]:
+    for name in ["categ_cosine_sim", "authr_cosine_sim", "descr_cosine_sim"]:
         file_path = SCORES_DIR + "/" + name
         with open(file_path, "wb+") as f:
             np.save(f, globals()[name])
